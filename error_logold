@@ -1,0 +1,89 @@
+[18-Dec-2025 15:39:33 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../laravel/vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 8
+[18-Dec-2025 15:39:33 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../laravel/vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 8
+[18-Dec-2025 15:39:33 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/bintangwisata/bintangwisataholiday.com/../laravel/vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/bintangwisata/bintangwisataholiday.com/index.php:8
+Stack trace:
+#0 {main}
+  thrown in /home/bintangwisata/bintangwisataholiday.com/index.php on line 8
+[18-Dec-2025 15:39:38 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../laravel/vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 8
+[18-Dec-2025 15:39:38 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../laravel/vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 8
+[18-Dec-2025 15:39:38 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/bintangwisata/bintangwisataholiday.com/../laravel/vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/bintangwisata/bintangwisataholiday.com/index.php:8
+Stack trace:
+#0 {main}
+  thrown in /home/bintangwisata/bintangwisataholiday.com/index.php on line 8
+[18-Dec-2025 15:40:57 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:40:57 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:40:57 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/bintangwisata/bintangwisataholiday.com/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:40:57 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:40:57 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:40:57 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/bintangwisata/bintangwisataholiday.com/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:40:58 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:40:58 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:40:58 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/bintangwisata/bintangwisataholiday.com/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:40:59 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:40:59 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:40:59 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/bintangwisata/bintangwisataholiday.com/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:41:02 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:41:02 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:41:02 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/bintangwisata/bintangwisataholiday.com/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:41:04 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:41:04 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:41:04 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/bintangwisata/bintangwisataholiday.com/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:42:38 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:42:38 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:42:38 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/bintangwisata/bintangwisataholiday.com/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:44:39 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:44:39 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:44:39 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/bintangwisata/bintangwisataholiday.com/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:44:40 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:44:40 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:44:40 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/bintangwisata/bintangwisataholiday.com/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:44:40 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:44:40 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:44:40 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/bintangwisata/bintangwisataholiday.com/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:44:41 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:44:41 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:44:41 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/bintangwisata/bintangwisataholiday.com/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:46:25 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:46:25 UTC] PHP Warning:  require(/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[18-Dec-2025 15:46:25 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/bintangwisata/bintangwisataholiday.com/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/bintangwisata/bintangwisataholiday.com/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/bintangwisata/bintangwisataholiday.com/index.php on line 34
+[19-Dec-2025 18:42:13 UTC] PHP Parse error:  syntax error, unexpected token "\", expecting end of file in /home/bintangwisata/bintangwisataholiday.com/storage-link.php on line 24
+[19-Dec-2025 18:42:15 UTC] PHP Parse error:  syntax error, unexpected token "\", expecting end of file in /home/bintangwisata/bintangwisataholiday.com/storage-link.php on line 24
+[19-Dec-2025 18:42:16 UTC] PHP Parse error:  syntax error, unexpected token "\", expecting end of file in /home/bintangwisata/bintangwisataholiday.com/storage-link.php on line 24
+[19-Dec-2025 18:42:17 UTC] PHP Parse error:  syntax error, unexpected token "\", expecting end of file in /home/bintangwisata/bintangwisataholiday.com/storage-link.php on line 24
+[19-Dec-2025 18:43:11 UTC] PHP Parse error:  syntax error, unexpected token "\", expecting end of file in /home/bintangwisata/bintangwisataholiday.com/storage-link.php on line 24

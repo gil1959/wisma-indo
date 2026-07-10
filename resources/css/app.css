@@ -1,0 +1,183 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; }
+
+  :root{
+    --brand: #0194F3;         /* Azure Radiance */
+    --brand-dark: #007fd1;
+    --brand-darker: #006bb0;
+  }
+
+  body { @apply bg-slate-50 text-slate-800 antialiased; }
+  a { @apply no-underline; }
+
+  /* consistent focus ring */
+  :is(input, select, textarea):focus-visible{
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(1,148,243,0.18);
+    border-color: var(--brand);
+  }
+    
+}
+
+@layer components {
+  /* ---------- effects ---------- */
+  .shadow-soft{
+    box-shadow:
+      0 18px 55px rgba(1,148,243,0.14),
+      0 1px 0 rgba(15,23,42,0.06);
+  }
+  .btn-danger {
+    @apply bg-red-500 text-white hover:bg-red-600;
+  }
+
+  .btn-gateway {
+    @apply text-white shadow-soft;
+    background-color: #0194F3;
+  }
+  .btn-gateway:hover { background-color: #007fd1; }
+
+  .input {
+    @apply w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500;
+  }
+
+  .label {
+    @apply text-xs font-semibold text-slate-600 mb-1 block;
+  }
+
+  .alert-success {
+    @apply rounded-lg bg-green-100 text-green-800 px-4 py-3 text-sm;
+  }
+
+  .alert-error {
+    @apply rounded-lg bg-red-100 text-red-800 px-4 py-3 text-sm;
+  }
+
+  .badge-success {
+    @apply inline-block rounded-full bg-green-500 text-white text-xs px-2 py-0.5;
+  }
+
+  .badge-muted {
+    @apply inline-block rounded-full bg-slate-400 text-white text-xs px-2 py-0.5;
+  }
+  .goog-logo-link,
+.goog-te-gadget span {
+    display: none !important;
+}
+
+.goog-te-gadget {
+    color: transparent !important;
+}
+
+iframe.goog-te-banner-frame {
+    display: none !important;
+}
+
+body {
+    top: 0 !important;
+}
+
+
+  /* ---------- brand helpers ---------- */
+  .text-azure { color: var(--brand); }
+  .bg-azure { background-color: var(--brand); }
+  .border-azure { border-color: rgba(1,148,243,0.35); }
+  .ring-azure { box-shadow: 0 0 0 4px rgba(1,148,243,0.18); }
+
+  .grad-azure{
+    background: linear-gradient(90deg, var(--brand) 0%, rgba(1,148,243,0.65) 100%);
+  }
+
+  /* ---------- base UI blocks ---------- */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition;
+  }
+
+  /* FORCE primary to Azure (no reliance on Tailwind brand palette) */
+  .btn-primary{
+    @apply text-white shadow-soft;
+    background-color: var(--brand);
+  }
+  .btn-primary:hover{ background-color: var(--brand-dark); }
+  .btn-primary:active{ background-color: var(--brand-darker); }
+
+  .btn-ghost {
+    @apply bg-white/70 text-slate-900 hover:bg-white border border-slate-200;
+  }
+
+  .card {
+    @apply rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-soft transition;
+  }
+
+  .pill{
+    @apply inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold;
+  }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .pill-azure{
+    @apply border;
+    background: rgba(1,148,243,0.08);
+    border-color: rgba(1,148,243,0.22);
+    color: rgba(2, 81, 132, 1);
+  }
+
+  .icon-badge{
+    @apply h-11 w-11 rounded-2xl grid place-items-center border bg-white;
+    border-color: rgba(1,148,243,0.22);
+    box-shadow: 0 10px 30px rgba(1,148,243,0.12);
+  }
+  .icon-badge i{ color: var(--brand); }
+
+  /* ---------- decorative section backgrounds ---------- */
+  .travel-grid{
+    background-image:
+      linear-gradient(to right, rgba(1,148,243,0.10) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(1,148,243,0.10) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+
+  .travel-dots{
+    background-image: radial-gradient(rgba(1,148,243,0.16) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+
+  .glass{
+    @apply bg-white/70 backdrop-blur border;
+    border-color: rgba(148,163,184,0.35);
+  }
+
+  /* existing gateway button: keep but align to Azure */
+  .btn-gateway {
+    @apply text-white shadow-soft;
+    background-color: var(--brand);
+  }
+  .btn-gateway:hover { background-color: var(--brand-dark); }
+  .btn-gateway:active { background-color: var(--brand-darker); }
+  .admin-ui .admin-container{
+    @apply mx-auto w-full max-w-[1160px];
+  }
+
+  /* rapatkan nav item admin tanpa mengganggu front */
+  .admin-ui .admin-nav a{
+    @apply px-3 py-2.5 rounded-xl text-sm font-bold mb-1;
+  }
+
+  /* rapatkan tombol di admin saja (front tetap besar) */
+  .admin-ui .btn{
+    @apply px-4 py-2.5 text-sm;
+  }
+
+  /* rapatkan komponen umum admin */
+  .admin-ui .pill{ @apply px-3 py-1.5 text-xs; }
+  .admin-ui .icon-badge{ @apply h-10 w-10; }
+
+  /* kalau ada card di admin yang terasa kebesaran */
+  .admin-ui .card{
+    @apply rounded-2xl;
+  }
+   .admin-ui .admin-container { @apply mx-auto w-full max-w-[1160px]; }
+  .admin-ui .admin-nav a { @apply px-3 py-2.5 rounded-xl text-sm font-bold mb-1; }
+}

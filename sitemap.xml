@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" 
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+    <url>
+        <loc>https://bintangwisataholiday.com/</loc>
+        <lastmod>2026-02-07</lastmod>
+        <priority>1.00</priority>
+        <changefreq>daily</changefreq>
+    </url>
+
+    <url>
+        <loc>https://bintangwisataholiday.com/paket-tour</loc>
+        <lastmod>2026-02-07</lastmod>
+        <priority>0.90</priority>
+    </url>
+    <url>
+        <loc>https://bintangwisataholiday.com/rent-car</loc>
+        <lastmod>2026-02-07</lastmod>
+        <priority>0.85</priority>
+    </url>
+    <url>
+        <loc>https://bintangwisataholiday.com/sewa-kapal</loc>
+        <lastmod>2026-02-07</lastmod>
+        <priority>0.85</priority>
+    </url>
+    <url>
+        <loc>https://bintangwisataholiday.com/paket-umrah</loc>
+        <lastmod>2026-02-07</lastmod>
+        <priority>0.85</priority>
+    </url>
+    <url>
+        <loc>https://bintangwisataholiday.com/paket-mice</loc>
+        <lastmod>2026-02-07</lastmod>
+        <priority>0.80</priority>
+    </url>
+
+    <url>
+        <loc>https://bintangwisataholiday.com/dokumentasi</loc>
+        <lastmod>2026-02-07</lastmod>
+        <priority>0.70</priority>
+    </url>
+    <url>
+        <loc>https://bintangwisataholiday.com/about</loc>
+        <lastmod>2026-02-07</lastmod>
+        <priority>0.60</priority>
+    </url>
+    <url>
+        <loc>https://bintangwisataholiday.com/artikel</loc>
+        <lastmod>2026-02-07</lastmod>
+        <priority>0.80</priority>
+        <changefreq>weekly</changefreq>
+    </url>
+    <url>
+        <loc>https://bintangwisataholiday.com/partner</loc>
+        <lastmod>2026-02-07</lastmod>
+        <priority>0.60</priority>
+    </url>
+
+</urlset>

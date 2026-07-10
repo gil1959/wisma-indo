@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#0194F3" />
+    <title>Offline - Bintang Wisata</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu;
+            margin: 0;
+            background: #f8fafc;
+            color: #0f172a
+        }
+
+        .wrap {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 48px 16px
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            padding: 22px;
+            box-shadow: 0 10px 30px rgba(2, 132, 199, .12)
+        }
+
+        .badge {
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: #e6f4ff;
+            border: 1px solid #cceaff;
+            color: #015a95;
+            font-weight: 700;
+            font-size: 12px
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: #0194F3
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 14px;
+            text-decoration: none;
+            background: #0194F3;
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 14px;
+            font-weight: 800
+        }
+
+        p {
+            color: #475569
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="badge"><span class="dot"></span> Kamu sedang offline</div>
+        <h1 style="margin:14px 0 8px; font-size:32px;">Koneksi terputus</h1>
+        <p style="margin:0 0 18px;">Halaman tetap bisa dibuka dari cache jika sebelumnya pernah kamu akses. Coba
+            nyalakan internet lalu refresh.</p>
+
+        <div class="card">
+            <div style="font-weight:900; font-size:16px;">Yang bisa kamu lakukan:</div>
+            <ul style="margin:10px 0 0; padding-left:18px; color:#475569">
+                <li>Aktifkan data / Wi-Fi</li>
+                <li>Refresh halaman</li>
+                <li>Kembali ke Home setelah online</li>
+            </ul>
+            <a href="/">Kembali ke Home</a>
+        </div>
+    </div>
+</body>
+
+</html>

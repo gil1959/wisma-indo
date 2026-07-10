@@ -1,0 +1,14 @@
+Options -Indexes
+RewriteEngine On
+
+# 1) Serve /storage/* dari public/storage/*
+RewriteRule ^storage/(.*)$ public/storage/$1 [L,NC]
+
+# 2) Serve asset public langsung (optional tapi aman)
+RewriteCond %{REQUEST_URI} ^/(css|js|images|fonts|build|assets)/ [NC]
+RewriteRule ^(.*)$ public/$1 [L,NC]
+
+# 3) Selain itu masuk ke Laravel
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [L]
