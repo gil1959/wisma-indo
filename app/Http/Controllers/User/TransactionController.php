@@ -9,6 +9,10 @@ class TransactionController extends Controller
 {
     public function index()
     {
-        return view('front.user.transactions.index');
+        $transactions = \App\Models\TopupTransaction::where('user_id', \Illuminate\Support\Facades\Auth::id())
+            ->latest()
+            ->paginate(10);
+            
+        return view('front.user.transactions.index', compact('transactions'));
     }
 }

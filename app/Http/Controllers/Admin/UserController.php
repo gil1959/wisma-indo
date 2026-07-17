@@ -231,4 +231,28 @@ return redirect()
             ->route('admin.users.index')
             ->with('success', 'User berhasil dihapus.');
     }
+
+    public function toggleFreeQuota(User $user)
+    {
+        $quota = $user->quota;
+        if (!$quota) {
+            $quota = \App\Models\UserQuota::create(['user_id' => $user->id, 'listing_quota' => 0, 'has_free_quota' => false]);
+        }
+
+        if ($quota->has_free_quota) {
+            // Nonaktifkan
+            $quota->has_free_quota = false;
+            if ($quota->listing_quota > 0) {
+                $quota->decrement('listing_quota');
+            }
+            $quota->save();
+            return back()->with('success', 'Kuota Gratis 1x berhasil dinonaktifkan.');
+        } else {
+            // Aktifkan
+            $quota->has_free_quota = true;
+            $quota->increment('listing_quota');
+            $quota->save();
+            return back()->with('success', 'Kuota Gratis 1x berhasil diaktifkan kembali.');
+        }
+    }
 }

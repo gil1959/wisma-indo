@@ -22,11 +22,14 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $fillable = [
     'name',
     'email',
+    'google_id',
     'password',
+    'avatar',
     'phone',
     'address',
     'full_address',
     'sub_district',
+    'bio',
     'email_verified_at',
    // affiliate
 'is_affiliate',
@@ -72,7 +75,7 @@ class User extends Authenticatable implements MustVerifyEmail
 'is_suspended' => 'boolean',
 'suspended_at' => 'datetime',
     ];
-    public function quotas()
+    public function quota()
     {
         return $this->hasOne(UserQuota::class);
     }
@@ -85,5 +88,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function topupTransactions()
     {
         return $this->hasMany(TopupTransaction::class);
+    }
+
+    public function favoriteListings()
+    {
+        return $this->hasMany(FavoriteListing::class);
     }
 }

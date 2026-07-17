@@ -25,11 +25,15 @@ class RedirectIfAuthenticated
             if (Auth::guard($guard)->check()) {
                 $user = Auth::user();
 
-                if ($user && $user->hasRole('admin')) {
-                    return redirect('/bw-admin');
+                if ($user && ($user->hasRole('admin') || $user->hasRole('site_moderator'))) {
+                    return redirect('/admin');
                 }
 
-                return redirect('/user/dashboard');
+                if ($user && $user->hasRole('partner')) {
+                    return redirect('/partner/dashboard');
+                }
+
+                return redirect('/akun');
             }
         }
 

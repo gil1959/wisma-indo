@@ -15,4 +15,9 @@ class TopupTransaction extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function topupPackage()
+    {
+        return $this->belongsTo(TopupPackage::class);
+    }
 }

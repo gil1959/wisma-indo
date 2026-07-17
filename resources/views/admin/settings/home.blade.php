@@ -32,6 +32,139 @@
     <form method="POST" action="{{ route('admin.settings.home.save') }}" class="mt-6" enctype="multipart/form-data">
         @csrf
 
+        {{-- ================= HERO SECTION ================= --}}
+        <div class="card p-0 overflow-hidden mb-6">
+            <div class="px-5 py-4 border-b bg-slate-50">
+                <div class="text-sm font-extrabold text-slate-900">Hero Section</div>
+                <div class="text-xs text-slate-600 mt-1">Pengaturan background dan teks untuk Hero.</div>
+            </div>
+            <div class="p-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs font-extrabold text-slate-700">Judul Hero</label>
+                        <input type="text" name="hero_title" value="{{ old('hero_title', $heroSettings['title'] ?? '') }}" class="mt-1 w-full rounded-xl border-slate-200" />
+                    </div>
+                    <div>
+                        <label class="text-xs font-extrabold text-slate-700">Subjudul Hero</label>
+                        <input type="text" name="hero_subtitle" value="{{ old('hero_subtitle', $heroSettings['subtitle'] ?? '') }}" class="mt-1 w-full rounded-xl border-slate-200" />
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="text-xs font-extrabold text-slate-700">Background Image</label>
+                        @if(!empty($heroSettings['bg_image']))
+                        <div class="mb-2">
+                            <img src="{{ asset('storage/'.$heroSettings['bg_image']) }}" class="h-20 w-auto rounded-lg border object-cover" />
+                        </div>
+                        @endif
+                        <input type="file" name="hero_bg_image" accept="image/*" class="mt-1 w-full rounded-xl border-slate-200" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- ================= CUSTOM LINKS (CTA) ================= --}}
+        <div class="card p-0 overflow-hidden mb-6">
+            <div class="px-5 py-4 border-b bg-slate-50">
+                <div class="text-sm font-extrabold text-slate-900">Tombol CTA (Kiri)</div>
+                <div class="text-xs text-slate-600 mt-1">Tombol Cari Properti, Pasang Iklan, dsb.</div>
+            </div>
+            <div class="p-5">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm">
+                        <thead>
+                            <tr class="text-slate-600">
+                                <th class="text-left font-extrabold py-2">Label</th>
+                                <th class="text-left font-extrabold py-2">Sublabel</th>
+                                <th class="text-left font-extrabold py-2">URL / Link</th>
+                                <th class="text-left font-extrabold py-2">Icon Image</th>
+                                <th class="py-2"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="customLinksRows" class="align-top">
+                            @foreach(($customLinks ?? []) as $i => $l)
+                            <tr class="border-t">
+                                <td class="py-3 pr-3">
+                                    <input type="text" name="custom_links[{{ $i }}][label]" value="{{ old('custom_links.'.$i.'.label', $l['label'] ?? '') }}" class="w-full rounded-xl border-slate-200" />
+                                </td>
+                                <td class="py-3 pr-3">
+                                    <input type="text" name="custom_links[{{ $i }}][sublabel]" value="{{ old('custom_links.'.$i.'.sublabel', $l['sublabel'] ?? '') }}" class="w-full rounded-xl border-slate-200" />
+                                </td>
+                                <td class="py-3 pr-3">
+                                    <input type="text" name="custom_links[{{ $i }}][url]" value="{{ old('custom_links.'.$i.'.url', $l['url'] ?? '') }}" class="w-full rounded-xl border-slate-200" />
+                                </td>
+                                <td class="py-3 pr-3">
+                                    @php $exImg = $l['icon_image'] ?? ''; @endphp
+                                    @if($exImg)
+                                    <img src="{{ asset('storage/'.$exImg) }}" class="h-8 w-8 mb-2 rounded border object-cover" />
+                                    @endif
+                                    <input type="file" name="custom_links[{{ $i }}][icon_image]" accept="image/*" class="w-full rounded-xl border-slate-200" />
+                                    <input type="hidden" name="custom_links[{{ $i }}][icon_image_existing]" value="{{ $exImg }}" />
+                                </td>
+                                <td class="py-3 text-right">
+                                    <button type="button" class="inline-flex items-center justify-center h-9 w-9 rounded-xl border border-slate-200 hover:bg-slate-50" onclick="this.closest('tr').remove()">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-4">
+                    <button type="button" class="btn btn-ghost" onclick="addCustomLinkRow()">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Tambah Tombol
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {{-- ================= SIDE BANNERS ================= --}}
+        <div class="card p-0 overflow-hidden mb-6">
+            <div class="px-5 py-4 border-b bg-slate-50">
+                <div class="text-sm font-extrabold text-slate-900">Side Banners (Kanan)</div>
+                <div class="text-xs text-slate-600 mt-1">Banner di sebelah kanan tombol CTA.</div>
+            </div>
+            <div class="p-5">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm">
+                        <thead>
+                            <tr class="text-slate-600">
+                                <th class="text-left font-extrabold py-2">Image</th>
+                                <th class="text-left font-extrabold py-2">URL / Link</th>
+                                <th class="py-2"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="sideBannersRows" class="align-top">
+                            @foreach(($sideBanners ?? []) as $i => $b)
+                            <tr class="border-t">
+                                <td class="py-3 pr-3">
+                                    @php $exBImg = $b['image'] ?? ''; @endphp
+                                    @if($exBImg)
+                                    <img src="{{ asset('storage/'.$exBImg) }}" class="h-16 w-32 mb-2 rounded border object-cover" />
+                                    @endif
+                                    <input type="file" name="side_banners[{{ $i }}][image]" accept="image/*" class="w-full rounded-xl border-slate-200" />
+                                    <input type="hidden" name="side_banners[{{ $i }}][image_existing]" value="{{ $exBImg }}" />
+                                </td>
+                                <td class="py-3 pr-3">
+                                    <input type="text" name="side_banners[{{ $i }}][url]" value="{{ old('side_banners.'.$i.'.url', $b['url'] ?? '') }}" class="w-full rounded-xl border-slate-200" />
+                                </td>
+                                <td class="py-3 text-right">
+                                    <button type="button" class="inline-flex items-center justify-center h-9 w-9 rounded-xl border border-slate-200 hover:bg-slate-50" onclick="this.closest('tr').remove()">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-4">
+                    <button type="button" class="btn btn-ghost" onclick="addSideBannerRow()">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Tambah Banner
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div class="card p-0 overflow-hidden">
             <div class="px-5 py-4 border-b bg-slate-50">
                 <div class="text-sm font-extrabold text-slate-900">Tab Hero</div>
@@ -782,6 +915,58 @@
 
 <script>
     let tabsIndex = parseInt(document.getElementById('tabsMeta')?.getAttribute('data-index') || '0', 10);
+    let customLinksIndex = {{ count($customLinks ?? []) }};
+    let sideBannersIndex = {{ count($sideBanners ?? []) }};
+
+    function addCustomLinkRow() {
+        const tbody = document.getElementById('customLinksRows');
+        const tr = document.createElement('tr');
+        tr.className = 'border-t';
+        tr.innerHTML = `
+            <td class="py-3 pr-3">
+                <input type="text" name="custom_links[${customLinksIndex}][label]" class="w-full rounded-xl border-slate-200" />
+            </td>
+            <td class="py-3 pr-3">
+                <input type="text" name="custom_links[${customLinksIndex}][sublabel]" class="w-full rounded-xl border-slate-200" />
+            </td>
+            <td class="py-3 pr-3">
+                <input type="text" name="custom_links[${customLinksIndex}][url]" class="w-full rounded-xl border-slate-200" />
+            </td>
+            <td class="py-3 pr-3">
+                <input type="file" name="custom_links[${customLinksIndex}][icon_image]" accept="image/*" class="w-full rounded-xl border-slate-200" />
+            </td>
+            <td class="py-3 text-right">
+                <button type="button" class="inline-flex items-center justify-center h-9 w-9 rounded-xl border border-slate-200 hover:bg-slate-50" onclick="this.closest('tr').remove()">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+        customLinksIndex++;
+        if(window.lucide) window.lucide.createIcons();
+    }
+
+    function addSideBannerRow() {
+        const tbody = document.getElementById('sideBannersRows');
+        const tr = document.createElement('tr');
+        tr.className = 'border-t';
+        tr.innerHTML = `
+            <td class="py-3 pr-3">
+                <input type="file" name="side_banners[${sideBannersIndex}][image]" accept="image/*" class="w-full rounded-xl border-slate-200" />
+            </td>
+            <td class="py-3 pr-3">
+                <input type="text" name="side_banners[${sideBannersIndex}][url]" class="w-full rounded-xl border-slate-200" />
+            </td>
+            <td class="py-3 text-right">
+                <button type="button" class="inline-flex items-center justify-center h-9 w-9 rounded-xl border border-slate-200 hover:bg-slate-50" onclick="this.closest('tr').remove()">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+        sideBannersIndex++;
+        if(window.lucide) window.lucide.createIcons();
+    }
 
     function addRow() {
         const tbody = document.getElementById('tabsRows');

@@ -4,9 +4,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" href="{{ isset($siteSettings['site_favicon']) ? asset($siteSettings['site_favicon']) : asset('favicon.ico') }}">
 
-    <title>@yield('title', 'Admin Panel') - Bintang Wisata</title>
+    <title>@yield('title', 'Admin Panel') - {{ $siteSettings['brand_name'] ?? 'Brand Anda' }}</title>
 
     {{-- Fonts --}}
     <link rel="stylesheet" href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700;800&display=swap">
@@ -65,13 +65,17 @@
                 {{-- BRAND --}}
                 <div class="h-16 px-5 flex items-center justify-between border-b border-slate-200">
                     <div class="flex items-center gap-3">
-                        <div class="h-10 w-10 rounded-2xl grid place-items-center border"
-                            style="background:rgba(1,148,243,0.10);border-color:rgba(1,148,243,0.22)">
-                            <i data-lucide="shield" class="w-5 h-5" style="color:#0194F3;"></i>
-                        </div>
+                        @if(!empty($siteSettings['site_logo']))
+                            <img src="{{ asset($siteSettings['site_logo']) }}" alt="Logo" class="h-10 w-10 object-contain rounded-xl">
+                        @else
+                            <div class="h-10 w-10 rounded-2xl grid place-items-center border"
+                                style="background:rgba(1,148,243,0.10);border-color:rgba(1,148,243,0.22)">
+                                <i data-lucide="shield" class="w-5 h-5" style="color:#0194F3;"></i>
+                            </div>
+                        @endif
                         <div class="min-w-0">
                             <div class="font-extrabold text-slate-900 leading-tight truncate">Admin Panel</div>
-                            <div class="text-xs text-slate-500 -mt-0.5 truncate">Bintang Wisata</div>
+                            <div class="text-xs text-slate-500 -mt-0.5 truncate">{{ $siteSettings['brand_name'] ?? 'Brand Anda' }}</div>
                         </div>
                     </div>
 
@@ -86,132 +90,67 @@
                 {{-- NAV --}}
                 @php
                 $nav = [
-                ['label'=>'Dashboard','route'=>'admin.dashboard','match'=>'admin.dashboard','icon'=>'layout-dashboard','perm'=>'admin.dashboard.view'],
-                ['label'=>'Orders','route'=>'admin.orders.index','match'=>'admin.orders.*','icon'=>'shopping-bag','perm'=>'admin.orders.manage'],
-                ['label'=>'Pembayaran','route'=>'admin.payments.index','match'=>'admin.payments.*','icon'=>'credit-card','perm'=>'admin.payments.manage'],
+                    ['label'=>'Dashboard','route'=>'admin.dashboard','match'=>'admin.dashboard','icon'=>'layout-dashboard'],
+                    
+                    [
+                        'label' => 'Data Properti',
+                        'icon' => 'home',
+                        'children' => [
+                            ['label'=>'Semua Iklan','route'=>'admin.listings.index','match'=>'admin.listings.*','icon'=>'list'],
+                            ['label'=>'Kategori Iklan','route'=>'admin.listing-categories.index','match'=>'admin.listing-categories.*','icon'=>'tags'],
+                        ],
+                    ],
+                    
+                    [
+                        'label' => 'Transaksi & Saldo',
+                        'icon' => 'credit-card',
+                        'children' => [
+                            ['label'=>'Paket Top Up','route'=>'admin.topup-packages.index','match'=>'admin.topup-packages.*','icon'=>'package'],
+                            ['label'=>'Permintaan Top Up','route'=>'admin.topups.index','match'=>'admin.topups.*','icon'=>'wallet'],
+                        ],
+                    ],
+                    
+                    [
+                        'label' => 'Pengguna (Users)',
+                        'icon' => 'users',
+                        'children' => [
+                            ['label'=>'Semua Akun','route'=>'admin.users.index','match'=>'admin.users.*','icon'=>'users'],
+                        ],
+                    ],
+                    
+                    ['label'=>'Push Notifikasi','route'=>'admin.notifications.create','match'=>'admin.notifications.*','icon'=>'bell'],
+                    ['label'=>'Popup Widget','route'=>'admin.settings.popup.edit','match'=>'admin.settings.popup.*','icon'=>'message-square'],
+                    
+                    [
+                        'label' => 'Artikel & Berita',
+                        'icon' => 'newspaper',
+                        'children' => [
+                            ['label'=>'Daftar Artikel','route'=>'admin.articles.index','match'=>'admin.articles.*','icon'=>'file-text'],
+                            ['label'=>'Kategori','route'=>'admin.article-categories.index','match'=>'admin.article-categories.*','icon'=>'layers'],
+                        ],
+                    ],
+                    
+                    [
+                        'label' => 'Halaman Legal',
+                        'icon' => 'book-open',
+                        'children' => [
+                            ['label'=>'Kebijakan Privasi','route'=>'admin.legal.privacy','match'=>'admin.legal.privacy','icon'=>'file-text'],
+                            ['label'=>'Syarat & Ketentuan','route'=>'admin.legal.terms','match'=>'admin.legal.terms','icon'=>'file-text'],
+                            ['label'=>'Kontak Kami','route'=>'admin.legal.contact','match'=>'admin.legal.contact','icon'=>'phone'],
+                        ],
+                    ],
+                    
+                    [
+                        'label' => 'Settings',
+                        'icon' => 'settings',
+                        'children' => [
+                            ['label'=>'General','route'=>'admin.settings.general','match'=>'admin.settings.general','icon'=>'sliders'],
+                            ['label'=>'Home Setting','route'=>'admin.settings.home','match'=>'admin.settings.home*','icon'=>'layout-grid'],
+                        ],
+                    ],
 
-                // GROUP: Paket Wisata
-                [
-                'label' => 'Paket Wisata',
-                'icon' => 'map',
-                'children' => [
-                ['label'=>'Paket Wisata','route'=>'admin.tour-packages.index','match'=>'admin.tour-packages.*','icon'=>'map','perm'=>'admin.tour-packages.manage'],
-                ['label'=>'Kategori Tour','route'=>'admin.categories.index','match'=>'admin.categories.*','icon'=>'tags','perm'=>'admin.categories.manage'],
-                ],
-                ],
-
-                // GROUP: Rental
-                [
-                'label' => 'Rental',
-                'icon' => 'car',
-                'children' => [
-                ['label'=>'Rental','route'=>'admin.rent-car-packages.index','match'=>'admin.rent-car-packages.*','icon'=>'car','perm'=>'admin.rent-car-packages.manage'],
-                ['label'=>'Kategori Rental','route'=>'admin.rent-car-categories.index','match'=>'admin.rent-car-categories.*','icon'=>'tags','perm'=>'admin.rent-car-categories.manage'],
-                ],
-                ],
-                ['label'=>'Kode Promo','route'=>'admin.promos.index','match'=>'admin.promos.*','icon'=>'ticket-percent','perm'=>'admin.promos.manage'],
-                [
-                'label' => 'Section Promo',
-                'icon' => 'ticket-percent',
-                'children' => [
-                ['label'=>'Home Promo Tours','route'=>'admin.home-sections.promo-tours.edit','match'=>'admin.home-sections.promo-tours.*','icon'=>'sparkles','perm'=>'admin.home-sections.manage'],
-                ['label'=>'Home Banner: Discount','route'=>'admin.promos.home-banners.index','params'=>['section'=>'discount'],'match'=>'admin.promos.home-banners.*','icon'=>'images','perm'=>'admin.promos.manage'],
-                ['label'=>'Home Banner: Missions','route'=>'admin.promos.home-banners.index','params'=>['section'=>'missions'],'match'=>'admin.promos.home-banners.*','icon'=>'images','perm'=>'admin.promos.manage'],
-                ],
-                ],
-                ['label'=>'Dokumentasi','route'=>'admin.documentations.index','match'=>'admin.documentations.*','icon'=>'images','perm'=>'admin.documentations.manage'],
-                ['label'=>'Inspirasi Destinasi','route'=>'admin.destination-inspirations.index','match'=>'admin.destination-inspirations.*','icon'=>'sparkles','perm'=>'admin.destination-inspirations.manage'],
-                ['label'=>'Artikel','route'=>'admin.articles.index','match'=>'admin.articles.*','icon'=>'newspaper','perm'=>'admin.articles.manage'],
-
-                ['label'=>'Halaman Legal','route'=>'admin.legal-pages.edit','match'=>'admin.legal-pages.*','icon'=>'file-text','perm'=>'admin.legal-pages.manage'],
-
-                ['label'=>'Halaman Document','route'=>'admin.travel-documents.edit','match'=>'admin.travel-documents.*','icon'=>'file-text','perm'=>'admin.legal-pages.manage'],
-
-                // GROUP: Sewa Kapal
-                [
-                'label' => 'Sewa Kapal',
-                'icon' => 'ship',
-                'children' => [
-                ['label'=>'Paket Sewa Kapal','route'=>'admin.ship-packages.index','match'=>'admin.ship-packages.*','icon'=>'ship','perm'=>'admin.ship-packages.manage'],
-                ['label'=>'Kategori Sewa Kapal','route'=>'admin.ship-categories.index','match'=>'admin.ship-categories.*','icon'=>'tags','perm'=>'admin.ship-categories.manage'],
-                ],
-                ],
-
-                // GROUP: Umrah
-                [
-                'label' => 'Umrah',
-                'icon' => 'kaaba',
-                'children' => [
-                ['label'=>'Paket Umrah','route'=>'admin.umrah-packages.index','match'=>'admin.umrah-packages.*','icon'=>'kaaba','perm'=>'admin.umrah-packages.manage'],
-                ['label'=>'Kategori Umrah','route'=>'admin.umrah-categories.index','match'=>'admin.umrah-categories.*','icon'=>'tags','perm'=>'admin.umrah-categories.manage'],
-                ],
-                ],
-
-                // GROUP: MICE
-                [
-                'label' => 'MICE',
-                'icon' => 'briefcase',
-                'children' => [
-                ['label'=>'Paket MICE','route'=>'admin.mice-packages.index','match'=>'admin.mice-packages.*','icon'=>'briefcase','perm'=>'admin.mice-packages.manage'],
-                ['label'=>'Kategori MICE','route'=>'admin.mice-categories.index','match'=>'admin.mice-categories.*','icon'=>'tags','perm'=>'admin.mice-categories.manage'],
-                ],
-                ],
-
-                ['label'=>'Client Logos','route'=>'admin.client-logos.index','match'=>'admin.client-logos.*','icon'=>'image','perm'=>'admin.client-logos.manage'],
-                ['label'=>'Komentar Paket','route'=>'admin.reviews.index','match'=>'admin.reviews.*','icon'=>'message-square','perm'=>'admin.reviews.manage'],
-                ['label'=>'SEO','route'=>'admin.seo.edit','match'=>'admin.seo.*','icon'=>'search','perm'=>'admin.seo.manage'],
-
-
-                // GROUP: Users & Affiliate
-                [
-                'label' => 'Users & Affiliate',
-                'icon' => 'users',
-                'children' => [
-                ['label'=>'All Users','route'=>'admin.users.index','match'=>'admin.users.*','icon'=>'users','perm'=>'admin.users.manage'],
-                ['label'=>'Affiliate Requests','route'=>'admin.affiliate.requests.index','match'=>'admin.affiliate.requests.*','icon'=>'user-check','perm'=>'admin.affiliate.requests.manage'],
-                ['label'=>'Affiliate Orders','route'=>'admin.affiliate.orders.index','match'=>'admin.affiliate.orders.*','icon'=>'shopping-bag','perm'=>'admin.affiliate.orders.manage'],
-                ['label'=>'Affiliate Withdrawals','route'=>'admin.affiliate.withdrawals.index','match'=>'admin.affiliate.withdrawals.*','icon'=>'wallet','perm'=>'admin.affiliate.withdrawals.manage'],
-                ['label'=>'Affiliate Users','route'=>'admin.users.affiliate.index','match'=>'admin.users.affiliate.*','icon'=>'users','perm'=>'admin.affiliate.users.manage'],
-                ],
-                ],
-
-                // GROUP: Partners
-                [
-                'label' => 'Partners',
-                'icon' => 'handshake',
-                'children' => [
-                ['label'=>'Partner Applications','route'=>'admin.partners.applications.index','match'=>'admin.partners.applications.*','icon'=>'user-check','perm'=>'admin.partners.applications.manage'],
-                ['label'=>'Partner Users','route'=>'admin.partners.users.index','match'=>'admin.partners.users.*','icon'=>'users','perm'=>'admin.partners.users.manage'],
-                ['label'=>'Produk Partner','route'=>'admin.partners.products.index','match'=>'admin.partners.products.*','icon'=>'package','perm'=>'admin.partners.products.manage'],
-                ['label'=>'Partner Withdrawals','route'=>'admin.partner_withdrawals.index','match'=>'admin.partner_withdrawals.*','icon'=>'wallet','perm'=>'admin.partner_withdrawals.manage'],
-                ],
-                ],
-
-                [
-                'label' => 'Tabungan Umrah',
-                'icon' => 'wallet',
-                'children' => [
-                ['label'=>'Verifikasi Akun','route'=>'admin.tabungan-umrah.accounts.pending','match'=>'admin.tabungan-umrah.accounts.*','icon'=>'user-check','perm'=>'admin.dashboard.view'],
-                ['label'=>'Akun Terverifikasi','route'=>'admin.tabungan-umrah.accounts.verified','match'=>'admin.tabungan-umrah.accounts.verified','icon'=>'users','perm'=>'admin.dashboard.view'],
-                ['label'=>'Setoran/Finance','route'=>'admin.tabungan-umrah.deposits.index','match'=>'admin.tabungan-umrah.deposits.*','icon'=>'credit-card','perm'=>'admin.dashboard.view'],
-                ],
-                ],
-                ['label'=>'Kirim Notifikasi','route'=>'admin.notifications.create','match'=>'admin.notifications.*','icon'=>'bell','perm'=>'admin.notifications.manage'],
-
-                // GROUP: Settings
-                [
-                'label' => 'Settings',
-                'icon' => 'settings',
-                'children' => [
-                ['label'=>'General','route'=>'admin.settings.general','match'=>'admin.settings.general*','icon'=>'sliders','perm'=>'admin.settings.manage'],
-                ['label'=>'Home Setting','route'=>'admin.settings.home','match'=>'admin.settings.home*','icon'=>'layout-grid','perm'=>'admin.settings.manage'],
-                ['label'=>'Popup Widget','route'=>'admin.settings.popup.edit','match'=>'admin.settings.popup.*','icon'=>'message-square','perm'=>'admin.settings.manage'],
-                ],
-                ],
-
-                ['label'=>'Profil','route'=>'admin.profile.edit','match'=>'admin.profile.*','icon'=>'user','perm'=>'admin.profile.manage'],
+                    ['label'=>'Profil Admin','route'=>'admin.profile.edit','match'=>'admin.profile.*','icon'=>'user'],
                 ];
-
                 @endphp
 
 
@@ -342,10 +281,19 @@
                     </div>
 
                     <div class="flex items-center gap-3">
-                        <div class="hidden sm:block text-right">
-                            <div class="font-bold text-slate-900">{{ auth()->user()->name }}</div>
-                            <div class="text-xs text-slate-500">{{ auth()->user()->email }}</div>
-                        </div>
+                        <a href="{{ route('admin.profile.edit') }}" class="flex items-center gap-3 hover:bg-slate-50 p-1.5 rounded-2xl transition">
+                            <div class="hidden sm:block text-right">
+                                <div class="font-bold text-slate-900">{{ auth()->user()->name }}</div>
+                                <div class="text-xs text-slate-500">{{ auth()->user()->email }}</div>
+                            </div>
+                            <div class="w-10 h-10 rounded-xl overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center shrink-0">
+                                @if(auth()->user()->avatar)
+                                    <img src="{{ asset(auth()->user()->avatar) }}" alt="Avatar" class="w-full h-full object-cover">
+                                @else
+                                    <i data-lucide="user" class="w-5 h-5 text-slate-400"></i>
+                                @endif
+                            </div>
+                        </a>
 
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf

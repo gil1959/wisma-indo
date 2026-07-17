@@ -3,58 +3,52 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Notifications\AdminBroadcastNotification;
-use App\Services\WebPushService;
 use Illuminate\Http\Request;
+use App\Models\User;
+use App\Notifications\PushNotification;
 
 class NotificationController extends Controller
 {
     public function create()
     {
-        $users = User::role('user')->select('id','name','email')->orderBy('name')->get();
-        $partners = User::role('partner')->select('id','name','email')->orderBy('name')->get();
-
-        return view('admin.notifications.create', compact('users', 'partners'));
+        $users = User::all();
+        return view('admin.notifications.create', compact('users'));
     }
 
-    public function store(Request $request, WebPushService $webPush)
+    public function store(Request $request)
     {
-        $data = $request->validate([
-            'target_role' => 'required|in:user,partner',
-            'send_mode' => 'required|in:all,selected',
-            'message' => 'required|string|max:1000',
-            'recipient_ids' => 'array',
-            'recipient_ids.*' => 'integer',
+        $request->validate([
+            'target' => 'required',
+            'user_ids' => 'required_if:target,specific|array',
+            'title' => 'required|string|max:255',
+            'message' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $query = User::role($data['target_role']);
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('notifications', 'public');
+            $imagePath = '/storage/' . $path;
+        }
 
-        if ($data['send_mode'] === 'selected') {
-            $ids = $data['recipient_ids'] ?? [];
-            if (count($ids) === 0) {
-                return back()->withErrors(['recipient_ids' => 'Pilih minimal 1 penerima.'])->withInput();
+        $notificationData = [
+            'title' => $request->title,
+            'message' => $request->message,
+            'image' => $imagePath,
+        ];
+
+        if ($request->target == 'all') {
+            $users = User::all();
+            foreach ($users as $user) {
+                $user->notify(new PushNotification($notificationData));
             }
-            $query->whereIn('id', $ids);
+        } else {
+            $users = User::whereIn('id', $request->user_ids)->get();
+            foreach ($users as $user) {
+                $user->notify(new PushNotification($notificationData));
+            }
         }
 
-        $recipients = $query->get();
-
-        foreach ($recipients as $u) {
-            $u->notify(new AdminBroadcastNotification($data['message'], $data['target_role']));
-
-            // push payload untuk service worker
-            $payload = [
-                'title' => 'Notifikasi dari Admin',
-                'body' => $data['message'],
-                'url' => $data['target_role'] === 'partner'
-                    ? route('partner.notifications.index')
-                    : route('user.notifications.index'),
-            ];
-
-            $webPush->sendToUserId((int)$u->id, $payload);
-        }
-
-        return redirect()->route('admin.notifications.create')->with('success', 'Notifikasi berhasil dikirim.');
+        return redirect()->route('admin.notifications.create')->with('success', 'Notifikasi berhasil dikirim!');
     }
 }

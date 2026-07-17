@@ -29,7 +29,7 @@
                 </button>
             </form>
 
-            <form method="POST" action="{{ route('logout.to.login') }}">
+            <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit"
                     class="px-4 py-2 rounded-xl border border-[#0194F3] text-[#0194F3] font-semibold hover:bg-[#0194F3]/10">

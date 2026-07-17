@@ -4,139 +4,92 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Article;
-use App\Jobs\Translate\ArticleToEn;
+use App\Models\ArticleCategory;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class ArticleController extends Controller
 {
     public function index()
     {
-        $items = Article::latest()->paginate(15);
-        return view('admin.articles.index', compact('items'));
+        $articles = Article::with('category')->latest()->paginate(10);
+        return view('admin.articles.index', compact('articles'));
     }
 
     public function create()
     {
-        return view('admin.articles.create');
+        $categories = ArticleCategory::all();
+        return view('admin.articles.create', compact('categories'));
     }
 
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'excerpt' => 'nullable|string|max:500',
-            'content' => 'required',
-            'cover_image' => 'nullable|image|max:2048',
+            'category_id' => 'nullable|exists:article_categories,id',
+            'content' => 'required|string',
+            'image' => 'nullable|image|max:2048',
             'is_published' => 'boolean',
-            'seo_title' => 'nullable|string|max:255',
-            'seo_description' => 'nullable|string|max:255',
-            'seo_keywords' => 'nullable|string|max:500',
-
-            // adsense code bisa panjang
-            'ads_code' => 'nullable|string',
-
-            // input tags dari form: string CSV (nanti diolah)
-            'tags' => 'nullable|string|max:2000',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_desc' => 'nullable|string',
         ]);
 
-        if ($request->hasFile('cover_image')) {
-            $data['cover_image'] = $request->file('cover_image')
-                ->store('articles/covers', 'public');
+        $validated['slug'] = Str::slug($request->title);
+        $validated['is_published'] = $request->has('is_published');
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('public/articles');
+            $validated['image'] = Storage::url($path);
         }
 
-        $data['slug'] = Str::slug($data['title']);
-        $data['user_id'] = Auth::id();
-        $data['tags'] = $this->normalizeTags($request->input('tags'));
+        Article::create($validated);
 
-
-        $article = Article::create($data);
-
-        ArticleToEn::dispatch($article->id)
-            ->onQueue('translations')
-            ->afterCommit();
-
-        return redirect()->route('admin.articles.index')
-            ->with('success', 'Artikel berhasil dibuat');
+        return redirect()->route('admin.articles.index')->with('success', 'Artikel berhasil ditambahkan.');
     }
 
     public function edit(Article $article)
     {
-        return view('admin.articles.edit', compact('article'));
+        $categories = ArticleCategory::all();
+        return view('admin.articles.edit', compact('article', 'categories'));
     }
 
     public function update(Request $request, Article $article)
     {
-        $data = $request->validate([
+        $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'excerpt' => 'nullable|string|max:500',
-            'content' => 'required',
-            'cover_image' => 'nullable|image|max:2048',
-            'is_published' => 'nullable|boolean',
-
-            'seo_title' => 'nullable|string|max:255',
-            'seo_description' => 'nullable|string|max:255',
-            'seo_keywords' => 'nullable|string|max:500',
-
-            'ads_code' => 'nullable|string',
-            'tags' => 'nullable|string|max:2000',
+            'category_id' => 'nullable|exists:article_categories,id',
+            'content' => 'required|string',
+            'image' => 'nullable|image|max:2048',
+            'is_published' => 'boolean',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_desc' => 'nullable|string',
         ]);
 
-        // penting: paksa boolean biar gak jadi NULL
-        $data['is_published'] = $request->boolean('is_published');
+        $validated['slug'] = Str::slug($request->title);
+        $validated['is_published'] = $request->has('is_published');
 
-        // penting: normalisasi tags harus SELALU jalan
-        $data['tags'] = $this->normalizeTags($request->input('tags'));
-
-        if ($request->hasFile('cover_image')) {
-            if ($article->cover_image) {
-                Storage::disk('public')->delete($article->cover_image);
+        if ($request->hasFile('image')) {
+            if ($article->image) {
+                $oldPath = str_replace('/storage/', 'public/', $article->image);
+                Storage::delete($oldPath);
             }
-
-            $data['cover_image'] = $request->file('cover_image')
-                ->store('articles/covers', 'public');
+            $path = $request->file('image')->store('public/articles');
+            $validated['image'] = Storage::url($path);
         }
 
-        $article->update($data);
+        $article->update($validated);
 
-        ArticleToEn::dispatch($article->id)
-            ->onQueue('translations')
-            ->afterCommit();
-
-        return redirect()->route('admin.articles.index')
-            ->with('success', 'Artikel diperbarui');
+        return redirect()->route('admin.articles.index')->with('success', 'Artikel berhasil diupdate.');
     }
-
 
     public function destroy(Article $article)
     {
-        if ($article->cover_image) {
-            Storage::disk('public')->delete($article->cover_image);
+        if ($article->image) {
+            $oldPath = str_replace('/storage/', 'public/', $article->image);
+            Storage::delete($oldPath);
         }
-
         $article->delete();
-
-        return back()->with('success', 'Artikel dihapus');
-    }
-    private function normalizeTags(?string $raw): ?array
-    {
-        if (!$raw) return null;
-
-        $tags = collect(explode(',', $raw))
-            ->map(fn($t) => trim($t))
-            ->filter()
-            ->map(function ($t) {
-                // rapihin spasi dobel di tengah
-                $t = preg_replace('/\s+/', ' ', $t);
-                return $t;
-            })
-            ->unique()
-            ->take(20)
-            ->values()
-            ->all();
-
-        return count($tags) ? $tags : null;
+        return back()->with('success', 'Artikel berhasil dihapus.');
     }
 }

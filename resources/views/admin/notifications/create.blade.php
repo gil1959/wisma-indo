@@ -1,121 +1,141 @@
 @extends('layouts.admin')
 
-@section('title', 'Kirim Notifikasi')
-@section('page-title', 'Kirim Notifikasi')
-@section('page-subtitle', 'Broadcast ke user / mitra (partner)')
-
 @section('content')
-<div class="space-y-5" x-data="notifSender()">
-
-    <div class="flex items-center justify-between gap-3">
+<div class="p-6 max-w-4xl mx-auto">
+    <div class="flex items-center gap-4 mb-6">
         <div>
-            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">Kirim Notifikasi</h2>
-            <p class="mt-1 text-sm text-slate-600">Admin dapat mengirim notifikasi ke role tertentu, semua atau user tertentu.</p>
+            <h1 class="text-2xl font-bold text-slate-800">Kirim Notifikasi</h1>
+            <p class="text-slate-500 text-sm">Kirim pesan pemberitahuan kepada user.</p>
         </div>
     </div>
 
     @if(session('success'))
-        <div class="rounded-2xl border border-green-200 bg-green-50 p-4 text-green-800 font-semibold">
+        <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 p-4 font-semibold text-emerald-700">
             {{ session('success') }}
         </div>
     @endif
 
-    @if($errors->any())
-        <div class="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-rose-800">
-            <div class="font-extrabold mb-2">Periksa input:</div>
-            <ul class="list-disc ml-5 text-sm font-semibold">
-                @foreach($errors->all() as $e)
-                    <li>{{ $e }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <form method="POST" action="{{ route('admin.notifications.store') }}"
-          class="rounded-2xl border border-slate-200 bg-white p-6 space-y-5">
-        @csrf
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label class="text-xs font-extrabold text-slate-600 uppercase">Kirim ke Role</label>
-                <select name="target_role" x-model="targetRole"
-                        class="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-800">
-                    <option value="user">User</option>
-                    <option value="partner">Mitra (Partner)</option>
-                </select>
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <form action="{{ route('admin.notifications.store') }}" method="POST" enctype="multipart/form-data" x-data="{ target: 'all', imagePreview: null, fileChosen(e) { if(e.target.files.length) this.imagePreview = URL.createObjectURL(e.target.files[0]) } }">
+            @csrf
+            
+            <div class="mb-6">
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Pilih Penerima</label>
+                <div class="flex gap-4">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="target" value="all" x-model="target" class="w-4 h-4 text-[#0194F3] border-slate-300 focus:ring-[#0194F3]">
+                        <span class="text-sm font-medium text-slate-700">Semua User</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="target" value="specific" x-model="target" class="w-4 h-4 text-[#0194F3] border-slate-300 focus:ring-[#0194F3]">
+                        <span class="text-sm font-medium text-slate-700">Pilih User Tertentu</span>
+                    </label>
+                </div>
             </div>
 
-            <div>
-                <label class="text-xs font-extrabold text-slate-600 uppercase">Mode Pengiriman</label>
-                <select name="send_mode" x-model="sendMode"
-                        class="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-800">
-                    <option value="all">Kirim ke Semua</option>
-                    <option value="selected">Pilih Tertentu</option>
+            <div x-show="target === 'specific'" class="mb-6" x-collapse>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Pilih User</label>
+                <select name="user_ids[]" id="user-select" class="w-full" multiple>
+                    @foreach($users as $user)
+                        <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
+                    @endforeach
                 </select>
+                @error('user_ids') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
             </div>
-        </div>
 
-        <div x-show="sendMode==='selected'" x-cloak>
-            <label class="text-xs font-extrabold text-slate-600 uppercase">Pilih Penerima</label>
+            <div class="mb-6">
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Judul Notifikasi</label>
+                <input type="text" name="title" value="{{ old('title') }}" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-[#0194F3] focus:ring-1 focus:ring-[#0194F3] outline-none transition" required placeholder="Contoh: Promo Spesial Weekend!">
+                @error('title') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+            </div>
 
-            <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="rounded-2xl border border-slate-200 p-4">
-                    <div class="font-extrabold text-slate-900 mb-2">Daftar User</div>
-                    <select name="recipient_ids[]" multiple size="10"
-                            x-show="targetRole==='user'" x-cloak
-                            class="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-800">
-                        @foreach($users as $u)
-                            <option value="{{ $u->id }}">{{ $u->name }} — {{ $u->email }}</option>
-                        @endforeach
-                    </select>
+            <div class="mb-6" wire:ignore>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Pesan Notifikasi</label>
+                <textarea name="message" id="editor" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-[#0194F3] focus:ring-1 focus:ring-[#0194F3] outline-none transition h-40" placeholder="Ketik pesan Anda di sini...">{{ old('message') }}</textarea>
+                @error('message') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+            </div>
 
-                    <select name="recipient_ids[]" multiple size="10"
-                            x-show="targetRole==='partner'" x-cloak
-                            class="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-800">
-                        @foreach($partners as $u)
-                            <option value="{{ $u->id }}">{{ $u->name }} — {{ $u->email }}</option>
-                        @endforeach
-                    </select>
-
+            <div class="mb-8">
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Gambar / Foto (Opsional)</label>
+                
+                <div class="flex items-start gap-4">
+                    <label class="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-slate-300 rounded-xl cursor-pointer bg-slate-50 hover:bg-slate-100 transition relative overflow-hidden">
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                            <i data-lucide="image-plus" class="w-8 h-8 text-slate-400 mb-2"></i>
+                            <p class="text-xs text-slate-500 text-center px-2">Klik untuk<br>Pilih Foto</p>
+                        </div>
+                        <template x-if="imagePreview">
+                            <div class="absolute inset-0 bg-white">
+                                <img :src="imagePreview" class="w-full h-full object-cover">
+                            </div>
+                        </template>
+                        <input type="file" name="image" accept="image/*" class="hidden" @change="fileChosen">
+                    </label>
                     <div class="text-xs text-slate-500 mt-2">
-                        Tips: tahan Ctrl/Cmd untuk pilih banyak.
+                        Format didukung: JPG, PNG, JPEG.<br>
+                        Ukuran maksimal: 2MB.<br>
+                        Rekomendasi rasio: 16:9 atau 1:1.
                     </div>
                 </div>
-
-                <div class="rounded-2xl border border-slate-200 p-4 bg-slate-50">
-                    <div class="font-extrabold text-slate-900 mb-2">Catatan</div>
-                    <ul class="text-sm text-slate-700 font-semibold list-disc ml-5 space-y-1">
-                        <li>Notif masuk ke bell icon (panel user/mitra).</li>
-                        <li>Kalau user setuju permission push, akan muncul push notif di device/browser.</li>
-                        <li>Kalau push ditolak, tetap masuk notifikasi in-app.</li>
-                    </ul>
-                </div>
+                @error('image') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
             </div>
-        </div>
 
-        <div>
-            <label class="text-xs font-extrabold text-slate-600 uppercase">Isi Pesan</label>
-            <textarea name="message" rows="5"
-                      class="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-800"
-                      placeholder="Tulis pesan notifikasi...">{{ old('message') }}</textarea>
-        </div>
-
-        <div class="flex items-center justify-end gap-3">
-            <button type="submit"
-                    class="px-5 py-3 rounded-2xl font-extrabold text-white"
-                    style="background:#0194F3;">
-                Kirim Notifikasi
-            </button>
-        </div>
-    </form>
+            <div class="flex justify-end gap-3 pt-6 border-t border-slate-100">
+                <button type="submit" class="px-6 py-2.5 rounded-lg font-semibold text-white bg-[#0194F3] hover:bg-blue-600 transition flex items-center gap-2">
+                    <i data-lucide="send" class="w-4 h-4"></i> Kirim Notifikasi
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
-<script>
-function notifSender(){
-    return {
-        targetRole: "{{ old('target_role','user') }}",
-        sendMode: "{{ old('send_mode','all') }}",
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+    .select2-container .select2-selection--multiple {
+        min-height: 44px;
+        border: 1px solid #cbd5e1;
+        border-radius: 0.5rem;
+        padding: 4px;
     }
-}
+    .select2-container--default.select2-container--focus .select2-selection--multiple {
+        border-color: #0194F3;
+        box-shadow: 0 0 0 1px #0194F3;
+    }
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.375rem;
+        padding: 2px 8px;
+        color: #475569;
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#user-select').select2({
+            placeholder: "Cari nama atau email user..."
+        });
+
+        tinymce.init({
+            selector: '#editor',
+            plugins: 'lists link textcolor',
+            toolbar: 'undo redo | bold italic underline | forecolor backcolor | alignleft aligncenter alignright | bullist numlist | link',
+            menubar: false,
+            branding: false,
+            height: 250,
+            setup: function (editor) {
+                editor.on('change', function () {
+                    tinymce.triggerSave();
+                });
+            }
+        });
+    });
 </script>
+@endpush
 @endsection

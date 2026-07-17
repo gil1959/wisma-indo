@@ -29,6 +29,10 @@ Route::post('/webhooks/ipaymu', [IpaymuWebhookController::class, 'handle']);
 Route::post('/webhooks/paypal', [\App\Http\Controllers\Webhook\PayPalWebhookController::class, 'handle'])
     ->name('webhooks.paypal');
 
+// Webhooks for Top Up
+Route::post('/webhooks/topup/tripay', [\App\Http\Controllers\Api\PaymentCallbackController::class, 'tripayCallback']);
+Route::post('/webhooks/topup/xendit', [\App\Http\Controllers\Api\PaymentCallbackController::class, 'xenditCallback']);
+
 Route::match(['GET', 'HEAD'], '/webhooks/tripay', function () {
     return response()->json(['message' => 'ok'], 200);
 });

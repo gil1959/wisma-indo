@@ -28,16 +28,16 @@ class AuthenticatedSessionController extends Controller
 
     // ADMIN / SITE MODERATOR → ADMIN PANEL
     if ($user && ($user->hasRole('admin') || $user->hasRole('site_moderator'))) {
-        return redirect('/bw-admin');
+        return redirect()->route('admin.dashboard');
     }
 
     // PARTNER → PARTNER DASHBOARD (JANGAN intended)
     if ($user && $user->hasRole('partner')) {
-        return redirect('/partner/dashboard');
+        return redirect('/partner/dashboard'); // Jika rute ini sudah usang nanti bisa disesuaikan
     }
 
     // USER → USER DASHBOARD (JANGAN intended)
-    return redirect('/user/dashboard');
+    return redirect('/akun');
 }
 
 

@@ -15,3 +15,5 @@ yarn-error.log
 /.vscode
 *.sql
 error_log
+index.php
+.htaccess

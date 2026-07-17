@@ -48,7 +48,11 @@ class RegisteredUserController extends Controller
         // default role untuk registrasi
         $user->assignRole('user');
 
-
+        // default free quota
+        \App\Models\UserQuota::create([
+            'user_id' => $user->id,
+            'listing_quota' => 1
+        ]);
         event(new Registered($user));
 
         Auth::login($user);

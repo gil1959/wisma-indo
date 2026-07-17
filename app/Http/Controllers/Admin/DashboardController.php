@@ -3,32 +3,31 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order;
-use App\Models\TourPackage;
-use App\Models\RentCarPackage;
+use App\Models\Listing;
+use App\Models\User;
+use App\Models\TopupTransaction;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // TOTAL PENDAPATAN
-        $totalRevenue = Order::where('payment_status', 'paid')
-            ->where('order_status', 'approved')
-            ->sum('final_price');
+        // TOTAL LISTINGS
+        $totalListings = Listing::count();
 
-        // TOTAL PESANAN (paid saja)
-        $totalOrders = Order::where('payment_status', 'paid')->count();
+        // TOTAL ACTIVE LISTINGS
+        $activeListings = Listing::where('status', 'active')->count();
 
-        // PAKET AKTIF
-        $activeTours = TourPackage::where('is_active', 1)->count();
-        $activeRentCars = RentCarPackage::where('is_active', 1)->count();
+        // TOTAL USERS
+        $totalUsers = User::count();
 
-        $totalPackages = $activeTours + $activeRentCars;
+        // TOTAL TOPUP REVENUE (Success)
+        $totalRevenue = TopupTransaction::where('status', 'success')->sum('price');
 
         return view('admin.dashboard', compact(
-            'totalRevenue',
-            'totalOrders',
-            'totalPackages'
+            'totalListings',
+            'activeListings',
+            'totalUsers',
+            'totalRevenue'
         ));
     }
 }

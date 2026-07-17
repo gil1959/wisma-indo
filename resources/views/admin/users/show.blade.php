@@ -56,11 +56,35 @@
                 </div>
             </div>
             <div>
-  <div class="text-xs font-extrabold text-slate-500 uppercase">Role</div>
-  <div class=" text-slate-900 font-semibold mt-1">
-      {{ strtoupper($user->roles->pluck('name')->first() ?? '-') }}
-  </div>
-</div>
+                <div class="text-xs font-extrabold text-slate-500 uppercase">Role</div>
+                <div class=" text-slate-900 font-semibold mt-1">
+                    {{ strtoupper($user->roles->pluck('name')->first() ?? '-') }}
+                </div>
+            </div>
+
+            <div class="md:col-span-2 mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+                <div>
+                    <div class="text-xs font-extrabold text-slate-500 uppercase">Status Kuota Gratis 1x</div>
+                    <div class="mt-1 text-slate-900 font-semibold flex items-center gap-2">
+                        @if($user->quota && $user->quota->has_free_quota)
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">
+                                <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Masih Aktif / Belum Terpakai
+                            </span>
+                        @else
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600">
+                                <i data-lucide="x-circle" class="w-3.5 h-3.5"></i> Sudah Terpakai / Nonaktif
+                            </span>
+                        @endif
+                    </div>
+                </div>
+                
+                <form action="{{ route('admin.users.toggle_quota', $user) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="px-4 py-2 text-sm font-bold rounded-xl transition shadow-sm {{ $user->quota && $user->quota->has_free_quota ? 'bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200' : 'bg-[#0194F3] text-white hover:bg-blue-600' }}">
+                        {{ $user->quota && $user->quota->has_free_quota ? 'Nonaktifkan Kuota Gratis' : 'Aktifkan Kuota Gratis' }}
+                    </button>
+                </form>
+            </div>
 
         </div>
 

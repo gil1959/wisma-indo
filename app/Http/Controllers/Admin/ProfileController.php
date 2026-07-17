@@ -20,45 +20,33 @@ class ProfileController extends Controller
         $user = auth()->user();
 
         $data = $request->validate([
-            'name'  => ['required', 'string', 'max:255'],
-            'email' => [
-                'required',
-                'email',
-                'max:255',
-                Rule::unique('users', 'email')->ignore($user->id),
-            ],
+            'name'     => ['required', 'string', 'max:255'],
+            'email'    => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'avatar'   => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048']
         ]);
 
-        // kalau email berubah, biasanya verifikasi email direset (model implements MustVerifyEmail)
+        if ($request->hasFile('avatar')) {
+            if ($user->avatar && file_exists(public_path($user->avatar))) {
+                @unlink(public_path($user->avatar));
+            }
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = '/storage/' . $path;
+        }
+
+        if (!empty($data['password'])) {
+            $user->password = Hash::make($data['password']);
+        }
+
+        // kalau email berubah, biasanya verifikasi email direset
         if ($data['email'] !== $user->email) {
             $user->email_verified_at = null;
         }
 
-        $user->fill($data);
+        $user->name = $data['name'];
+        $user->email = $data['email'];
         $user->save();
 
         return back()->with('success', 'Profil berhasil diperbarui.');
-    }
-
-    public function updatePassword(Request $request)
-    {
-        $user = auth()->user();
-
-        $request->validate([
-            'current_password' => ['required'],
-            'password'         => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-
-        // cek password lama
-        if (!Hash::check($request->current_password, $user->password)) {
-            return back()
-                ->withErrors(['current_password' => 'Password saat ini salah.'])
-                ->withInput();
-        }
-
-        $user->password = Hash::make($request->password);
-        $user->save();
-
-        return back()->with('success', 'Password berhasil diperbarui.');
     }
 }

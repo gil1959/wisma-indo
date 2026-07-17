@@ -9,12 +9,36 @@
             {{-- Brand --}}
             <div class="lg:col-span-5">
                 <div class="flex items-center gap-3">
-                    <img src="{{ asset('images/logo.png') }}" alt="Rumaindo" class="h-10 w-auto object-contain">
-                    <span class="font-bold text-xl text-white">Rumaindo</span>
+                    <img src="{{ isset($siteSettings['site_logo']) && $siteSettings['site_logo'] != '' ? asset($siteSettings['site_logo']) : asset('images/logo.png') }}" alt="{{ $siteSettings['brand_name'] ?? 'Rumaindo' }}" class="h-10 w-auto object-contain">
+                    <span class="font-bold text-xl text-white">{{ $siteSettings['brand_name'] ?? 'Rumaindo' }}</span>
                 </div>
                 <p class="mt-5 text-slate-300 leading-relaxed max-w-md">
-                    Portal properti terpercaya untuk jual beli dan sewa rumah, apartemen, ruko, tanah kavling, serta menemukan penyedia barang dan jasa kebutuhan properti di seluruh Indonesia.
+                    {{ $siteSettings['footer_tagline'] ?? 'Portal properti terpercaya untuk jual beli dan sewa rumah, apartemen, ruko, tanah kavling, serta menemukan penyedia barang dan jasa kebutuhan properti di seluruh Indonesia.' }}
                 </p>
+
+                @php
+                    try {
+                        $footerLogos = \App\Models\FooterLogo::where('is_active', true)->orderBy('order')->take(9)->get();
+                    } catch(\Exception $e) {
+                        $footerLogos = collect();
+                    }
+                @endphp
+
+                @if($footerLogos->count() > 0)
+                <div class="mt-6 flex flex-wrap items-center gap-3">
+                    @foreach($footerLogos as $logo)
+                        @if($logo->url)
+                            <a href="{{ $logo->url }}" target="_blank" rel="noopener noreferrer" class="block bg-slate-900/50 border border-white/10 rounded-lg p-2 hover:bg-slate-800 transition" title="{{ $logo->name }}">
+                                <img src="{{ asset($logo->image) }}" alt="{{ $logo->name }}" class="h-6 w-auto object-contain opacity-80 hover:opacity-100 transition">
+                            </a>
+                        @else
+                            <div class="block bg-slate-900/50 border border-white/10 rounded-lg p-2" title="{{ $logo->name }}">
+                                <img src="{{ asset($logo->image) }}" alt="{{ $logo->name }}" class="h-6 w-auto object-contain opacity-80">
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
+                @endif
             </div>
 
             {{-- Quick Links --}}
@@ -25,6 +49,8 @@
                     <li><a class="hover:text-white hover:underline decoration-[#0194F3]" href="{{ route('properti') }}">Cari Properti</a></li>
                     <li><a class="hover:text-white hover:underline decoration-[#0194F3]" href="{{ route('barangjasa') }}">Barang & Jasa</a></li>
                     <li><a class="hover:text-white hover:underline decoration-[#0194F3]" href="{{ route('articles') }}">Artikel</a></li>
+                    <li><a class="hover:text-white hover:underline decoration-[#0194F3]" href="{{ route('privacy') }}">Kebijakan Privasi</a></li>
+                    <li><a class="hover:text-white hover:underline decoration-[#0194F3]" href="{{ route('terms') }}">Syarat & Ketentuan</a></li>
                 </ul>
             </div>
 
@@ -35,15 +61,15 @@
                     <div class="space-y-4 text-slate-200">
                         <div class="flex gap-3">
                             <i data-lucide="map-pin" class="w-5 h-5 text-[#0194F3] mt-0.5 shrink-0"></i>
-                            <div class="text-sm leading-snug">Jl. Sudirman No. 1, Jakarta</div>
+                            <div class="text-sm leading-snug">{{ $siteSettings['footer_address'] ?? 'Jl. Sudirman No. 1, Jakarta' }}</div>
                         </div>
                         <div class="flex gap-3">
                             <i data-lucide="phone" class="w-5 h-5 text-[#0194F3] shrink-0"></i>
-                            <div class="text-sm leading-snug">021-12345678</div>
+                            <div class="text-sm leading-snug">{{ $siteSettings['footer_phone'] ?? '021-12345678' }}</div>
                         </div>
                         <div class="flex gap-3">
                             <i data-lucide="mail" class="w-5 h-5 text-[#0194F3] shrink-0"></i>
-                            <div class="text-sm leading-snug">halo@rumaindo.com</div>
+                            <div class="text-sm leading-snug">{{ $siteSettings['footer_email'] ?? 'halo@rumaindo.com' }}</div>
                         </div>
                     </div>
                 </div>
@@ -51,7 +77,7 @@
         </div>
 
         <div class="mt-12 border-t border-white/10 pt-6 text-center text-sm text-slate-400">
-            © {{ date('Y') }} Rumaindo. All rights reserved.
+            {{ $siteSettings['footer_copyright'] ?? ('© ' . date('Y') . ' ' . ($siteSettings['brand_name'] ?? 'Rumaindo') . '. All rights reserved.') }}
         </div>
     </div>
 </footer>
