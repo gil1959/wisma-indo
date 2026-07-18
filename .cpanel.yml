@@ -1,5 +1,5 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/bintangwisatahol/public_html/
-    - /bin/cp -R * $DEPLOYPATH
+    - export DEPLOYPATH=/home/wismaindo/public_html/
+    - /usr/bin/rsync -avP --exclude='.env' --exclude='.htaccess' --exclude='index.php' --exclude='.git/' --exclude='storage/' ./ $DEPLOYPATH
