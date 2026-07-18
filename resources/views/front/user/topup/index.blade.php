@@ -38,7 +38,7 @@
                         <div class="p-8 text-center border-b border-amber-50 relative overflow-hidden bg-amber-50/30">
                             <h3 class="text-xl font-extrabold text-slate-800 mb-2 relative z-10">{{ $pkg->amount }} Listing Kuota</h3>
                             
-                            @if($pkg->original_price && $pkg->original_price > $pkg->price)
+                            @if($pkg->original_price)
                                 <div class="text-slate-400 line-through text-sm font-bold mb-1">
                                     Rp {{ number_format($pkg->original_price, 0, ',', '.') }}
                                 </div>
@@ -111,7 +111,7 @@
                             <div class="absolute top-0 right-0 w-32 h-32 bg-[#0194F3]/5 rounded-bl-full -z-0"></div>
                             <h3 class="text-xl font-bold text-slate-800 mb-2 relative z-10">{{ $pkg->amount }} Listing</h3>
                             
-                            @if($pkg->original_price && $pkg->original_price > $pkg->price)
+                            @if($pkg->original_price)
                                 <div class="text-slate-400 line-through text-sm font-bold mb-1 relative z-10">
                                     Rp {{ number_format($pkg->original_price, 0, ',', '.') }}
                                 </div>
