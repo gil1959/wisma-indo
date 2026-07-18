@@ -618,5 +618,4 @@ function generateAiDescription() {
         }
     });
 </script>
-@endif
 @endpush

@@ -440,6 +440,29 @@
     </div>
     @endif
 
+    {{-- REKOMENDASI IKLAN --}}
+    @if(isset($recommendedListings) && $recommendedListings->count() > 0)
+    <div class="mt-16">
+        <h2 class="text-2xl font-bold text-slate-800 mb-6">Rekomendasi Iklan</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            @foreach($recommendedListings as $item)
+            <a href="{{ route('listing.show', $item->slug) }}" class="group bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl hover:border-[#0194F3]/30 transition-all duration-300 flex flex-col">
+                <div class="relative overflow-hidden bg-slate-100" style="aspect-ratio:4/3;">
+                    @if($item->cover_image)<img src="{{ asset($item->cover_image) }}" alt="{{ $item->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    @else<div class="w-full h-full flex items-center justify-center text-slate-300"><i data-lucide="image" style="width:40px;height:40px;"></i></div>@endif
+                    <div class="absolute top-3 left-3"><span class="px-2 py-1 bg-white/90 backdrop-blur-sm text-slate-700 text-xs font-bold rounded-lg capitalize">{{ $item->listingCategory->name ?? '' }}</span></div>
+                </div>
+                <div class="p-4 flex flex-col flex-1">
+                    <h3 class="font-bold text-slate-800 text-sm mb-1.5 line-clamp-2 group-hover:text-[#0194F3] transition">{{ $item->title }}</h3>
+                    <p class="text-slate-400 text-xs flex items-center gap-1 mb-2"><i data-lucide="map-pin" style="width:12px;height:12px;flex-shrink:0;"></i><span class="line-clamp-1">{{ $item->location ?? 'Lokasi tidak diketahui' }}</span></p>
+                    <p class="text-base font-bold text-[#0194F3] mt-auto">Rp {{ number_format($item->price, 0, ',', '.') }}</p>
+                </div>
+            </a>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
 </div>
 </div>
 @endsection

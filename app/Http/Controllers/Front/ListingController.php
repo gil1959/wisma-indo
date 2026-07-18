@@ -111,6 +111,13 @@ class ListingController extends Controller
             ->take(4)
             ->get();
 
-        return view('front.listings.show', compact('listing', 'relatedListings', 'userListings'));
+        // Rekomendasi Iklan
+        $recommendedListings = Listing::where('id', '!=', $listing->id)
+            ->where('status', 'tersedia')
+            ->inRandomOrder()
+            ->take(4)
+            ->get();
+
+        return view('front.listings.show', compact('listing', 'relatedListings', 'userListings', 'recommendedListings'));
     }
 }
