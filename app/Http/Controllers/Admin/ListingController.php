@@ -277,8 +277,6 @@ class ListingController extends Controller
 
     private function applyWatermark($path)
     {
-        if (!class_exists(\Intervention\Image\ImageManager::class)) return;
-        
         $siteLogo = \App\Models\Setting::where('key', 'site_logo')->first()->value ?? null;
         $brandName = \App\Models\Setting::where('key', 'brand_name')->first()->value ?? 'Wisma Indo';
         if (!$siteLogo) return;
