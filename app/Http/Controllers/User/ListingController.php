@@ -270,6 +270,11 @@ class ListingController extends Controller
 
         $logoPath = public_path(str_replace('/storage/', 'storage/', $siteLogo));
         if (!file_exists($logoPath)) {
+            // Fallback for cPanel if symlink doesn't exist
+            $logoPath = storage_path('app/public/' . str_replace('/storage/', '', $siteLogo));
+        }
+        
+        if (!file_exists($logoPath)) {
             \Illuminate\Support\Facades\Log::error("Watermark: Logo file does not exist at path: " . $logoPath);
             return;
         }
@@ -302,7 +307,7 @@ class ListingController extends Controller
             $image->insert($watermark, $startX, $startY, 'top-left', 0.85);
             
             // Masukkan teks di sebelah kanan logo
-            $fontPath = 'C:\\Windows\\Fonts\\arialbd.ttf'; // Arial Bold agar tebal
+            $fontPath = public_path('fonts/arialbd.ttf'); // Menggunakan font dari project
             if (file_exists($fontPath)) {
                 $textX = $startX + $logoWidth + $padding;
                 $textY = $startY + intval($logoHeight * 0.85); // Baseline text
