@@ -277,14 +277,23 @@ class ListingController extends Controller
 
     private function applyWatermark($path)
     {
-        if (!class_exists(\Intervention\Image\ImageManager::class)) return;
+        if (!class_exists(\Intervention\Image\ImageManager::class)) {
+            \Illuminate\Support\Facades\Log::error("Watermark: ImageManager class not found.");
+            return;
+        }
         
         $siteLogo = \App\Models\Setting::where('key', 'site_logo')->first()->value ?? null;
         $brandName = \App\Models\Setting::where('key', 'brand_name')->first()->value ?? 'Wisma Indo';
-        if (!$siteLogo) return;
+        if (!$siteLogo) {
+            \Illuminate\Support\Facades\Log::error("Watermark: site_logo setting not found.");
+            return;
+        }
 
         $logoPath = public_path(str_replace('/storage/', 'storage/', $siteLogo));
-        if (!file_exists($logoPath)) return;
+        if (!file_exists($logoPath)) {
+            \Illuminate\Support\Facades\Log::error("Watermark: Logo file does not exist at path: " . $logoPath);
+            return;
+        }
 
         try {
             $manager = new \Intervention\Image\ImageManager(\Intervention\Image\Drivers\Gd\Driver::class);
@@ -324,6 +333,8 @@ class ListingController extends Controller
                     $font->color('rgba(128, 128, 128, 0.85)'); // Abu-abu semi transparan tapi jelas
                     $font->align('left');
                 });
+            } else {
+                \Illuminate\Support\Facades\Log::error("Watermark: Font file does not exist at path: " . $fontPath);
             }
 
             $image->save(storage_path('app/' . $path));
