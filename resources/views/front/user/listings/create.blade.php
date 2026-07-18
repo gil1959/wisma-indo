@@ -509,6 +509,7 @@
         }
     });
 </script>
+@endif
 
 <script>
 function generateAiDescription() {
