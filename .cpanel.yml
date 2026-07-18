@@ -2,4 +2,10 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/wismaindo/public_html/
-    - /usr/bin/rsync -avP --exclude='.env' --exclude='.htaccess' --exclude='index.php' --exclude='.git/' --exclude='storage/' ./ $DEPLOYPATH
+    - /bin/cp $DEPLOYPATH.env /home/wismaindo/.env.backup 2>/dev/null || true
+    - /bin/cp $DEPLOYPATH.htaccess /home/wismaindo/.htaccess.backup 2>/dev/null || true
+    - /bin/cp ${DEPLOYPATH}index.php /home/wismaindo/index.php.backup 2>/dev/null || true
+    - /bin/cp -R * $DEPLOYPATH
+    - /bin/cp /home/wismaindo/.env.backup $DEPLOYPATH.env 2>/dev/null || true
+    - /bin/cp /home/wismaindo/.htaccess.backup $DEPLOYPATH.htaccess 2>/dev/null || true
+    - /bin/cp /home/wismaindo/index.php.backup ${DEPLOYPATH}index.php 2>/dev/null || true
