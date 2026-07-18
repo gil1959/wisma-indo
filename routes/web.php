@@ -133,3 +133,13 @@ Route::middleware(['auth', \Spatie\Permission\Middleware\RoleMiddleware::class .
 });
 
 require __DIR__ . '/auth.php';
+
+// Fallback route for storage files when symlink is not available (common on shared hosting)
+Route::get('storage/{path}', function ($path) {
+    $filePath = storage_path('app/public/' . $path);
+    if (!\Illuminate\Support\Facades\File::exists($filePath)) {
+        abort(404);
+    }
+    $mime = \Illuminate\Support\Facades\File::mimeType($filePath);
+    return response()->file($filePath, ['Content-Type' => $mime]);
+})->where('path', '.*');
