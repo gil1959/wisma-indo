@@ -6,7 +6,7 @@ deployment:
     - /bin/cp $DEPLOYPATH.htaccess /home/wismaindo/.htaccess.backup 2>/dev/null || true
     - /bin/cp ${DEPLOYPATH}index.php /home/wismaindo/index.php.backup 2>/dev/null || true
     - /bin/cp -R * $DEPLOYPATH
-    - /bin/bash -c "cd $DEPLOYPATH && rm -rf vendor && unzip -q vendor.zip"
+    - /bin/bash -c "cd $DEPLOYPATH && rm -rf vendor && unzip -q vendor.zip && rm -rf bootstrap/cache/*.php"
     - /bin/cp /home/wismaindo/.env.backup $DEPLOYPATH.env 2>/dev/null || true
     - /bin/cp /home/wismaindo/.htaccess.backup $DEPLOYPATH.htaccess 2>/dev/null || true
     - /bin/cp /home/wismaindo/index.php.backup ${DEPLOYPATH}index.php 2>/dev/null || true
