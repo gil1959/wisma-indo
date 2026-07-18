@@ -66,7 +66,7 @@
         <div class="max-w-2xl mx-auto bg-white/10 p-2 backdrop-blur-md rounded-full border border-white/20 shadow-2xl">
             <form action="{{ route('properti') }}" method="GET" class="relative flex items-center bg-white rounded-full overflow-hidden p-1 shadow-inner">
                 <i data-lucide="search" class="w-5 h-5 text-slate-400 absolute left-4"></i>
-                <input type="text" name="q" placeholder="Cari lokasi, nama properti, atau area..." class="w-full pl-12 pr-4 py-3 bg-transparent text-slate-700 outline-none focus:ring-0 border-none font-medium placeholder-slate-400" autocomplete="off">
+                <input type="text" id="homeSearchLokasi" name="q" placeholder="Sedang mencari lokasi Anda..." class="w-full pl-12 pr-4 py-3 bg-transparent text-slate-700 outline-none focus:ring-0 border-none font-medium placeholder-slate-400" autocomplete="off">
                 <button type="submit" class="bg-[#0194F3] hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full transition-colors shrink-0">
                     Cari
                 </button>
@@ -472,3 +472,54 @@
 </section>
 
 @endsection
+
+@push('scripts')
+@if(isset($siteSettings['google_maps_api_key']) && $siteSettings['google_maps_api_key'] != '')
+<script src="https://maps.googleapis.com/maps/api/js?key={{ $siteSettings['google_maps_api_key'] }}&libraries=places"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var input = document.getElementById('homeSearchLokasi');
+        if (input) {
+            new google.maps.places.Autocomplete(input);
+            
+            if (!input.value) {
+                const fallbackToIP = function() {
+                    fetch('https://get.geojs.io/v1/ip/geo.json')
+                        .then(response => response.json())
+                        .then(data => {
+                            if(data.city) {
+                                input.value = data.city + (data.region ? ', ' + data.region : '');
+                            } else {
+                                input.placeholder = "Cari lokasi, nama properti, atau area...";
+                            }
+                        }).catch(err => {
+                            input.placeholder = "Cari lokasi, nama properti, atau area...";
+                        });
+                };
+
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        var pos = { lat: position.coords.latitude, lng: position.coords.longitude };
+                        var geocoder = new google.maps.Geocoder();
+                        geocoder.geocode({ location: pos }, function(results, status) {
+                            if (status === 'OK' && results[0]) {
+                                let city = results[0].address_components.find(c => c.types.includes('administrative_area_level_2'));
+                                let val = city ? city.long_name : results[0].formatted_address;
+                                input.value = val;
+                            } else {
+                                fallbackToIP();
+                            }
+                        });
+                    }, function(error) {
+                        console.warn("Geolokasi browser gagal (kode " + error.code + "): " + error.message);
+                        fallbackToIP();
+                    }, { enableHighAccuracy: true });
+                } else {
+                    fallbackToIP();
+                }
+            }
+        }
+    });
+</script>
+@endif
+@endpush

@@ -62,6 +62,8 @@ class ListingController extends Controller
             'certificate' => 'nullable|string',
             'imb' => 'nullable|boolean',
             'pbb' => 'nullable|boolean',
+            'latitude' => 'nullable|string',
+            'longitude' => 'nullable|string',
             'electricity' => 'nullable|integer',
             'maid_bedrooms' => 'nullable|integer',
             'maid_bathrooms' => 'nullable|integer',
@@ -98,6 +100,7 @@ class ListingController extends Controller
 
         if ($request->hasFile('cover_image')) {
             $path = $request->file('cover_image')->store('public/listings');
+            $this->applyWatermark($path);
             $validated['cover_image'] = Storage::url($path);
         }
 
@@ -110,6 +113,7 @@ class ListingController extends Controller
             foreach ($request->file('images') as $index => $image) {
                 if ($index >= 12) break; // Max 12 images
                 $path = $image->store('public/listings');
+                $this->applyWatermark($path);
                 ListingImage::create([
                     'listing_id' => $listing->id,
                     'image_path' => Storage::url($path),
@@ -157,6 +161,8 @@ class ListingController extends Controller
             'certificate' => 'nullable|string',
             'imb' => 'nullable|boolean',
             'pbb' => 'nullable|boolean',
+            'latitude' => 'nullable|string',
+            'longitude' => 'nullable|string',
             'electricity' => 'nullable|integer',
             'maid_bedrooms' => 'nullable|integer',
             'maid_bathrooms' => 'nullable|integer',
@@ -198,6 +204,7 @@ class ListingController extends Controller
                 Storage::delete(str_replace('/storage/', 'public/', $listing->cover_image));
             }
             $path = $request->file('cover_image')->store('public/listings');
+            $this->applyWatermark($path);
             $validated['cover_image'] = Storage::url($path);
         }
 
@@ -219,6 +226,7 @@ class ListingController extends Controller
             foreach ($request->file('images') as $image) {
                 if ($currentImages >= 12) break;
                 $path = $image->store('public/listings');
+                $this->applyWatermark($path);
                 ListingImage::create([
                     'listing_id' => $listing->id,
                     'image_path' => Storage::url($path),
@@ -244,5 +252,60 @@ class ListingController extends Controller
         
         $listing->delete();
         return redirect()->route('iklan.saya')->with('success', 'Iklan berhasil dihapus!');
+    }
+
+    private function applyWatermark($path)
+    {
+        $siteLogo = \App\Models\Setting::where('key', 'site_logo')->first()->value ?? null;
+        $brandName = \App\Models\Setting::where('key', 'brand_name')->first()->value ?? 'Wisma Indo';
+        if (!$siteLogo) return;
+
+        $logoPath = public_path(str_replace('/storage/', 'storage/', $siteLogo));
+        if (!file_exists($logoPath)) return;
+
+        try {
+            $manager = new \Intervention\Image\ImageManager(\Intervention\Image\Drivers\Gd\Driver::class);
+            $image = $manager->decodePath(storage_path('app/' . $path));
+            $watermark = $manager->decodePath($logoPath);
+            
+            // Layout seperti Navbar: Logo di kiri, Teks di kanan
+            // Ukuran logo dibuat proporsional (8% dari tinggi gambar utama)
+            $logoHeight = intval($image->height() * 0.08);
+            if ($logoHeight < 20) $logoHeight = 20;
+            $logoWidth = intval($watermark->width() * ($logoHeight / max($watermark->height(), 1)));
+            
+            $watermark->scale(height: $logoHeight);
+            $watermark->sharpen(15); // Tambah ketajaman (HD)
+            $watermark->grayscale();
+            
+            $fontSize = intval($logoHeight * 0.8);
+            $approxTextWidth = strlen($brandName) * ($fontSize * 0.55);
+            $padding = 15;
+            $totalWidth = $logoWidth + $padding + $approxTextWidth;
+            
+            // Hitung posisi agar grup logo+teks berada pas di tengah gambar
+            $startX = intval(($image->width() - $totalWidth) / 2);
+            $startY = intval(($image->height() - $logoHeight) / 2);
+            
+            // Masukkan logo
+            $image->insert($watermark, $startX, $startY, 'top-left', 0.85);
+            
+            // Masukkan teks di sebelah kanan logo
+            $fontPath = 'C:\\Windows\\Fonts\\arialbd.ttf'; // Arial Bold agar tebal
+            if (file_exists($fontPath)) {
+                $textX = $startX + $logoWidth + $padding;
+                $textY = $startY + intval($logoHeight * 0.85); // Baseline text
+                $image->text($brandName, $textX, $textY, function($font) use ($fontPath, $fontSize) {
+                    $font->file($fontPath);
+                    $font->size($fontSize);
+                    $font->color('rgba(128, 128, 128, 0.85)'); // Abu-abu semi transparan tapi jelas
+                    $font->align('left');
+                });
+            }
+
+            $image->save(storage_path('app/' . $path));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Watermark failed: " . $e->getMessage());
+        }
     }
 }

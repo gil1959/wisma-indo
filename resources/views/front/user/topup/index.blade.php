@@ -58,10 +58,19 @@
                         
                         <div class="p-6 flex-grow flex flex-col justify-between">
                             <ul class="space-y-3 mb-8">
-                                <li class="flex items-start gap-3 text-sm text-slate-600 font-medium">
-                                    <i data-lucide="check" class="w-5 h-5 text-orange-500 shrink-0"></i>
-                                    <span>Berlaku untuk semua kategori iklan.</span>
-                                </li>
+                                @if(is_array($pkg->benefits) && count($pkg->benefits) > 0)
+                                    @foreach($pkg->benefits as $benefit)
+                                        <li class="flex items-start gap-3 text-sm text-slate-600 font-medium">
+                                            <i data-lucide="check" class="w-5 h-5 text-orange-500 shrink-0"></i>
+                                            <span>{{ $benefit }}</span>
+                                        </li>
+                                    @endforeach
+                                @else
+                                    <li class="flex items-start gap-3 text-sm text-slate-600 font-medium">
+                                        <i data-lucide="check" class="w-5 h-5 text-orange-500 shrink-0"></i>
+                                        <span>Berlaku untuk semua kategori iklan.</span>
+                                    </li>
+                                @endif
                                 @if($pkg->valid_until)
                                     <li class="flex items-start gap-3 text-sm text-slate-600 font-medium">
                                         <i data-lucide="clock" class="w-5 h-5 text-orange-500 shrink-0"></i>
@@ -71,7 +80,7 @@
                             </ul>
                             
                             <a href="{{ route('topup.checkout', $pkg->id) }}" class="block w-full py-3.5 px-4 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold text-center rounded-xl transition shadow-lg shadow-orange-500/30">
-                                Klaim Promo Sekarang
+                                {{ $pkg->button_text ?? 'Klaim Promo Sekarang' }}
                             </a>
                         </div>
                     </div>
@@ -101,6 +110,13 @@
                         <div class="p-8 text-center border-b border-slate-50 relative overflow-hidden">
                             <div class="absolute top-0 right-0 w-32 h-32 bg-[#0194F3]/5 rounded-bl-full -z-0"></div>
                             <h3 class="text-xl font-bold text-slate-800 mb-2 relative z-10">{{ $pkg->amount }} Listing</h3>
+                            
+                            @if($pkg->original_price && $pkg->original_price > $pkg->price)
+                                <div class="text-slate-400 line-through text-sm font-bold mb-1 relative z-10">
+                                    Rp {{ number_format($pkg->original_price, 0, ',', '.') }}
+                                </div>
+                            @endif
+
                             <div class="text-[#0194F3] font-black text-3xl mb-1 relative z-10 flex justify-center items-start gap-1">
                                 <span class="text-base mt-1">Rp</span>{{ number_format($pkg->price, 0, ',', '.') }}
                             </div>
@@ -113,18 +129,27 @@
                         
                         <div class="p-6 bg-slate-50 flex-grow flex flex-col justify-between">
                             <ul class="space-y-3 mb-8">
-                                <li class="flex items-start gap-3 text-sm text-slate-600">
-                                    <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-500 shrink-0"></i>
-                                    <span>Bisa untuk semua kategori iklan.</span>
-                                </li>
-                                <li class="flex items-start gap-3 text-sm text-slate-600">
-                                    <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-500 shrink-0"></i>
-                                    <span>Masa aktif kuota selamanya (Lifetime).</span>
-                                </li>
+                                @if(is_array($pkg->benefits) && count($pkg->benefits) > 0)
+                                    @foreach($pkg->benefits as $benefit)
+                                        <li class="flex items-start gap-3 text-sm text-slate-600">
+                                            <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-500 shrink-0"></i>
+                                            <span>{{ $benefit }}</span>
+                                        </li>
+                                    @endforeach
+                                @else
+                                    <li class="flex items-start gap-3 text-sm text-slate-600">
+                                        <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-500 shrink-0"></i>
+                                        <span>Bisa untuk semua kategori iklan.</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-sm text-slate-600">
+                                        <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-500 shrink-0"></i>
+                                        <span>Masa aktif kuota selamanya (Lifetime).</span>
+                                    </li>
+                                @endif
                             </ul>
                             
                             <a href="{{ route('topup.checkout', $pkg->id) }}" class="block w-full py-3.5 px-4 bg-white border-2 border-[#0194F3] text-[#0194F3] hover:bg-[#0194F3] hover:text-white font-bold text-center rounded-xl transition shadow-sm hover:shadow-lg hover:shadow-[#0194F3]/30">
-                                Beli Paket Ini
+                                {{ $pkg->button_text ?? 'Beli Paket Ini' }}
                             </a>
                         </div>
                     </div>

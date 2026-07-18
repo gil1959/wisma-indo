@@ -38,6 +38,23 @@
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Label Diskon (Opsional)</label>
                     <input type="text" name="discount_label" value="{{ old('discount_label') }}" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-[#0194F3] focus:ring-1 focus:ring-[#0194F3] outline-none transition" placeholder="Contoh: Hemat 20%">
                 </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Harga Asli (Harga Coret)</label>
+                    <input type="number" name="original_price" value="{{ old('original_price') }}" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-[#0194F3] focus:ring-1 focus:ring-[#0194F3] outline-none transition" placeholder="Contoh: 100000">
+                    <p class="text-xs text-slate-500 mt-1">Kosongkan jika tidak ada diskon.</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Teks Tombol Pembelian</label>
+                    <input type="text" name="button_text" value="{{ old('button_text', 'Beli Paket Ini') }}" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-[#0194F3] focus:ring-1 focus:ring-[#0194F3] outline-none transition" placeholder="Contoh: Beli Paket Ini">
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Daftar Keuntungan / Benefit Paket</label>
+                <textarea name="benefits" rows="4" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-[#0194F3] focus:ring-1 focus:ring-[#0194F3] outline-none transition" placeholder="Bisa untuk semua kategori iklan.&#10;Masa aktif selamanya.">{{ old('benefits') }}</textarea>
+                <p class="text-xs text-slate-500 mt-1">Pisahkan setiap benefit dengan baris baru (Enter).</p>
             </div>
 
             <div x-data="{ isVoucher: false }" class="mb-8 space-y-4">
@@ -54,11 +71,6 @@
 
                     <div x-show="isVoucher" x-collapse>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-blue-50/50 p-4 rounded-xl border border-blue-100">
-                            <div>
-                                <label class="block text-sm font-semibold text-slate-700 mb-2">Harga Asli (Sebelum Diskon)</label>
-                                <input type="number" name="original_price" value="{{ old('original_price') }}" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-[#0194F3] focus:ring-1 focus:ring-[#0194F3] outline-none transition" placeholder="Contoh: 1000000">
-                                <p class="text-xs text-slate-500 mt-1">Akan dicoret pada tampilan.</p>
-                            </div>
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-2">Batas Waktu Voucher</label>
                                 <input type="datetime-local" name="valid_until" value="{{ old('valid_until') }}" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-[#0194F3] focus:ring-1 focus:ring-[#0194F3] outline-none transition">

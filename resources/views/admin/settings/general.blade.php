@@ -9,6 +9,16 @@
 </div>
 @endif
 
+@if ($errors->any())
+<div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-red-900 font-bold">
+    <ul class="list-disc pl-5 text-sm">
+        @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
+
 <div x-data="{ tab: 'identitas' }" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
     <!-- Tabs Header -->
     <div class="flex flex-wrap border-b border-slate-200 bg-slate-50">
@@ -135,6 +145,27 @@
                         <p class="text-sm font-bold text-blue-800 mb-1"><i data-lucide="info" class="w-4 h-4 inline-block mr-1"></i> Authorized Redirect URI</p>
                         <p class="text-xs text-blue-700 leading-relaxed mb-2">Salin dan tempel URL ini ke kolom <strong>Authorized redirect URIs</strong> pada Google Cloud Console Anda:</p>
                         <code class="block bg-white p-2 text-xs font-mono text-blue-600 rounded border border-blue-200 break-all">{{ url('/auth/google/callback') }}</code>
+                    </div>
+                </div>
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-slate-700">Google Maps API (Geolokasi)</h4>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-600 mb-2">Google Maps API Key</label>
+                        <input type="text" name="google_maps_api_key" value="{{ old('google_maps_api_key', $settings['google_maps_api_key'] ?? '') }}" class="w-full rounded-xl border-slate-300" placeholder="AIzaSy...">
+                        <p class="text-xs text-slate-500 mt-1">Digunakan untuk fitur Autocomplete Lokasi dan Visual Peta saat pasang iklan & pencarian.</p>
+                    </div>
+                </div>
+                
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-slate-700">Google Gemini AI Studio (Deskripsi Otomatis)</h4>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-600 mb-2">Gemini API Key</label>
+                        <input type="text" name="gemini_api_key" value="{{ old('gemini_api_key', $settings['gemini_api_key'] ?? '') }}" class="w-full rounded-xl border-slate-300" placeholder="AIzaSy...">
+                        <p class="text-xs text-slate-500 mt-1">Digunakan untuk fitur Generate Deskripsi Iklan dan Artikel secara otomatis menggunakan Google Gemini AI.</p>
                     </div>
                 </div>
             </div>

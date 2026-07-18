@@ -30,10 +30,20 @@ class TopupPackageController extends Controller
             'is_voucher' => 'boolean',
             'original_price' => 'nullable|numeric|min:0',
             'valid_until' => 'nullable|date',
+            'button_text' => 'nullable|string',
+            'benefits' => 'nullable|string',
         ]);
         
         $validated['is_active'] = $request->has('is_active');
         $validated['is_voucher'] = $request->has('is_voucher');
+        $validated['button_text'] = $request->button_text ?? 'Beli Paket Ini';
+
+        if ($request->filled('benefits')) {
+            $benefits = array_filter(array_map('trim', explode("\n", str_replace("\r", "", $request->benefits))));
+            $validated['benefits'] = array_values($benefits);
+        } else {
+            $validated['benefits'] = null;
+        }
 
         TopupPackage::create($validated);
 
@@ -56,10 +66,20 @@ class TopupPackageController extends Controller
             'is_voucher' => 'boolean',
             'original_price' => 'nullable|numeric|min:0',
             'valid_until' => 'nullable|date',
+            'button_text' => 'nullable|string',
+            'benefits' => 'nullable|string',
         ]);
 
         $validated['is_active'] = $request->has('is_active');
         $validated['is_voucher'] = $request->has('is_voucher');
+        $validated['button_text'] = $request->button_text ?? 'Beli Paket Ini';
+
+        if ($request->filled('benefits')) {
+            $benefits = array_filter(array_map('trim', explode("\n", str_replace("\r", "", $request->benefits))));
+            $validated['benefits'] = array_values($benefits);
+        } else {
+            $validated['benefits'] = null;
+        }
 
         $topupPackage->update($validated);
 

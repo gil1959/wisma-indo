@@ -103,6 +103,14 @@ class ListingController extends Controller
             ->take(4)
             ->get();
 
-        return view('front.listings.show', compact('listing', 'relatedListings'));
+        // Ambil iklan lain dari pembuat yang sama
+        $userListings = Listing::where('user_id', $listing->user_id)
+            ->where('id', '!=', $listing->id)
+            ->where('status', 'tersedia')
+            ->latest()
+            ->take(4)
+            ->get();
+
+        return view('front.listings.show', compact('listing', 'relatedListings', 'userListings'));
     }
 }

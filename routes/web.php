@@ -12,6 +12,7 @@ Route::get('/simulasi', [\App\Http\Controllers\Front\SimulasiController::class, 
 Route::get('/quran', [\App\Http\Controllers\Front\QuranController::class, 'index'])->name('quran');
 Route::get('/co-broke', [\App\Http\Controllers\Front\CoBrokeController::class, 'index'])->name('cobroke');
 Route::get('/artikel', [\App\Http\Controllers\Front\ArticleController::class, 'index'])->name('articles');
+Route::get('/artikel/{slug}', [\App\Http\Controllers\Front\ArticleController::class, 'show'])->name('articles.show');
 Route::get('/listing/{slug}', [\App\Http\Controllers\Front\ListingController::class, 'show'])->name('listing.show');
 Route::get('/simulasi', [\App\Http\Controllers\Front\SimulasiController::class, 'index'])->name('simulasi');
 Route::get('/privacy-policy', [\App\Http\Controllers\Front\LegalController::class, 'privacy'])->name('privacy');
@@ -54,6 +55,9 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/iklan-saya/{listing}', [\App\Http\Controllers\User\ListingController::class, 'destroy'])->name('iklan.saya.destroy');
         Route::post('/iklan-favorit/{listing}', [\App\Http\Controllers\User\FavoriteController::class, 'store'])->name('iklan.favorit.store');
         Route::delete('/iklan-favorit/{listing}', [\App\Http\Controllers\User\FavoriteController::class, 'destroy'])->name('iklan.favorit.destroy');
+
+        // AI Generator Route
+        Route::post('/ai/generate', [\App\Http\Controllers\AiController::class, 'generate'])->name('ai.generate');
     });
 });
 

@@ -59,8 +59,13 @@
                 </div>
 
                 <div class="mb-6">
-                    <label class="block text-sm font-bold text-slate-700 mb-2">Deskripsi Lengkap *</label>
-                    <textarea name="description" required rows="5" class="w-full rounded-xl border-slate-200 focus:border-[#0194F3] focus:ring focus:ring-[#0194F3]/20" placeholder="Jelaskan detail keunggulan, spesifikasi, dan hal menarik lainnya dari iklan Anda...">{{ old('description') }}</textarea>
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="block text-sm font-bold text-slate-700">Deskripsi Lengkap *</label>
+                        <button type="button" onclick="generateAiDescription()" id="btnAiDesc" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg shadow hover:opacity-90 transition">
+                            <i data-lucide="bot" class="w-3.5 h-3.5"></i> Generate AI
+                        </button>
+                    </div>
+                    <textarea name="description" id="listingDesc" class="w-full rounded-xl border-slate-200 hidden">{{ old('description') }}</textarea>
                 </div>
             </div>
 
@@ -259,20 +264,27 @@
                     <i data-lucide="map-pin" class="w-5 h-5 text-[#0194F3]"></i> Lokasi & Kontak
                 </h3>
                 
-                <div class="mb-6">
+                <div class="mb-6 relative">
                     <label class="block text-sm font-bold text-slate-700 mb-2">Lokasi Singkat *</label>
-                    <input type="text" name="location" required value="{{ old('location') }}" class="w-full rounded-xl border-slate-200 focus:border-[#0194F3] focus:ring focus:ring-[#0194F3]/20" placeholder="Contoh: Jakarta Selatan">
+                    <input type="text" id="locationSearch" name="location" required value="{{ old('location') }}" class="w-full rounded-xl border-slate-200 focus:border-[#0194F3] focus:ring focus:ring-[#0194F3]/20" placeholder="Contoh: Jakarta Selatan">
+                    <p class="text-xs text-slate-500 mt-1">Gunakan kotak pencarian ini untuk mencari lokasi di peta secara otomatis.</p>
                 </div>
+                
+                @if(isset($siteSettings['google_maps_api_key']) && $siteSettings['google_maps_api_key'] != '')
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Peta Lokasi (Otomatis)</label>
+                    <div id="mapPicker" class="w-full h-[300px] rounded-xl border border-slate-200 shadow-inner overflow-hidden mb-2 relative z-0 bg-slate-100 flex items-center justify-center">
+                        <span class="text-slate-400 font-medium">Memuat Peta...</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-1">Geser pin merah muda pada peta untuk menyesuaikan titik lokasi dengan presisi.</p>
+                </div>
+                <input type="hidden" id="latitude" name="latitude" value="{{ old('latitude') }}">
+                <input type="hidden" id="longitude" name="longitude" value="{{ old('longitude') }}">
+                @endif
                 
                 <div class="mb-6">
                     <label class="block text-sm font-bold text-slate-700 mb-2">Alamat Lengkap</label>
-                    <textarea name="address" rows="3" class="w-full rounded-xl border-slate-200 focus:border-[#0194F3] focus:ring focus:ring-[#0194F3]/20" placeholder="Jalan, RT/RW, Kecamatan...">{{ old('address') }}</textarea>
-                </div>
-                
-                <div class="mb-6">
-                    <label class="block text-sm font-bold text-slate-700 mb-2">Google Maps Embed URL (Opsional)</label>
-                    <input type="url" name="maps_url" value="{{ old('maps_url') }}" class="w-full rounded-xl border-slate-200 focus:border-[#0194F3] focus:ring focus:ring-[#0194F3]/20" placeholder="Contoh: https://www.google.com/maps/embed?...">
-                    <p class="text-xs text-slate-500 mt-2">Buka Google Maps, klik Bagikan > Sematkan peta > Salin HTML, lalu ambil link di dalam <code>src="..."</code> saja.</p>
+                    <textarea id="addressField" name="address" rows="3" class="w-full rounded-xl border-slate-200 focus:border-[#0194F3] focus:ring focus:ring-[#0194F3]/20" placeholder="Jalan, RT/RW, Kecamatan...">{{ old('address') }}</textarea>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -346,9 +358,6 @@
 
 @push('scripts')
 @include('components.image-uploader-script')
-@endpush
-
-@push('scripts')
 <script>
     function listingForm() {
         return {
@@ -356,4 +365,258 @@
         }
     }
 </script>
+@if(isset($siteSettings['google_maps_api_key']) && $siteSettings['google_maps_api_key'] != '')
+<script src="https://maps.googleapis.com/maps/api/js?key={{ $siteSettings['google_maps_api_key'] }}&libraries=places"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var defaultLat = -6.2088;
+        var defaultLng = 106.8456;
+        var oldLat = document.getElementById('latitude').value;
+        var oldLng = document.getElementById('longitude').value;
+        var startLat = oldLat ? parseFloat(oldLat) : defaultLat;
+        var startLng = oldLng ? parseFloat(oldLng) : defaultLng;
+
+        var map = new google.maps.Map(document.getElementById('mapPicker'), {
+            center: {lat: startLat, lng: startLng},
+            zoom: oldLat ? 16 : 12,
+            mapTypeControl: false,
+            streetViewControl: false,
+        });
+
+        var marker = new google.maps.Marker({
+            position: {lat: startLat, lng: startLng},
+            map: map,
+            draggable: true,
+            animation: google.maps.Animation.DROP,
+        });
+
+        var input = document.getElementById('locationSearch');
+        var autocomplete = new google.maps.places.Autocomplete(input);
+        autocomplete.bindTo('bounds', map);
+
+        autocomplete.addListener('place_changed', function() {
+            var place = autocomplete.getPlace();
+            if (!place.geometry) return;
+
+            if (place.geometry.viewport) {
+                map.fitBounds(place.geometry.viewport);
+            } else {
+                map.setCenter(place.geometry.location);
+                map.setZoom(17);
+            }
+            marker.setPosition(place.geometry.location);
+            document.getElementById('latitude').value = place.geometry.location.lat();
+            document.getElementById('longitude').value = place.geometry.location.lng();
+        });
+
+        marker.addListener('dragend', function() {
+            var pos = marker.getPosition();
+            document.getElementById('latitude').value = pos.lat();
+            document.getElementById('longitude').value = pos.lng();
+            
+            var geocoder = new google.maps.Geocoder();
+            geocoder.geocode({ location: pos }, function(results, status) {
+                if (status === 'OK' && results[0]) {
+                    var city = '';
+                    var subloc = '';
+                    results[0].address_components.forEach(function(c) {
+                        if (c.types.includes('administrative_area_level_2') || c.types.includes('locality')) city = c.long_name;
+                        if (c.types.includes('sublocality') || c.types.includes('neighborhood')) subloc = c.long_name;
+                    });
+                    var shortLoc = [];
+                    if (subloc) shortLoc.push(subloc);
+                    if (city) shortLoc.push(city);
+                    
+                    document.getElementById('locationSearch').value = shortLoc.length > 0 ? shortLoc.join(', ') : results[0].formatted_address;
+                    document.getElementById('addressField').value = results[0].formatted_address;
+                }
+            });
+        });
+
+        if (!oldLat && !oldLng) {
+            const fallbackToIP = function() {
+                fetch('https://get.geojs.io/v1/ip/geo.json')
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.latitude && data.longitude) {
+                            var pos = { lat: parseFloat(data.latitude), lng: parseFloat(data.longitude) };
+                            map.setCenter(pos);
+                            map.setZoom(15);
+                            marker.setPosition(pos);
+                            document.getElementById('latitude').value = pos.lat;
+                            document.getElementById('longitude').value = pos.lng;
+                            
+                            var geocoder = new google.maps.Geocoder();
+                            geocoder.geocode({ location: pos }, function(results, status) {
+                                if (status === 'OK' && results[0]) {
+                                    var city = '';
+                                    var subloc = '';
+                                    results[0].address_components.forEach(function(c) {
+                                        if (c.types.includes('administrative_area_level_2') || c.types.includes('locality')) city = c.long_name;
+                                        if (c.types.includes('sublocality') || c.types.includes('neighborhood')) subloc = c.long_name;
+                                    });
+                                    var shortLoc = [];
+                                    if (subloc) shortLoc.push(subloc);
+                                    if (city) shortLoc.push(city);
+                                    
+                                    document.getElementById('locationSearch').value = shortLoc.length > 0 ? shortLoc.join(', ') : results[0].formatted_address;
+                                    document.getElementById('addressField').value = results[0].formatted_address;
+                                } else if (data.city) {
+                                    document.getElementById('locationSearch').value = data.city + ', ' + data.region;
+                                }
+                            });
+                        }
+                    }).catch(err => console.log('IP Geo fallback failed:', err));
+            };
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var pos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    
+                    map.setCenter(pos);
+                    map.setZoom(16);
+                    marker.setPosition(pos);
+                    document.getElementById('latitude').value = pos.lat;
+                    document.getElementById('longitude').value = pos.lng;
+                    
+                    var geocoder = new google.maps.Geocoder();
+                    geocoder.geocode({ location: pos }, function(results, status) {
+                        if (status === 'OK' && results[0]) {
+                            var city = '';
+                            var subloc = '';
+                            results[0].address_components.forEach(function(c) {
+                                if (c.types.includes('administrative_area_level_2') || c.types.includes('locality')) city = c.long_name;
+                                if (c.types.includes('sublocality') || c.types.includes('neighborhood')) subloc = c.long_name;
+                            });
+                            var shortLoc = [];
+                            if (subloc) shortLoc.push(subloc);
+                            if (city) shortLoc.push(city);
+                            
+                            document.getElementById('locationSearch').value = shortLoc.length > 0 ? shortLoc.join(', ') : results[0].formatted_address;
+                            document.getElementById('addressField').value = results[0].formatted_address;
+                        }
+                    });
+                }, function(error) {
+                    console.warn("Geolokasi browser gagal (kode " + error.code + "): " + error.message);
+                    fallbackToIP();
+                }, { enableHighAccuracy: true });
+            } else {
+                fallbackToIP();
+            }
+        }
+    });
+</script>
+
+<script>
+function generateAiDescription() {
+    let title = document.querySelector('input[name="title"]').value;
+    let price = document.querySelector('input[name="price"]') ? document.querySelector('input[name="price"]').value : '';
+    let transSelect = document.querySelector('select[name="transaction_type"]');
+    let transaction = (transSelect && transSelect.selectedIndex > -1) ? transSelect.options[transSelect.selectedIndex].value : '{{ $kategori }}';
+    
+    if (!title || !price) {
+        Swal.fire('Perhatian', 'Silakan isi Judul Iklan dan Harga terlebih dahulu agar AI bisa membuat deskripsi yang akurat.', 'warning');
+        return;
+    }
+
+    let category = '';
+    let categorySelect = document.querySelector('select[name="listing_category_id"]');
+    if (categorySelect && categorySelect.options[categorySelect.selectedIndex]) {
+        category = categorySelect.options[categorySelect.selectedIndex].text;
+    }
+
+    let payload = {
+        type: 'listing',
+        title: title,
+        category: category,
+        price: price,
+        transaction_type: transaction,
+        location: document.querySelector('input[name="location"]') ? document.querySelector('input[name="location"]').value : ''
+    };
+
+    if ('{{ $kategori }}' === 'properti') {
+        payload.land_area = document.querySelector('input[name="land_area"]') ? document.querySelector('input[name="land_area"]').value : '';
+        payload.building_area = document.querySelector('input[name="building_area"]') ? document.querySelector('input[name="building_area"]').value : '';
+        payload.bedrooms = document.querySelector('input[name="bedrooms"]') ? document.querySelector('input[name="bedrooms"]').value : '';
+        payload.bathrooms = document.querySelector('input[name="bathrooms"]') ? document.querySelector('input[name="bathrooms"]').value : '';
+        
+        let certSelect = document.querySelector('select[name="certificate"]');
+        payload.certificate = (certSelect && certSelect.selectedIndex > 0) ? certSelect.options[certSelect.selectedIndex].text : '';
+        
+        let furnSelect = document.querySelector('select[name="furnished_status"]');
+        payload.furnished_status = (furnSelect && furnSelect.selectedIndex > 0) ? furnSelect.options[furnSelect.selectedIndex].text : '';
+        
+        payload.facilities = Array.from(document.querySelectorAll('input[name="facilities[]"]:checked')).map(el => el.value);
+        payload.surroundings = Array.from(document.querySelectorAll('input[name="surroundings[]"]:checked')).map(el => el.value);
+    } else if ('{{ $kategori }}' === 'barang') {
+        let condSelect = document.querySelector('select[name="condition"]');
+        payload.condition = (condSelect && condSelect.selectedIndex > 0) ? condSelect.options[condSelect.selectedIndex].text : '';
+        payload.brand = document.querySelector('input[name="brand"]') ? document.querySelector('input[name="brand"]').value : '';
+    } else if ('{{ $kategori }}' === 'jasa') {
+        payload.service_area = document.querySelector('input[name="service_area"]') ? document.querySelector('input[name="service_area"]').value : '';
+    }
+    
+    let btn = document.getElementById('btnAiDesc');
+    let originalText = btn.innerHTML;
+    btn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> Loading...';
+    btn.disabled = true;
+
+    fetch('{{ route("ai.generate") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if(tinymce.get('listingDesc')) {
+                tinymce.get('listingDesc').setContent(data.data);
+            } else {
+                document.getElementById('listingDesc').value = data.data;
+            }
+        } else {
+            Swal.fire('Gagal', data.message || 'Gagal generate dengan AI.', 'error');
+        }
+    })
+    .catch(error => {
+        Swal.fire('Error', 'Terjadi kesalahan koneksi saat menghubungi AI.', 'error');
+        console.error(error);
+    })
+    .finally(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        lucide.createIcons();
+    });
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
+<script>
+    tinymce.init({
+        selector: '#listingDesc',
+        height: 300,
+        menubar: false,
+        plugins: [
+            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+            'insertdatetime', 'media', 'table', 'help', 'wordcount'
+        ],
+        toolbar: 'undo redo | blocks | ' +
+        'bold italic backcolor | alignleft aligncenter ' +
+        'alignright alignjustify | bullist numlist outdent indent | ' +
+        'removeformat | help',
+        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }',
+        setup: function (editor) {
+            editor.on('change', function () {
+                editor.save();
+            });
+        }
+    });
+</script>
+@endif
 @endpush

@@ -12,7 +12,12 @@
                     <input type="text" name="title" class="w-full rounded-xl border-slate-300 focus:border-[#0194F3] focus:ring-[#0194F3]" required>
                 </div>
                 <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">Konten</label>
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="block text-sm font-bold text-slate-700">Konten</label>
+                        <button type="button" onclick="generateAiArticle()" id="btnAiDesc" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg shadow hover:opacity-90 transition">
+                            <i data-lucide="bot" class="w-3.5 h-3.5"></i> Generate Konten AI
+                        </button>
+                    </div>
                     <textarea name="content" id="editor" class="w-full rounded-xl border-slate-300 hidden"></textarea>
                 </div>
             </div>
@@ -59,13 +64,80 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.ckeditor.com/ckeditor5/38.1.1/classic/ckeditor.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
 <script>
-    ClassicEditor
-        .create(document.querySelector('#editor'))
-        .catch(error => { console.error(error); });
+    tinymce.init({
+        selector: '#editor',
+        height: 400,
+        menubar: false,
+        plugins: [
+            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+            'insertdatetime', 'media', 'table', 'help', 'wordcount'
+        ],
+        toolbar: 'undo redo | blocks | ' +
+        'bold italic backcolor | alignleft aligncenter ' +
+        'alignright alignjustify | bullist numlist outdent indent | ' +
+        'removeformat | help',
+        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }',
+        setup: function (editor) {
+            editor.on('change', function () {
+                editor.save();
+            });
+        }
+    });
+
+    function generateAiArticle() {
+        let title = document.querySelector('input[name="title"]').value;
+        if (!title) {
+            Swal.fire('Perhatian', 'Silakan isi Judul Artikel terlebih dahulu.', 'warning');
+            return;
+        }
+        
+        let btn = document.getElementById('btnAiDesc');
+        let originalText = btn.innerHTML;
+        btn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> Loading...';
+        btn.disabled = true;
+
+        let category = '';
+        let categorySelect = document.querySelector('select[name="article_category_id"]');
+        if (categorySelect && categorySelect.options[categorySelect.selectedIndex]) {
+            category = categorySelect.options[categorySelect.selectedIndex].text;
+        }
+        
+        fetch('{{ route("ai.generate") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                type: 'article',
+                title: title,
+                category: category
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if(tinymce.get('editor')) {
+                    tinymce.get('editor').setContent(data.data);
+                } else {
+                    document.getElementById('editor').value = data.data;
+                }
+            } else {
+                Swal.fire('Gagal', data.message || 'Gagal generate dengan AI.', 'error');
+            }
+        })
+        .catch(error => {
+            Swal.fire('Error', 'Terjadi kesalahan koneksi saat menghubungi AI.', 'error');
+            console.error(error);
+        })
+        .finally(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            lucide.createIcons();
+        });
+    }
 </script>
-<style>
-.ck-editor__editable_inline { min-height: 400px; }
-</style>
 @endpush

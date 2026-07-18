@@ -76,6 +76,8 @@ class SettingController extends Controller
             'google_login_active'  => ['nullable', 'boolean'],
             'google_client_id'     => ['nullable', 'string', 'max:255'],
             'google_client_secret' => ['nullable', 'string', 'max:255'],
+            'google_maps_api_key'  => ['nullable', 'string', 'max:255'],
+            'gemini_api_key'       => ['nullable', 'string', 'max:255'],
         ]);
 
         $keys = [
@@ -85,7 +87,7 @@ class SettingController extends Controller
             'tripay_merchant_code', 'tripay_api_key', 'tripay_private_key', 'tripay_active', 'tripay_mode',
             'xendit_api_key', 'xendit_active', 'xendit_callback_token',
             'offline_unique_code_min', 'offline_unique_code_max',
-            'google_login_active', 'google_client_id', 'google_client_secret'
+            'google_login_active', 'google_client_id', 'google_client_secret', 'google_maps_api_key', 'gemini_api_key'
         ];
 
         foreach ($keys as $key) {

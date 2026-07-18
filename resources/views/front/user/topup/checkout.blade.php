@@ -82,8 +82,22 @@
                     <div class="flex items-start justify-between mb-4">
                         <div>
                             <h3 class="font-bold text-slate-700">Paket Kuota {{ $package->amount }} Listing</h3>
+                            @if($package->original_price && $package->original_price > $package->price)
+                                <span class="text-sm font-bold text-slate-400 line-through mt-1 block">Rp {{ number_format($package->original_price, 0, ',', '.') }}</span>
+                            @endif
                             @if($package->bonus)
                                 <span class="text-sm font-bold text-emerald-500 mt-1 block">+{{ $package->bonus }} Iklan Gratis</span>
+                            @endif
+
+                            @if(is_array($package->benefits) && count($package->benefits) > 0)
+                                <ul class="mt-4 space-y-2">
+                                    @foreach($package->benefits as $benefit)
+                                        <li class="flex items-start gap-2 text-xs text-slate-500">
+                                            <i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i>
+                                            <span>{{ $benefit }}</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
                             @endif
                         </div>
                         <div class="font-bold text-slate-800">

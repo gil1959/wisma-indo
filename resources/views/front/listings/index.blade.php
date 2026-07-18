@@ -107,7 +107,7 @@
                         {{-- Lokasi --}}
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 mb-2">Lokasi / Daerah</label>
-                            <input type="text" name="lokasi" placeholder="Contoh: Jakarta Selatan" value="{{ request('lokasi') }}" class="w-full border-slate-300 rounded-xl focus:ring-[#0194F3] focus:border-[#0194F3] bg-slate-50 text-sm">
+                            <input type="text" id="searchLokasi" name="lokasi" placeholder="Mencari lokasi saat ini..." value="{{ request('lokasi') }}" class="w-full border-slate-300 rounded-xl focus:ring-[#0194F3] focus:border-[#0194F3] bg-slate-50 text-sm">
                         </div>
 
                         {{-- Submit --}}
@@ -223,3 +223,56 @@
 </div>
 
 @endsection
+
+@push('scripts')
+@if(isset($siteSettings['google_maps_api_key']) && $siteSettings['google_maps_api_key'] != '')
+<script src="https://maps.googleapis.com/maps/api/js?key={{ $siteSettings['google_maps_api_key'] }}&libraries=places"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var input = document.getElementById('searchLokasi');
+        if (input) {
+            new google.maps.places.Autocomplete(input);
+            
+            // Otomatis deteksi jika kosong
+            if (!input.value) {
+                const fallbackToIP = function() {
+                    fetch('https://get.geojs.io/v1/ip/geo.json')
+                        .then(response => response.json())
+                        .then(data => {
+                            if(data.city) {
+                                input.value = data.city + (data.region ? ', ' + data.region : '');
+                            } else {
+                                input.placeholder = "Ketik nama lokasi...";
+                            }
+                        }).catch(err => {
+                            input.placeholder = "Ketik nama lokasi...";
+                        });
+                };
+
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        var pos = { lat: position.coords.latitude, lng: position.coords.longitude };
+                        var geocoder = new google.maps.Geocoder();
+                        geocoder.geocode({ location: pos }, function(results, status) {
+                            if (status === 'OK' && results[0]) {
+                                // Ambil kota atau address
+                                let city = results[0].address_components.find(c => c.types.includes('administrative_area_level_2'));
+                                let val = city ? city.long_name : results[0].formatted_address;
+                                input.value = val;
+                            } else {
+                                fallbackToIP();
+                            }
+                        });
+                    }, function(error) {
+                        console.warn("Geolokasi browser gagal (kode " + error.code + "): " + error.message);
+                        fallbackToIP();
+                    }, { enableHighAccuracy: true });
+                } else {
+                    fallbackToIP();
+                }
+            }
+        }
+    });
+</script>
+@endif
+@endpush

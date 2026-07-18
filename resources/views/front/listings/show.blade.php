@@ -21,7 +21,14 @@
     $rawMaps   = $listing->maps_url ?? $listing->map_url ?? null;
     $iframeSrc = null;
 
-    if ($rawMaps) {
+    if ($listing->latitude && $listing->longitude) {
+        $lat = $listing->latitude;
+        $lng = $listing->longitude;
+        $iframeSrc = 'https://maps.google.com/maps?q='.$lat.','.$lng.'&t=&z=15&ie=UTF8&iwloc=&output=embed';
+        if (!$rawMaps) {
+            $rawMaps = 'https://www.google.com/maps/search/?api=1&query='.$lat.','.$lng;
+        }
+    } elseif ($rawMaps) {
         if (preg_match('/src="([^"]+)"/', $rawMaps, $matches)) {
             $iframeSrc = $matches[1];
         } else {
@@ -236,7 +243,7 @@
                 {{-- Deskripsi --}}
                 <div class="mb-6 pt-5 border-t border-slate-100">
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Deskripsi</p>
-                    <div class="text-slate-600 leading-relaxed text-sm">{!! nl2br(e($listing->description)) !!}</div>
+                    <div class="prose prose-sm prose-slate max-w-none text-slate-600 leading-relaxed">{!! $listing->description !!}</div>
                 </div>
 
                 {{-- Fasilitas --}}
@@ -284,33 +291,40 @@
                 @endif
                 @endif
 
-                {{-- MAPS PREVIEW ─── iframe + invisible overlay link ─── --}}
-                @if($rawMaps)
+                {{-- MAPS PREVIEW (Berdasarkan Geolokasi) --}}
+                @if($listing->latitude && $listing->longitude && isset($siteSettings['google_maps_api_key']) && $siteSettings['google_maps_api_key'] != '')
                 <div class="pt-5 border-t border-slate-100">
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Lokasi di Peta</p>
-                    @if($iframeSrc)
-                    {{-- Preview peta + klik buka Google Maps --}}
-                    <div class="maps-box">
-                        <iframe src="{{ $iframeSrc }}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                        {{-- Overlay transparan: menangkap klik dan arahkan ke Google Maps --}}
-                        <a href="{{ $rawMaps }}" target="_blank" rel="noopener" class="maps-link" title="Buka di Google Maps"></a>
-                        <div class="maps-badge">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                            Buka di Google Maps
+                    <div class="relative rounded-2xl overflow-hidden shadow-sm border border-slate-200 group" style="height: 300px;">
+                        <a href="https://www.google.com/maps?q={{ $listing->latitude }},{{ $listing->longitude }}" target="_blank" class="absolute inset-0 z-10 block cursor-pointer" title="Buka di Google Maps"></a>
+                        <div id="listingMap" class="absolute inset-0 w-full h-full bg-slate-100 flex items-center justify-center pointer-events-none">
+                            <span class="text-slate-400 font-medium">Memuat Peta...</span>
                         </div>
                     </div>
-                    @else
-                    <a href="{{ $rawMaps }}" target="_blank" rel="noopener" class="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-slate-200 hover:border-[#0194F3] bg-slate-50 hover:bg-blue-50 transition-all" style="height:200px; text-decoration:none;">
-                        <div class="w-14 h-14 rounded-full bg-[#0194F3]/10 flex items-center justify-center">
-                            <i data-lucide="map-pin" class="w-7 h-7 text-[#0194F3]"></i>
-                        </div>
-                        <div class="text-center">
-                            <p class="font-bold text-slate-700 text-sm">Lihat Lokasi di Google Maps</p>
-                            <p class="text-xs text-slate-400 mt-1">Klik untuk membuka peta</p>
-                        </div>
-                    </a>
-                    @endif
                 </div>
+                @push('scripts')
+                <script src="https://maps.googleapis.com/maps/api/js?key={{ $siteSettings['google_maps_api_key'] }}"></script>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        var lat = parseFloat("{{ $listing->latitude }}");
+                        var lng = parseFloat("{{ $listing->longitude }}");
+                        var mapEl = document.getElementById('listingMap');
+                        if(mapEl && !isNaN(lat) && !isNaN(lng)) {
+                            var map = new google.maps.Map(mapEl, {
+                                center: {lat: lat, lng: lng},
+                                zoom: 16,
+                                mapTypeControl: false,
+                                streetViewControl: false,
+                            });
+                            new google.maps.Marker({
+                                position: {lat: lat, lng: lng},
+                                map: map,
+                                animation: google.maps.Animation.DROP,
+                            });
+                        }
+                    });
+                </script>
+                @endpush
                 @endif
             </div>
         </div>
@@ -371,6 +385,32 @@
                         </div>
                     </div>
                 </div>
+
+                {{-- IKLAN LAIN DARI PENJUAL INI --}}
+                @if(isset($userListings) && $userListings->count() > 0)
+                <div class="mt-6">
+                    <div class="block w-full py-3 px-4 border border-slate-200 rounded-xl text-center text-sm font-bold text-slate-600 bg-white shadow-sm mb-4">
+                        <i data-lucide="layout-grid" class="inline-block w-4 h-4 mr-1.5 -mt-0.5"></i> BUKA IKLAN LAINNYA
+                    </div>
+                    
+                    <div class="flex flex-col gap-4">
+                        @foreach($userListings as $uItem)
+                        <a href="{{ route('listing.show', $uItem->slug) }}" class="group bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl hover:border-[#0194F3]/30 transition-all duration-300 flex flex-col">
+                            <div class="relative overflow-hidden bg-slate-100" style="aspect-ratio:4/3;">
+                                @if($uItem->cover_image)<img src="{{ asset($uItem->cover_image) }}" alt="{{ $uItem->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                @else<div class="w-full h-full flex items-center justify-center text-slate-300"><i data-lucide="image" style="width:40px;height:40px;"></i></div>@endif
+                                <div class="absolute top-3 left-3"><span class="px-2 py-1 bg-white/90 backdrop-blur-sm text-slate-700 text-xs font-bold rounded-lg capitalize">{{ $uItem->listingCategory->name ?? '' }}</span></div>
+                            </div>
+                            <div class="p-4 flex flex-col flex-1">
+                                <h3 class="font-bold text-slate-800 text-sm mb-1.5 line-clamp-2 group-hover:text-[#0194F3] transition">{{ $uItem->title }}</h3>
+                                <p class="text-slate-400 text-xs flex items-center gap-1 mb-2"><i data-lucide="map-pin" style="width:12px;height:12px;flex-shrink:0;"></i><span class="line-clamp-1">{{ $uItem->location ?? 'Lokasi tidak diketahui' }}</span></p>
+                                <p class="text-base font-bold text-[#0194F3] mt-auto">Rp {{ number_format($uItem->price, 0, ',', '.') }}</p>
+                            </div>
+                        </a>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
 
             </div>
         </div>
