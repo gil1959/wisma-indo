@@ -18,7 +18,7 @@ class ListingPromotionController extends Controller
     {
         if ($listing->user_id != Auth::id()) abort(403);
 
-        $query = ListingPackage::orderBy('price', 'asc');
+        $query = ListingPackage::where('is_active', true)->orderBy('price', 'asc');
         if ($request->has('type')) {
             $query->where('type', $request->type);
         }

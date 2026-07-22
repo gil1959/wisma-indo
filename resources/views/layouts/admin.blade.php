@@ -106,6 +106,7 @@
                         'icon' => 'credit-card',
                         'children' => [
                             ['label'=>'Paket Top Up','route'=>'admin.topup-packages.index','match'=>'admin.topup-packages.*','icon'=>'package'],
+                            ['label'=>'Paket Promosi','route'=>'admin.listing-packages.index','match'=>'admin.listing-packages.*','icon'=>'star'],
                             ['label'=>'Permintaan Top Up','route'=>'admin.topups.index','match'=>'admin.topups.*','icon'=>'wallet'],
                             ['label'=>'Promosi Iklan','route'=>'admin.listing-promotions.index','match'=>'admin.listing-promotions.*','icon'=>'trending-up'],
                         ],

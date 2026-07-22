@@ -11,6 +11,11 @@ class ListingPackage extends Model
 
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'benefits' => 'array',
+        'is_active' => 'boolean',
+    ];
+
     public function transactions()
     {
         return $this->hasMany(ListingTransaction::class);

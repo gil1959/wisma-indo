@@ -32,41 +32,56 @@
                     @endif
                     <div class="flex-grow">
                         <div class="flex items-center gap-3 mb-4">
-                            <div class="w-12 h-12 rounded-2xl {{ $package->type == 'premium' ? 'bg-yellow-50 text-yellow-600' : 'bg-indigo-50 text-indigo-600' }} flex items-center justify-center text-xl">
+                            <div class="w-12 h-12 rounded-2xl {{ $package->type == 'premium' ? 'bg-yellow-50 text-yellow-600' : 'bg-indigo-50 text-indigo-600' }} flex items-center justify-center text-xl shrink-0">
                                 <i data-lucide="{{ $package->type == 'premium' ? 'star' : 'arrow-up' }}" class="w-6 h-6"></i>
                             </div>
                             <div>
-                                <h3 class="text-xl font-bold text-slate-900">{{ $package->name }}</h3>
-                                <p class="text-sm text-slate-500">{{ $package->type == 'premium' ? 'Tampil eksklusif dengan label Premium' : 'Naikkan posisi iklan Anda' }}</p>
+                                <h3 class="text-xl font-bold text-slate-900 leading-tight">{{ $package->name }}</h3>
+                                @if($package->discount_label)
+                                    <span class="inline-block mt-1 px-2 py-0.5 bg-red-100 text-red-600 text-[10px] font-bold rounded uppercase tracking-wide">{{ $package->discount_label }}</span>
+                                @endif
                             </div>
                         </div>
-                        <div class="text-3xl font-black text-slate-900 mb-6">
-                            Rp {{ number_format($package->price, 0, ',', '.') }}
+                        <div class="mb-6">
+                            @if($package->original_price)
+                                <div class="text-sm text-slate-400 line-through font-medium mb-1">
+                                    Rp {{ number_format($package->original_price, 0, ',', '.') }}
+                                </div>
+                            @endif
+                            <div class="text-3xl font-black text-slate-900">
+                                Rp {{ number_format($package->price, 0, ',', '.') }}
+                            </div>
                         </div>
                         <ul class="space-y-3 mb-8">
-                            @if($package->type == 'premium')
-                                <li class="flex items-start gap-3 text-sm text-slate-600">
-                                    <i data-lucide="check" class="w-4 h-4 text-green-500 mt-0.5"></i>
-                                    <span>Label <strong class="text-slate-900">Premium</strong> di semua halaman</span>
-                                </li>
-                                <li class="flex items-start gap-3 text-sm text-slate-600">
-                                    <i data-lucide="check" class="w-4 h-4 text-green-500 mt-0.5"></i>
-                                    <span>Tampil di urutan teratas</span>
-                                </li>
+                            @if(is_array($package->benefits) && count($package->benefits) > 0)
+                                @foreach($package->benefits as $benefit)
+                                    <li class="flex items-start gap-3 text-sm text-slate-600">
+                                        <i data-lucide="check" class="w-4 h-4 text-green-500 mt-0.5 shrink-0"></i>
+                                        <span>{!! preg_replace('/(\d+x|Premium)/i', '<strong class="text-slate-900">$1</strong>', e($benefit)) !!}</span>
+                                    </li>
+                                @endforeach
                             @else
-                                <li class="flex items-start gap-3 text-sm text-slate-600">
-                                    <i data-lucide="check" class="w-4 h-4 text-green-500 mt-0.5"></i>
-                                    <span>Disundul sebanyak <strong class="text-slate-900">{{ $package->amount }}x</strong></span>
-                                </li>
-                                <li class="flex items-start gap-3 text-sm text-slate-600">
-                                    <i data-lucide="check" class="w-4 h-4 text-green-500 mt-0.5"></i>
-                                    <span>Meningkatkan posisi iklan</span>
-                                </li>
+                                <!-- Fallback if no benefits are set in DB -->
+                                @if($package->type == 'premium')
+                                    <li class="flex items-start gap-3 text-sm text-slate-600">
+                                        <i data-lucide="check" class="w-4 h-4 text-green-500 mt-0.5 shrink-0"></i>
+                                        <span>Label <strong class="text-slate-900">Premium</strong> di semua halaman</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-sm text-slate-600">
+                                        <i data-lucide="check" class="w-4 h-4 text-green-500 mt-0.5 shrink-0"></i>
+                                        <span>Tampil di urutan teratas</span>
+                                    </li>
+                                @else
+                                    <li class="flex items-start gap-3 text-sm text-slate-600">
+                                        <i data-lucide="check" class="w-4 h-4 text-green-500 mt-0.5 shrink-0"></i>
+                                        <span>Disundul sebanyak <strong class="text-slate-900">{{ $package->amount }}x</strong></span>
+                                    </li>
+                                @endif
                             @endif
                         </ul>
                     </div>
                     <a href="{{ route('listing_promotions.checkout', ['listing' => $listing->id, 'package' => $package->id]) }}" class="block w-full text-center py-3 px-4 rounded-2xl font-bold transition-all {{ $package->type == 'premium' ? 'bg-yellow-400 text-yellow-900 hover:bg-yellow-500' : 'bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-200' }}">
-                        Pilih Paket
+                        {{ $package->button_text ?? 'Pilih Paket' }}
                     </a>
                 </div>
             @endforeach

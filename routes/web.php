@@ -140,6 +140,7 @@ Route::middleware(['auth', \Spatie\Permission\Middleware\RoleMiddleware::class .
     Route::resource('offline-payment-methods', \App\Http\Controllers\Admin\OfflinePaymentMethodController::class)->only(['store', 'destroy']);
     
     // Listing Promotions
+    Route::resource('listing-packages', \App\Http\Controllers\Admin\ListingPackageController::class)->except(['show']);
     Route::resource('listing-promotions', \App\Http\Controllers\Admin\ListingPromotionController::class)->only(['index', 'update', 'destroy']);
 });
 
