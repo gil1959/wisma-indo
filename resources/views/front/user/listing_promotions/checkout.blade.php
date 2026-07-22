@@ -81,7 +81,7 @@
                     
                     <div class="flex items-start justify-between mb-4">
                         <div>
-                            <h3 class="font-bold text-slate-700">Paket Kuota {{ $package->amount }} Listing</h3>
+                            <h3 class="font-bold text-slate-700">{{ $package->name }}</h3>
                             @if($package->original_price && $package->original_price > $package->price)
                                 <span class="text-sm font-bold text-slate-400 line-through mt-1 block">Rp {{ number_format($package->original_price, 0, ',', '.') }}</span>
                             @endif
