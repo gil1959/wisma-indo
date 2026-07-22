@@ -14,19 +14,20 @@
             src="{{ $siteSettings['hero_image'] ?? '' }}"
             alt="Wisma Indo"
             class="h-full w-full object-cover">
-
-
+        
+        {{-- Gradient overlay for better text readability --}}
+        <div class="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-slate-900/30 to-slate-900/70"></div>
     </div>
 
     {{-- content --}}
     <div class="relative max-w-4xl mx-auto px-4" data-aos="fade-up">
 
 
-        <h1 class="mt-6 text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white">
+        <h1 class="mt-6 text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white drop-shadow-xl shadow-black">
             {{ $siteSettings['hero_title'] ?? ($isEn ? 'Comfortable & Trusted Trips' : 'Perjalanan Nyaman & Terpercaya') }}
         </h1>
 
-        <p class="mt-5 text-base md:text-lg text-white/90 max-w-2xl mx-auto mb-14">
+        <p class="mt-5 text-base md:text-lg text-white max-w-2xl mx-auto mb-14 drop-shadow-lg font-medium">
             {{ $siteSettings['hero_subtitle'] ?? ($isEn ? 'We help you plan your trip with professional service and transparent pricing.' : 'Kami membantu Anda merencanakan perjalanan dengan layanan profesional dan harga transparan.') }}
         </p>
 
