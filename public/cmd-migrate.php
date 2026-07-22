@@ -15,10 +15,18 @@ use Illuminate\Support\Facades\Artisan;
 
 define('LARAVEL_START', microtime(true));
 
-// Sesuaikan path ini jika struktur folder cPanel Anda berbeda.
-// Normalnya (jika di folder public Laravel):
-require __DIR__.'/../vendor/autoload.php';
-$app = require_once __DIR__.'/../bootstrap/app.php';
+// Deteksi otomatis posisi folder vendor
+if (file_exists(__DIR__.'/../vendor/autoload.php')) {
+    // Jika file ada di dalam folder public/
+    require __DIR__.'/../vendor/autoload.php';
+    $app = require_once __DIR__.'/../bootstrap/app.php';
+} elseif (file_exists(__DIR__.'/vendor/autoload.php')) {
+    // Jika file dipindah ke root folder (public_html/)
+    require __DIR__.'/vendor/autoload.php';
+    $app = require_once __DIR__.'/bootstrap/app.php';
+} else {
+    die("<h2 style='color:red;'>HTTP ERROR 500: Autoloader tidak ditemukan! Pastikan Anda menaruh file ini di folder yang benar.</h2>");
+}
 
 $kernel = $app->make(Kernel::class);
 $response = $kernel->handle(
