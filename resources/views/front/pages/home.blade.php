@@ -55,10 +55,10 @@
     </div>
 
     <div class="max-w-4xl mx-auto px-4 relative z-10 text-center w-full">
-        <h1 class="text-4xl md:text-5xl lg:text-7xl font-extrabold text-white tracking-tight mb-6 leading-tight">
+        <h1 class="text-4xl md:text-5xl lg:text-7xl font-extrabold text-slate-900 tracking-tight mb-6 leading-tight drop-shadow-md">
             {{ $heroTitle }}
         </h1>
-        <p class="text-lg md:text-xl text-slate-300 mb-10 max-w-2xl mx-auto font-light">
+        <p class="text-lg md:text-xl text-slate-800 mb-12 max-w-2xl mx-auto font-medium drop-shadow-sm">
             {{ $heroSubtitle }}
         </p>
 
