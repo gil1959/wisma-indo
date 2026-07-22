@@ -109,13 +109,13 @@
                 <div class="flex items-center gap-3 min-w-0">
                     <img
                         src="{{ $siteSettings['site_logo'] ?? asset('images/logo.png') }}"
-                        alt="{{ $siteSettings['seo_site_title'] ?? 'Bintang Wisata' }}"
+                        alt="{{ $siteSettings['seo_site_title'] ?? 'Wisma Indo' }}"
                         class="h-9 w-auto object-contain"
                     />
 
                     <div class="min-w-0">
                         <div class="font-extrabold text-slate-900 truncate">Partner Panel</div>
-                        <div class="text-xs text-slate-500 truncate">{{ $siteSettings['seo_site_title'] ?? 'Bintang Wisata' }}</div>
+                        <div class="text-xs text-slate-500 truncate">{{ $siteSettings['seo_site_title'] ?? 'Wisma Indo' }}</div>
                     </div>
                 </div>
 

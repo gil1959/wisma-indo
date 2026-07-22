@@ -43,9 +43,9 @@ $results[] = "Kirim ke: " . $testTo;
 
 try {
     Illuminate\Support\Facades\Mail::raw(
-        'TEST EMAIL dari Bintang Wisata - ' . date('Y-m-d H:i:s') . "\n\nJika email ini masuk, SMTP berfungsi!",
+        'TEST EMAIL dari Wisma Indo - ' . date('Y-m-d H:i:s') . "\n\nJika email ini masuk, SMTP berfungsi!",
         function ($msg) use ($testTo) {
-            $msg->to($testTo)->subject('[TEST] Email Diagnostik Bintang Wisata - ' . date('H:i:s'));
+            $msg->to($testTo)->subject('[TEST] Email Diagnostik Wisma Indo - ' . date('H:i:s'));
         }
     );
     $results[] = "STATUS: BERHASIL DIKIRIM!";

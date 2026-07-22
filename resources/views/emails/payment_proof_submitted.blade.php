@@ -11,7 +11,7 @@
   <div style="max-width: 760px; margin: 0 auto; background:#ffffff; border:1px solid #e2e8f0; border-radius:16px; overflow:hidden;">
 
     <div style="padding:18px 20px; background:#0f172a; color:#ffffff;">
-      <div style="font-size:18px; font-weight:bold;">Bintang Wisata</div>
+      <div style="font-size:18px; font-weight:bold;">Wisma Indo</div>
       <div style="font-size:12px; opacity:0.9;">
         Invoice: {{ $order->invoice_number }}
         <span style="opacity:0.75;">•</span>

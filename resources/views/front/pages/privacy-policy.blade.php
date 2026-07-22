@@ -1,6 +1,6 @@
 @extends('layouts.front')
 @php $isEn = app()->getLocale() === 'en'; @endphp
-@section('title', ($title ?? 'Privacy Policy') . ' - ' . ($siteSettings['seo_site_title'] ?? 'Bintang Wisata'))
+@section('title', ($title ?? 'Privacy Policy') . ' - ' . ($siteSettings['seo_site_title'] ?? 'Wisma Indo'))
 
 @section('content')
 <section class="relative overflow-hidden bg-white">

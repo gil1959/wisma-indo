@@ -1,6 +1,6 @@
 @extends('layouts.front')
 @php $isEn = app()->getLocale() === 'en'; @endphp
-@section('title', ($isEn ? 'Home - ' : 'Beranda - ') . ($siteSettings['seo_site_title'] ?? 'Bintang Wisata'))
+@section('title', ($isEn ? 'Home - ' : 'Beranda - ') . ($siteSettings['seo_site_title'] ?? 'Wisma Indo'))
 
 
 
@@ -12,35 +12,10 @@
     <div class="absolute inset-0">
         <img
             src="{{ $siteSettings['hero_image'] ?? '' }}"
-            alt="Bintang Wisata"
+            alt="Wisma Indo"
             class="h-full w-full object-cover">
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/45 to-slate-950/15"></div>
 
-        {{-- decorative travel SVG overlay --}}
-        <div class="absolute inset-0 opacity-60">
-            <svg class="absolute -top-24 -right-24 w-[520px] h-[520px]" viewBox="0 0 600 600" fill="none" aria-hidden="true">
-                <defs>
-                    <radialGradient id="rg1" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(300 300) rotate(90) scale(280)">
-                        <stop stop-color="#0194F3" stop-opacity="0.35" />
-                        <stop offset="1" stop-color="#0194F3" stop-opacity="0" />
-                    </radialGradient>
-                </defs>
-                <circle cx="300" cy="300" r="280" fill="url(#rg1)" />
-                <path d="M120 330c70-90 170-150 280-150 40 0 80 7 120 20" stroke="#FFFFFF" stroke-opacity="0.30" stroke-width="2" stroke-linecap="round" />
-                <path d="M155 380c85-70 160-105 245-105 70 0 125 18 170 42" stroke="#FFFFFF" stroke-opacity="0.22" stroke-width="2" stroke-linecap="round" />
-            </svg>
 
-            <svg class="absolute -bottom-14 -left-10 w-[520px] h-[520px]" viewBox="0 0 600 600" fill="none" aria-hidden="true">
-                <defs>
-                    <radialGradient id="rg2" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(280 320) rotate(90) scale(280)">
-                        <stop stop-color="#0194F3" stop-opacity="0.28" />
-                        <stop offset="1" stop-color="#0194F3" stop-opacity="0" />
-                    </radialGradient>
-                </defs>
-                <circle cx="280" cy="320" r="280" fill="url(#rg2)" />
-                <path d="M140 260c60 40 110 60 170 60 90 0 155-45 250-125" stroke="#FFFFFF" stroke-opacity="0.22" stroke-width="2" stroke-linecap="round" />
-            </svg>
-        </div>
     </div>
 
     {{-- content --}}
@@ -776,7 +751,7 @@ init() {
             </div>
 
             <h2 class="mt-4 text-2xl lg:text-3xl font-extrabold text-slate-900">
-                {{ $siteSettings['home_why_title'] ?? 'Mengapa Memilih Bintang Wisata' }}
+                {{ $siteSettings['home_why_title'] ?? 'Mengapa Memilih Wisma Indo' }}
             </h2>
 
             <p class="mt-3 text-slate-600">
@@ -874,7 +849,7 @@ init() {
             </div>
 
             <h2 class="mt-4 text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight">
-                {{ $siteSettings['home_logos_title'] ?? 'Kepercayaan Pelanggan Bintang Wisata' }}
+                {{ $siteSettings['home_logos_title'] ?? 'Kepercayaan Pelanggan Wisma Indo' }}
             </h2>
 
             <p class="mt-2 text-slate-600 max-w-2xl mx-auto">
@@ -989,11 +964,11 @@ init() {
                     </div>
 
                     <h2 class="mt-4 text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight">
-                        {{ $siteSettings['home_partner_title'] ?? 'Mau jadi Partner Bintang Wisata?' }}
+                        {{ $siteSettings['home_partner_title'] ?? 'Mau jadi Partner Wisma Indo?' }}
                     </h2>
 
                     <p class="mt-3 text-slate-600 leading-relaxed">
-                        {{ $siteSettings['home_partner_desc'] ?? 'Kembangkan jangkauan layanan kamu bersama Bintang Wisata. Dapatkan akses dashboard khusus partner untuk kebutuhan operasional.' }}
+                        {{ $siteSettings['home_partner_desc'] ?? 'Kembangkan jangkauan layanan kamu bersama Wisma Indo. Dapatkan akses dashboard khusus partner untuk kebutuhan operasional.' }}
                     </p>
 
                     <div class="mt-6">

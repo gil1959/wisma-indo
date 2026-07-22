@@ -28,10 +28,10 @@ return [
         'address' => '住所',
         'phone' => '電話',
         'email' => 'メール',
-        'copyright' => 'Bintang Wisata Indonesia。All rights reserved.',
+        'copyright' => 'Wisma Indo Indonesia。All rights reserved.',
     ],
     'home' => [
-        'page_title' => 'ホーム - Bintang Wisata',
+        'page_title' => 'ホーム - Wisma Indo',
         'badge' => '旅行 • ツアー • レンタカー',
         'hero_fallback_title' => '快適で信頼できる旅',
         'hero_fallback_subtitle' => 'ツアーパッケージとレンタカーを、明確な旅程と透明な料金でお楽しみください。',
@@ -45,7 +45,7 @@ return [
         'why_detail_title' => '詳細',
         'why_detail_desc' => '簡単な流れ',
         'section_tag_services' => '主なサービス',
-        'section_why_choose' => 'Bintang Wisata を選ぶ理由',
+        'section_why_choose' => 'Wisma Indo を選ぶ理由',
         'cards' => [
             'best_spots_title' => 'おすすめスポット',
             'best_spots_desc' => '人気の目的地を見つけて、休暇の定番スポットを楽しもう。',

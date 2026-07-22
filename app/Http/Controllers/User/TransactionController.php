@@ -11,8 +11,13 @@ class TransactionController extends Controller
     {
         $transactions = \App\Models\TopupTransaction::where('user_id', \Illuminate\Support\Facades\Auth::id())
             ->latest()
-            ->paginate(10);
+            ->paginate(10, ['*'], 'topup_page');
             
-        return view('front.user.transactions.index', compact('transactions'));
+        $listingTransactions = \App\Models\ListingTransaction::where('user_id', \Illuminate\Support\Facades\Auth::id())
+            ->with('listingPackage')
+            ->latest()
+            ->paginate(10, ['*'], 'listing_page');
+            
+        return view('front.user.transactions.index', compact('transactions', 'listingTransactions'));
     }
 }

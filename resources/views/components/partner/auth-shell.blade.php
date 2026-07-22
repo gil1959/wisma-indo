@@ -28,9 +28,9 @@
     {{-- TOP: Brand + Title --}}
     <div>
         <div class="flex items-center gap-3">
-            <img src="{{ asset('images/logo.png') }}" alt="Bintang Wisata" class="h-9 w-auto object-contain">
+            <img src="{{ asset('images/logo.png') }}" alt="Wisma Indo" class="h-9 w-auto object-contain">
             <div class="min-w-0">
-                <div class="text-sm font-extrabold tracking-tight truncate">Bintang Wisata</div>
+                <div class="text-sm font-extrabold tracking-tight truncate">Wisma Indo</div>
                 <div class="text-xs text-white/90 truncate">Partner Program</div>
             </div>
         </div>
@@ -109,7 +109,7 @@
        
 
         <div class="mt-4 text-[11px] text-white/70 leading-relaxed">
-            Dengan melanjutkan, kamu menyetujui kebijakan dan proses verifikasi Partner Bintang Wisata.
+            Dengan melanjutkan, kamu menyetujui kebijakan dan proses verifikasi Partner Wisma Indo.
         </div>
     </div>
 

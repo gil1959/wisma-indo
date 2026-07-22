@@ -14,6 +14,7 @@ Route::get('/co-broke', [\App\Http\Controllers\Front\CoBrokeController::class, '
 Route::get('/artikel', [\App\Http\Controllers\Front\ArticleController::class, 'index'])->name('articles');
 Route::get('/artikel/{slug}', [\App\Http\Controllers\Front\ArticleController::class, 'show'])->name('articles.show');
 Route::get('/listing/{slug}', [\App\Http\Controllers\Front\ListingController::class, 'show'])->name('listing.show');
+Route::get('/pengguna/{id}', [\App\Http\Controllers\Front\ListingController::class, 'userListings'])->name('user.listings');
 Route::get('/simulasi', [\App\Http\Controllers\Front\SimulasiController::class, 'index'])->name('simulasi');
 Route::get('/privacy-policy', [\App\Http\Controllers\Front\LegalController::class, 'privacy'])->name('privacy');
 Route::get('/terms-conditions', [\App\Http\Controllers\Front\LegalController::class, 'terms'])->name('terms');
@@ -39,6 +40,13 @@ Route::middleware(['auth'])->group(function () {
     
     Route::get('/transaksi', [\App\Http\Controllers\User\TransactionController::class, 'index'])->name('transaksi');
     
+    // Listing Promotions (Sundul / Premium)
+    Route::get('/promosi-iklan/{listing}/paket', [\App\Http\Controllers\User\ListingPromotionController::class, 'packages'])->name('listing_promotions.packages');
+    Route::get('/promosi-iklan/{listing}/checkout/{package}', [\App\Http\Controllers\User\ListingPromotionController::class, 'checkout'])->name('listing_promotions.checkout');
+    Route::post('/promosi-iklan/{listing}/process/{package}', [\App\Http\Controllers\User\ListingPromotionController::class, 'process'])->name('listing_promotions.process');
+    Route::get('/promosi-iklan/upload-proof/{transaction}', [\App\Http\Controllers\User\ListingPromotionController::class, 'uploadProof'])->name('listing_promotions.upload_proof');
+    Route::post('/promosi-iklan/upload-proof/{transaction}', [\App\Http\Controllers\User\ListingPromotionController::class, 'storeProof'])->name('listing_promotions.store_proof');
+
     // Notifications
     Route::get('/notifikasi', [\App\Http\Controllers\User\NotificationController::class, 'index'])->name('user.notifications.index');
     Route::get('/notifikasi/{id}', [\App\Http\Controllers\User\NotificationController::class, 'show'])->name('user.notifications.show');
@@ -130,6 +138,9 @@ Route::middleware(['auth', \Spatie\Permission\Middleware\RoleMiddleware::class .
     Route::post('topups/{topup}/reject', [\App\Http\Controllers\Admin\TopupController::class, 'reject'])->name('topups.reject');
     Route::resource('topup-packages', \App\Http\Controllers\Admin\TopupPackageController::class);
     Route::resource('offline-payment-methods', \App\Http\Controllers\Admin\OfflinePaymentMethodController::class)->only(['store', 'destroy']);
+    
+    // Listing Promotions
+    Route::resource('listing-promotions', \App\Http\Controllers\Admin\ListingPromotionController::class)->only(['index', 'update', 'destroy']);
 });
 
 require __DIR__ . '/auth.php';

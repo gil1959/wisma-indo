@@ -65,7 +65,7 @@
                 <div class="flex items-center gap-4 min-w-0">
                     <img
                         src="{{ $siteSettings['site_logo'] ?? asset('images/logo.png') }}"
-                        alt="{{ $siteSettings['seo_site_title'] ?? 'Bintang Wisata' }}"
+                        alt="{{ $siteSettings['seo_site_title'] ?? 'Wisma Indo' }}"
                         class="h-10 w-auto object-contain" />
 
                     <div class="min-w-0">

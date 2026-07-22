@@ -82,8 +82,8 @@ class ListingController extends Controller
             'phone' => 'nullable|string',
             'whatsapp' => 'nullable|string',
             'youtube_url' => 'nullable|string',
-            'cover_image' => 'nullable|image|max:2048',
-            'images.*' => 'nullable|image|max:2048',
+            'cover_image' => 'nullable|image|max:20480',
+            'images.*' => 'nullable|image|max:20480',
         ]);
 
         $validated['user_id'] = Auth::id();
@@ -96,7 +96,7 @@ class ListingController extends Controller
         $category = ListingCategory::find($validated['listing_category_id']);
         $validated['category'] = $category->type;
         $validated['type'] = $category->type;
-        $validated['status'] = 'pending';
+        $validated['status'] = 'tersedia';
 
         if ($request->hasFile('cover_image')) {
             $path = $request->file('cover_image')->store('public/listings');
@@ -111,7 +111,7 @@ class ListingController extends Controller
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $index => $image) {
-                if ($index >= 12) break; // Max 12 images
+                if ($index >= 18) break; // Max 18 images
                 $path = $image->store('public/listings');
                 $this->applyWatermark($path);
                 ListingImage::create([
@@ -181,8 +181,8 @@ class ListingController extends Controller
             'phone' => 'nullable|string',
             'whatsapp' => 'nullable|string',
             'youtube_url' => 'nullable|string',
-            'cover_image' => 'nullable|image|max:2048',
-            'images.*' => 'nullable|image|max:2048',
+            'cover_image' => 'nullable|image|max:20480',
+            'images.*' => 'nullable|image|max:20480',
         ]);
 
         $validated['slug'] = Str::slug($validated['title']) . '-' . uniqid();
@@ -196,7 +196,7 @@ class ListingController extends Controller
         $validated['type'] = $category->type;
 
         if ($listing->status === 'rejected') {
-            $validated['status'] = 'pending';
+            $validated['status'] = 'tersedia';
         }
 
         if ($request->hasFile('cover_image')) {
@@ -224,7 +224,7 @@ class ListingController extends Controller
             // Option to replace all or add to existing. Let's just add new ones for now up to limit
             $currentImages = $listing->images()->count();
             foreach ($request->file('images') as $image) {
-                if ($currentImages >= 12) break;
+                if ($currentImages >= 18) break;
                 $path = $image->store('public/listings');
                 $this->applyWatermark($path);
                 ListingImage::create([
@@ -314,14 +314,15 @@ class ListingController extends Controller
                 $image->text($brandName, $textX, $textY, function($font) use ($fontPath, $fontSize) {
                     $font->file($fontPath);
                     $font->size($fontSize);
-                    $font->color('rgba(128, 128, 128, 0.85)'); // Abu-abu semi transparan tapi jelas
+                    $font->color('rgba(128, 128, 128, 0.85)');
                     $font->align('left');
                 });
             } else {
                 \Illuminate\Support\Facades\Log::error("Watermark: Font file does not exist at path: " . $fontPath);
             }
 
-            $image->save(storage_path('app/' . $path));
+            $image->scaleDown(width: 1200);
+            $image->save(storage_path('app/' . $path), quality: 75);
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error("Watermark failed: " . $e->getMessage());
         }

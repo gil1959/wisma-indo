@@ -1,6 +1,6 @@
 @extends('layouts.front')
 @php $isEn = app()->getLocale() === 'en'; @endphp
-@section('title', $siteSettings['about_meta_title'] ?? 'About - Bintang Wisata')
+@section('title', $siteSettings['about_meta_title'] ?? 'About - Wisma Indo')
 
 @section('content')
 
@@ -27,7 +27,7 @@
         <div class="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-extrabold"
           style="background: rgba(1,148,243,0.08); border-color: rgba(1,148,243,0.22); color:#055a93;">
           <span class="h-2 w-2 rounded-full" style="background:#0194F3;"></span>
-          {{ $siteSettings['about_hero_badge'] ?? 'Tentang Bintang Wisata' }}
+          {{ $siteSettings['about_hero_badge'] ?? 'Tentang Wisma Indo' }}
         </div>
 
         <h1 class="text-3xl lg:text-4xl font-extrabold text-slate-900 leading-tight">
@@ -39,8 +39,8 @@
 
         <p class="mt-4 text-base lg:text-lg text-slate-700 leading-relaxed max-w-2xl">
           {!! nl2br(e($siteSettings['about_hero_desc'] ?? ($isEn
-          ? 'Bintang Wisata provides travel and transportation services designed to make everything easier—from choosing packages and scheduling, to on-trip support. Transparency and service accuracy are our baseline standards.'
-          : 'Bintang Wisata menyediakan layanan perjalanan dan transportasi yang dirancang untuk memudahkan Anda: mulai dari pemilihan paket, penjadwalan, hingga dukungan selama perjalanan. Kami menempatkan transparansi dan ketepatan layanan sebagai standar utama.'
+          ? 'Wisma Indo provides travel and transportation services designed to make everything easier—from choosing packages and scheduling, to on-trip support. Transparency and service accuracy are our baseline standards.'
+          : 'Wisma Indo menyediakan layanan perjalanan dan transportasi yang dirancang untuk memudahkan Anda: mulai dari pemilihan paket, penjadwalan, hingga dukungan selama perjalanan. Kami menempatkan transparansi dan ketepatan layanan sebagai standar utama.'
           ))) !!}
         </p>
 

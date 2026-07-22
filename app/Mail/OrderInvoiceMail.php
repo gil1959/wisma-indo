@@ -24,7 +24,7 @@ class OrderInvoiceMail extends Mailable
 {
     $this->order->loadMissing('payments');
 
-    $subject = 'Invoice ' . $this->order->invoice_number . ' - Bintang Wisata';
+    $subject = 'Invoice ' . $this->order->invoice_number . ' - Wisma Indo';
     if ($this->isAdminCopy) {
         $subject = '[ADMIN COPY] ' . $subject;
     }

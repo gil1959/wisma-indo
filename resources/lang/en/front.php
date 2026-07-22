@@ -32,10 +32,10 @@ return [
         'address' => 'Address',
         'phone' => 'Phone',
         'email' => 'Email',
-        'copyright' => 'Bintang Wisata Indonesia. All rights reserved.',
+        'copyright' => 'Wisma Indo Indonesia. All rights reserved.',
     ],
     'home' => [
-        'page_title' => 'Home - Bintang Wisata',
+        'page_title' => 'Home - Wisma Indo',
         'badge' => 'Travel • Tour • Rental',
         'hero_fallback_title' => 'Comfortable & Trusted Trips',
         'hero_fallback_subtitle' => 'Enjoy tour packages and car rental with a great experience, neat itineraries, and transparent pricing.',
@@ -49,7 +49,7 @@ return [
         'why_detail_title' => 'Details',
         'why_detail_desc' => 'Simple flow',
         'section_tag_services' => 'Featured services',
-        'section_why_choose' => 'Why Choose Bintang Wisata',
+        'section_why_choose' => 'Why Choose Wisma Indo',
         'cards' => [
             'best_spots_title' => 'Best Travel Spots',
             'best_spots_desc' => 'Discover popular destinations that are always a top choice for holidays.',

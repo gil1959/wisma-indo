@@ -81,8 +81,8 @@ class ListingController extends Controller
             'whatsapp' => 'nullable|string',
             'youtube_url' => 'nullable|string',
             'status' => 'nullable|string',
-            'cover_image' => 'nullable|image|max:2048',
-            'images.*' => 'nullable|image|max:2048',
+            'cover_image' => 'nullable|image|max:20480',
+            'images.*' => 'nullable|image|max:20480',
         ]);
 
         $validated['user_id'] = Auth::id(); // Admin makes it for themselves by default or we could add a user select field.
@@ -209,8 +209,8 @@ class ListingController extends Controller
             'whatsapp' => 'nullable|string',
             'youtube_url' => 'nullable|string',
             'status' => 'nullable|string',
-            'cover_image' => 'nullable|image|max:2048',
-            'images.*' => 'nullable|image|max:2048',
+            'cover_image' => 'nullable|image|max:20480',
+            'images.*' => 'nullable|image|max:20480',
         ]);
 
         $validated['slug'] = Str::slug($validated['title']) . '-' . uniqid();

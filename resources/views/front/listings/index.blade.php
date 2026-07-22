@@ -147,6 +147,11 @@
                                     <i data-lucide="image" class="w-12 h-12"></i>
                                 </div>
                             @endif
+                            @if($item->is_premium)
+                            <div class="absolute top-3 right-3 bg-yellow-400 text-yellow-900 px-2 py-1 rounded-md text-xs font-bold shadow-sm flex items-center gap-1 z-10">
+                                <i class="fas fa-star text-xs"></i> Premium
+                            </div>
+                            @endif
                             <div class="absolute top-3 left-3 z-10 flex flex-col gap-1.5">
                                 <span class="px-2.5 py-1 bg-white/90 backdrop-blur-sm text-slate-700 text-xs font-bold rounded-lg shadow-sm capitalize">{{ $item->listingCategory->name ?? '' }}</span>
                                 @if($item->transaction_type)
@@ -156,9 +161,15 @@
                         </div>
                         <div class="p-4 flex flex-col flex-1">
                             <h3 class="font-bold text-slate-800 text-base mb-1.5 line-clamp-2 group-hover:text-[#0194F3] transition">{{ $item->title }}</h3>
-                            <div class="text-slate-400 text-xs flex items-center gap-1 mb-3">
-                                <i data-lucide="map-pin" class="w-3.5 h-3.5 shrink-0"></i>
-                                <span class="line-clamp-1">{{ $item->location ?? $item->address ?? 'Lokasi tidak diketahui' }}</span>
+                            <div class="flex justify-between items-center mb-3">
+                                <div class="text-slate-400 text-xs flex items-center gap-1">
+                                    <i data-lucide="map-pin" class="w-3.5 h-3.5 shrink-0"></i>
+                                    <span class="line-clamp-1">{{ $item->location ?? $item->address ?? 'Lokasi tidak diketahui' }}</span>
+                                </div>
+                                <div class="text-slate-400 text-xs flex items-center gap-1">
+                                    <i data-lucide="eye" class="w-3.5 h-3.5 shrink-0"></i>
+                                    <span>{{ $item->views ?? 0 }}</span>
+                                </div>
                             </div>
 
                             {{-- Detail berdasarkan tipe --}}

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>@yield('email_title', 'Bintang Wisata')</title>
+    <title>@yield('email_title', 'Wisma Indo')</title>
 </head>
 <body style="margin:0;padding:0;background:#f8fafc;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:24px 12px;">
@@ -13,7 +13,7 @@
                 <tr>
                     <td style="padding:18px 22px;background:#0194F3;">
                         <div style="font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:800;color:#ffffff;letter-spacing:0.2px;">
-                            {{ config('app.name', 'Bintang Wisata') }}
+                            {{ config('app.name', 'Wisma Indo') }}
                         </div>
                         <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:700;color:rgba(255,255,255,0.9);margin-top:4px;">
                             Tabungan Umrah
@@ -42,7 +42,7 @@
                                 Jika Anda tidak merasa melakukan aktivitas ini, abaikan email ini atau hubungi admin.
                             </div>
                             <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#64748b;margin-top:8px;">
-                                © {{ date('Y') }} {{ config('app.name', 'Bintang Wisata') }}. Semua hak dilindungi.
+                                © {{ date('Y') }} {{ config('app.name', 'Wisma Indo') }}. Semua hak dilindungi.
                             </div>
                         </div>
                     </td>

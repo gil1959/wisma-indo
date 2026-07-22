@@ -308,7 +308,7 @@
                 <div class="mb-6">
                     <label class="block text-sm font-bold text-slate-700 mb-2">Foto Cover (Utama) *</label>
                     <input type="file" name="cover_image" @change="handleCoverChange" required accept="image/*" class="w-full text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[#0194F3] hover:file:bg-blue-100">
-                    <p class="text-xs text-slate-500 mt-2">Format: JPG, PNG. Maks 2MB. Tampil di halaman depan.</p>
+                    <p class="text-xs text-slate-500 mt-2">Format: JPG, PNG. Maks 20MB. Tampil di halaman depan.</p>
                     
                     <template x-if="coverPreview">
                         <div class="mt-4 relative inline-block group">
@@ -321,7 +321,7 @@
                 </div>
 
                 <div class="mb-6">
-                    <label class="block text-sm font-bold text-slate-700 mb-2">Galeri Foto (Opsional, Maks 12)</label>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Galeri Foto (Opsional, Maks 18)</label>
                     <input type="file" name="images[]" x-ref="galleryInput" @change="handleGalleryChange" multiple accept="image/*" class="w-full text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[#0194F3] hover:file:bg-blue-100">
                     <p class="text-xs text-slate-500 mt-2">Bisa pilih beberapa foto sekaligus. Foto baru yang dipilih akan ditambahkan ke daftar preview di bawah.</p>
                     
@@ -598,6 +598,8 @@ function generateAiDescription() {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
 <script>
     tinymce.init({
+        branding: false,
+        promotion: false,
         selector: '#listingDesc',
         height: 300,
         menubar: false,

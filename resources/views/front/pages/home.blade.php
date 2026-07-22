@@ -47,11 +47,11 @@
 <section class="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-900 pt-20 pb-32">
     <div class="absolute inset-0 z-0">
         @if($heroBgImage)
-        <img src="{{ asset($heroBgImage) }}" alt="Background" class="w-full h-full object-cover opacity-40">
+        <img src="{{ asset($heroBgImage) }}" alt="Background" class="w-full h-full object-cover">
         @else
-        <img src="{{ asset('images/hero-property.jpg') }}" alt="Background" class="w-full h-full object-cover opacity-40">
+        <img src="{{ asset('images/hero-property.jpg') }}" alt="Background" class="w-full h-full object-cover">
         @endif
-        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/60 to-slate-900"></div>
+
     </div>
 
     <div class="max-w-4xl mx-auto px-4 relative z-10 text-center w-full">
@@ -370,7 +370,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             @if(isset($propertyListings) && $propertyListings->count() > 0)
                 @foreach ($propertyListings as $listing)
-                <a href="{{ route('listing.show', $listing->slug) }}" class="bg-white rounded-3xl overflow-hidden border border-slate-100 hover:shadow-xl transition-all group block">
+                <a href="{{ route('listing.show', $listing->slug) }}" class="bg-white rounded-3xl overflow-hidden border border-slate-100 hover:shadow-xl transition-all group flex flex-col h-full">
                     <div class="relative aspect-[4/3] overflow-hidden bg-slate-100">
                         @if($listing->primary_image)
                         <img src="{{ asset($listing->primary_image) }}" alt="{{ $listing->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
@@ -379,6 +379,12 @@
                             <i data-lucide="image" class="w-12 h-12"></i>
                         </div>
                         @endif
+                        @if($listing->is_premium)
+                        <div class="absolute top-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold shadow-md flex items-center gap-1 z-10">
+                            <i class="fas fa-star text-xs"></i> Premium
+                        </div>
+                        @endif
+
                         @if($listing->condition)
                         <div class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-[#0194F3]">
                             {{ $listing->condition }}
@@ -388,23 +394,35 @@
                             {{ $listing->transaction_type ?? 'Jual/Sewa' }}
                         </div>
                     </div>
-                    <div class="p-5">
-                        <h3 class="font-bold text-slate-800 text-lg mb-1 truncate">{{ $listing->title }}</h3>
-                        <div class="text-[#0194F3] font-bold text-xl mb-3">Rp {{ number_format($listing->price, 0, ',', '.') }}</div>
-                        <div class="flex items-center gap-1 text-slate-500 text-sm mb-4 truncate">
-                            <i data-lucide="map-pin" class="w-4 h-4 text-rose-500 shrink-0"></i> {{ $listing->location ?? $listing->address }}
+                    <div class="p-4 flex flex-col flex-1">
+                        <h3 class="font-bold text-slate-800 text-base mb-1.5 line-clamp-2 group-hover:text-[#0194F3] transition">{{ $listing->title }}</h3>
+                        <div class="flex justify-between items-center mb-3">
+                            <div class="text-slate-400 text-xs flex items-center gap-1">
+                                <i data-lucide="map-pin" class="w-3.5 h-3.5 shrink-0"></i>
+                                <span class="line-clamp-1">{{ $listing->location ?? $listing->address ?? 'Lokasi tidak diketahui' }}</span>
+                            </div>
+                            <div class="text-slate-400 text-xs flex items-center gap-1">
+                                <i data-lucide="eye" class="w-3.5 h-3.5 shrink-0"></i>
+                                <span>{{ $listing->views ?? 0 }}</span>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-4 text-slate-600 text-sm pt-4 border-t border-slate-100">
+
+                        <div class="flex items-center gap-3 text-slate-500 text-xs mb-3 flex-wrap">
                             @if($listing->bedrooms)
-                            <div class="flex items-center gap-1" title="Kamar Tidur"><i data-lucide="bed" class="w-4 h-4 text-slate-400"></i> {{ $listing->bedrooms }}</div>
+                            <span class="flex items-center gap-1"><i data-lucide="bed" class="w-3.5 h-3.5"></i> {{ $listing->bedrooms }} KT</span>
                             @endif
                             @if($listing->bathrooms)
-                            <div class="flex items-center gap-1" title="Kamar Mandi"><i data-lucide="bath" class="w-4 h-4 text-slate-400"></i> {{ $listing->bathrooms }}</div>
+                            <span class="flex items-center gap-1"><i data-lucide="bath" class="w-3.5 h-3.5"></i> {{ $listing->bathrooms }} KM</span>
                             @endif
                             @if($listing->building_area)
-                            <div class="flex items-center gap-1" title="Luas Bangunan"><i data-lucide="maximize" class="w-4 h-4 text-slate-400"></i> {{ $listing->building_area }}m²</div>
+                            <span class="flex items-center gap-1"><i data-lucide="maximize-2" class="w-3.5 h-3.5"></i> {{ $listing->building_area }} m²</span>
+                            @endif
+                            @if($listing->land_area && !$listing->building_area)
+                            <span class="flex items-center gap-1"><i data-lucide="map" class="w-3.5 h-3.5"></i> {{ $listing->land_area }} m²</span>
                             @endif
                         </div>
+
+                        <div class="text-lg font-bold text-[#0194F3] mt-auto">Rp {{ number_format($listing->price, 0, ',', '.') }}</div>
                     </div>
                 </a>
                 @endforeach
@@ -430,12 +448,17 @@
                 $combinedGS = collect();
                 if(isset($goodsListings)) $combinedGS = $combinedGS->merge($goodsListings);
                 if(isset($servicesListings)) $combinedGS = $combinedGS->merge($servicesListings);
-                $combinedGS = $combinedGS->sortByDesc('created_at')->take(8);
+                $combinedGS = $combinedGS->sortBy([
+                    ['is_premium', 'desc'],
+                    ['bump_count', 'desc'],
+                    ['bumped_at', 'desc'],
+                    ['created_at', 'desc']
+                ])->take(8);
             @endphp
             
             @if($combinedGS->count() > 0)
                 @foreach ($combinedGS as $listing)
-                <a href="{{ route('listing.show', $listing->slug) }}" class="bg-white rounded-3xl overflow-hidden border border-slate-100 hover:shadow-xl transition-all group block">
+                <a href="{{ route('listing.show', $listing->slug) }}" class="bg-white rounded-3xl overflow-hidden border border-slate-100 hover:shadow-xl transition-all group flex flex-col h-full">
                     <div class="relative aspect-[4/3] overflow-hidden bg-slate-100">
                         @if($listing->primary_image)
                         <img src="{{ asset($listing->primary_image) }}" alt="{{ $listing->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
@@ -444,16 +467,45 @@
                             <i data-lucide="{{ $listing->type == 'goods' ? 'package' : 'briefcase' }}" class="w-12 h-12"></i>
                         </div>
                         @endif
+                        @if($listing->is_premium)
+                        <div class="absolute top-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold shadow-md flex items-center gap-1 z-10">
+                            <i class="fas fa-star text-xs"></i> Premium
+                        </div>
+                        @endif
                         <div class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold {{ $listing->type == 'goods' ? 'text-orange-500' : 'text-emerald-500' }}">
                             {{ $listing->type == 'goods' ? 'Barang' : 'Jasa' }}
                         </div>
                     </div>
-                    <div class="p-5">
-                        <h3 class="font-bold text-slate-800 text-lg mb-1 truncate">{{ $listing->title }}</h3>
-                        <div class="text-[#0194F3] font-bold text-xl mb-3">Rp {{ number_format($listing->price, 0, ',', '.') }}</div>
-                        <div class="flex items-center gap-1 text-slate-500 text-sm truncate">
-                            <i data-lucide="map-pin" class="w-4 h-4 text-rose-500 shrink-0"></i> {{ $listing->location ?? $listing->address }}
+                    <div class="p-4 flex flex-col flex-1">
+                        <h3 class="font-bold text-slate-800 text-base mb-1.5 line-clamp-2 group-hover:text-[#0194F3] transition">{{ $listing->title }}</h3>
+                        <div class="flex justify-between items-center mb-3">
+                            <div class="text-slate-400 text-xs flex items-center gap-1">
+                                <i data-lucide="map-pin" class="w-3.5 h-3.5 shrink-0"></i>
+                                <span class="line-clamp-1">{{ $listing->location ?? $listing->address ?? 'Lokasi tidak diketahui' }}</span>
+                            </div>
+                            <div class="text-slate-400 text-xs flex items-center gap-1">
+                                <i data-lucide="eye" class="w-3.5 h-3.5 shrink-0"></i>
+                                <span>{{ $listing->views ?? 0 }}</span>
+                            </div>
                         </div>
+
+                        @if($listing->type == 'goods')
+                        <div class="flex items-center gap-2 flex-wrap mb-3">
+                            @if($listing->condition)
+                            <span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-semibold rounded-md">{{ $listing->condition }}</span>
+                            @endif
+                            @if($listing->brand)
+                            <span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-semibold rounded-md">{{ $listing->brand }}</span>
+                            @endif
+                        </div>
+                        @elseif($listing->type == 'services')
+                        <div class="flex items-center gap-1 text-slate-400 text-xs mb-3">
+                            <i data-lucide="navigation" class="w-3.5 h-3.5 shrink-0"></i>
+                            <span class="line-clamp-1">{{ $listing->service_area ?? 'Area layanan belum diisi' }}</span>
+                        </div>
+                        @endif
+
+                        <div class="text-lg font-bold text-[#0194F3] mt-auto">Rp {{ number_format($listing->price, 0, ',', '.') }}</div>
                     </div>
                 </a>
                 @endforeach

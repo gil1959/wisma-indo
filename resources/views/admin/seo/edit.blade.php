@@ -31,7 +31,7 @@
     <div class="mb-4">
       <label class="block text-sm font-semibold mb-2">Judul Website (Title Tag)</label>
       <input name="seo_site_title" class="w-full rounded-xl border-slate-200"
-             value="{{ old('seo_site_title', $settings['seo_site_title'] ?? 'Bintang Wisata - Tour & Travel Terpercaya') }}" />
+             value="{{ old('seo_site_title', $settings['seo_site_title'] ?? 'Wisma Indo - Tour & Travel Terpercaya') }}" />
       @error('seo_site_title')
         <div class="text-sm text-red-600 mt-1">{{ $message }}</div>
       @enderror

@@ -17,6 +17,9 @@ class HomeController extends Controller
         $propertyListings = \App\Models\Listing::with('listingCategory')
             ->where('status', 'tersedia')
             ->where('type', 'property')
+            ->orderBy('is_premium', 'desc')
+            ->orderBy('bump_count', 'desc')
+            ->orderBy('bumped_at', 'desc')
             ->latest()
             ->take(8)
             ->get();
@@ -24,6 +27,9 @@ class HomeController extends Controller
         $goodsListings = \App\Models\Listing::with('listingCategory')
             ->where('status', 'tersedia')
             ->where('type', 'goods')
+            ->orderBy('is_premium', 'desc')
+            ->orderBy('bump_count', 'desc')
+            ->orderBy('bumped_at', 'desc')
             ->latest()
             ->take(8)
             ->get();
@@ -31,6 +37,9 @@ class HomeController extends Controller
         $servicesListings = \App\Models\Listing::with('listingCategory')
             ->where('status', 'tersedia')
             ->where('type', 'services')
+            ->orderBy('is_premium', 'desc')
+            ->orderBy('bump_count', 'desc')
+            ->orderBy('bumped_at', 'desc')
             ->latest()
             ->take(8)
             ->get();

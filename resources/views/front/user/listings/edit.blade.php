@@ -328,7 +328,7 @@
                 </div>
 
                 <div class="mb-6">
-                    <label class="block text-sm font-bold text-slate-700 mb-2">Tambah Galeri Foto (Maks 12 total)</label>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Tambah Galeri Foto (Maks 18 total)</label>
                     <input type="file" name="images[]" x-ref="galleryInput" @change="handleGalleryChange" multiple accept="image/*" class="w-full text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[#0194F3] hover:file:bg-blue-100">
                     <p class="text-xs text-orange-500 mt-2 mb-2">Pilih gambar baru. Klik tombol X pada foto lama untuk menghapusnya (hapus permanen saat disimpan).</p>
                     
@@ -616,6 +616,8 @@ function generateAiDescription() {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
 <script>
     tinymce.init({
+        branding: false,
+        promotion: false,
         selector: '#listingDesc',
         height: 300,
         menubar: false,

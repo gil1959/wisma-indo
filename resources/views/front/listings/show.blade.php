@@ -192,6 +192,9 @@
             <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm">
                 <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
                     <div class="flex flex-wrap items-center gap-2">
+                        @if($listing->is_premium)
+                        <span class="px-3 py-1 bg-yellow-400 text-yellow-900 text-xs font-bold rounded-lg flex items-center gap-1"><i class="fas fa-star text-xs"></i> Premium</span>
+                        @endif
                         <span class="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-bold rounded-lg">{{ $listing->listingCategory->name ?? '' }}</span>
                         @if($listing->transaction_type)<span class="px-3 py-1 bg-[#0194F3]/10 text-[#0194F3] text-xs font-bold rounded-lg capitalize">{{ $listing->transaction_type }}</span>@endif
                         @if($listing->condition)<span class="px-3 py-1 bg-emerald-50 text-emerald-600 text-xs font-bold rounded-lg">{{ $listing->condition }}</span>@endif
@@ -389,9 +392,9 @@
                 {{-- IKLAN LAIN DARI PENJUAL INI --}}
                 @if(isset($userListings) && $userListings->count() > 0)
                 <div class="mt-6">
-                    <div class="block w-full py-3 px-4 border border-slate-200 rounded-xl text-center text-sm font-bold text-slate-600 bg-white shadow-sm mb-4">
+                    <a href="{{ route('user.listings', $listing->user_id) }}" class="block w-full py-3 px-4 border border-slate-200 rounded-xl text-center text-sm font-bold text-slate-600 bg-white shadow-sm mb-4 hover:bg-slate-50 transition block">
                         <i data-lucide="layout-grid" class="inline-block w-4 h-4 mr-1.5 -mt-0.5"></i> BUKA IKLAN LAINNYA
-                    </div>
+                    </a>
                     
                     <div class="flex flex-col gap-4">
                         @foreach($userListings as $uItem)
@@ -403,7 +406,10 @@
                             </div>
                             <div class="p-4 flex flex-col flex-1">
                                 <h3 class="font-bold text-slate-800 text-sm mb-1.5 line-clamp-2 group-hover:text-[#0194F3] transition">{{ $uItem->title }}</h3>
-                                <p class="text-slate-400 text-xs flex items-center gap-1 mb-2"><i data-lucide="map-pin" style="width:12px;height:12px;flex-shrink:0;"></i><span class="line-clamp-1">{{ $uItem->location ?? 'Lokasi tidak diketahui' }}</span></p>
+                                <div class="flex justify-between items-center mb-2">
+                                    <p class="text-slate-400 text-xs flex items-center gap-1"><i data-lucide="map-pin" style="width:12px;height:12px;flex-shrink:0;"></i><span class="line-clamp-1">{{ $uItem->location ?? 'Lokasi tidak diketahui' }}</span></p>
+                                    <p class="text-slate-400 text-xs flex items-center gap-1"><i data-lucide="eye" style="width:12px;height:12px;flex-shrink:0;"></i>{{ $uItem->views ?? 0 }}</p>
+                                </div>
                                 <p class="text-base font-bold text-[#0194F3] mt-auto">Rp {{ number_format($uItem->price, 0, ',', '.') }}</p>
                             </div>
                         </a>
@@ -431,7 +437,10 @@
                 </div>
                 <div class="p-4 flex flex-col flex-1">
                     <h3 class="font-bold text-slate-800 text-sm mb-1.5 line-clamp-2 group-hover:text-[#0194F3] transition">{{ $item->title }}</h3>
-                    <p class="text-slate-400 text-xs flex items-center gap-1 mb-2"><i data-lucide="map-pin" style="width:12px;height:12px;flex-shrink:0;"></i><span class="line-clamp-1">{{ $item->location ?? 'Lokasi tidak diketahui' }}</span></p>
+                    <div class="flex justify-between items-center mb-2">
+                        <p class="text-slate-400 text-xs flex items-center gap-1"><i data-lucide="map-pin" style="width:12px;height:12px;flex-shrink:0;"></i><span class="line-clamp-1">{{ $item->location ?? 'Lokasi tidak diketahui' }}</span></p>
+                        <p class="text-slate-400 text-xs flex items-center gap-1"><i data-lucide="eye" style="width:12px;height:12px;flex-shrink:0;"></i>{{ $item->views ?? 0 }}</p>
+                    </div>
                     <p class="text-base font-bold text-[#0194F3] mt-auto">Rp {{ number_format($item->price, 0, ',', '.') }}</p>
                 </div>
             </a>
@@ -454,7 +463,10 @@
                 </div>
                 <div class="p-4 flex flex-col flex-1">
                     <h3 class="font-bold text-slate-800 text-sm mb-1.5 line-clamp-2 group-hover:text-[#0194F3] transition">{{ $item->title }}</h3>
-                    <p class="text-slate-400 text-xs flex items-center gap-1 mb-2"><i data-lucide="map-pin" style="width:12px;height:12px;flex-shrink:0;"></i><span class="line-clamp-1">{{ $item->location ?? 'Lokasi tidak diketahui' }}</span></p>
+                    <div class="flex justify-between items-center mb-2">
+                        <p class="text-slate-400 text-xs flex items-center gap-1"><i data-lucide="map-pin" style="width:12px;height:12px;flex-shrink:0;"></i><span class="line-clamp-1">{{ $item->location ?? 'Lokasi tidak diketahui' }}</span></p>
+                        <p class="text-slate-400 text-xs flex items-center gap-1"><i data-lucide="eye" style="width:12px;height:12px;flex-shrink:0;"></i>{{ $item->views ?? 0 }}</p>
+                    </div>
                     <p class="text-base font-bold text-[#0194F3] mt-auto">Rp {{ number_format($item->price, 0, ',', '.') }}</p>
                 </div>
             </a>

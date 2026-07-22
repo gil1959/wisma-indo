@@ -112,6 +112,11 @@
                     <label class="block text-sm font-bold text-slate-700 mb-2">Copyright Text</label>
                     <input type="text" name="footer_copyright" value="{{ old('footer_copyright', $settings['footer_copyright'] ?? '') }}" class="w-full rounded-xl border-slate-300">
                 </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Email Admin (Notifikasi)</label>
+                    <input type="email" name="admin_notification_email" value="{{ old('admin_notification_email', $settings['admin_notification_email'] ?? '') }}" class="w-full rounded-xl border-slate-300" placeholder="Contoh: admin@wismaindo.com">
+                    <p class="text-xs text-slate-500 mt-1">Digunakan untuk menerima notifikasi register & pembayaran baru.</p>
+                </div>
             </div>
             <div class="mt-8 flex justify-end">
                 <button type="submit" class="bg-[#0194F3] text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-600">Simpan Kontak</button>
@@ -381,7 +386,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-500 mb-1">Atas Nama</label>
-                    <input type="text" name="account_name" required class="w-full rounded-xl border-slate-300 text-sm" placeholder="Contoh: Bintang Wisata">
+                    <input type="text" name="account_name" required class="w-full rounded-xl border-slate-300 text-sm" placeholder="Contoh: Wisma Indo">
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start mb-4">

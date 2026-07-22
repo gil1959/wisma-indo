@@ -1,7 +1,7 @@
 @extends('layouts.front')
 @php $isEn = app()->getLocale() === 'en'; @endphp
 
-@section('title', (($pageTitle ?? 'Dokumentasi') . ' - Bintang Wisata'))
+@section('title', (($pageTitle ?? 'Dokumentasi') . ' - Wisma Indo'))
 
 @section('content')
 

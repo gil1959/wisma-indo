@@ -12,7 +12,7 @@
                 $wa = '62' . substr($wa, 1);
             }
 
-            $waMsg = "Halo Admin Bintang Wisata, saya sudah mendaftar Partner dan ingin menanyakan status pendaftaran.";
+            $waMsg = "Halo Admin Wisma Indo, saya sudah mendaftar Partner dan ingin menanyakan status pendaftaran.";
             $waLink = !empty($wa) ? ("https://wa.me/{$wa}?text=" . urlencode($waMsg)) : null;
         @endphp
 

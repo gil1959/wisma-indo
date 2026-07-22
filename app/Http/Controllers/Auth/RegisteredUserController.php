@@ -54,6 +54,15 @@ class RegisteredUserController extends Controller
             'listing_quota' => 1
         ]);
         event(new Registered($user));
+        
+        $adminEmail = \App\Models\Setting::getValue('admin_notification_email');
+        if (!empty($adminEmail)) {
+            try {
+                \Illuminate\Support\Facades\Mail::raw("Ada pengguna baru mendaftar:\nNama: {$user->name}\nEmail: {$user->email}\nWaktu: " . now()->format('Y-m-d H:i:s'), function ($message) use ($adminEmail) {
+                    $message->to($adminEmail)->subject('Notifikasi Pendaftaran Baru');
+                });
+            } catch (\Exception $e) { }
+        }
 
         Auth::login($user);
 

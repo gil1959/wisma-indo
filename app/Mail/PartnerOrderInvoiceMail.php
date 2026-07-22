@@ -25,7 +25,7 @@ class PartnerOrderInvoiceMail extends Mailable
     {
         $this->order->loadMissing('payments');
 
-        $subject = '[PARTNER] Notifikasi Order Baru - ' . $this->order->invoice_number . ' - Bintang Wisata';
+        $subject = '[PARTNER] Notifikasi Order Baru - ' . $this->order->invoice_number . ' - Wisma Indo';
 
         return $this
             ->subject($subject)

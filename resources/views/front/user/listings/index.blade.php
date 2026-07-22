@@ -1,7 +1,12 @@
 @extends('layouts.front')
 
 @section('content')
-<div class="pt-24 pb-20 min-h-screen bg-slate-50">
+<div x-data="{ 
+    deleteModal: false, 
+    formToSubmit: null, 
+    openDelete(form) { this.formToSubmit = form; this.deleteModal = true; }, 
+    submitDelete() { this.formToSubmit.submit(); } 
+}" class="pt-24 pb-20 min-h-screen bg-slate-50">
     <div class="max-w-7xl mx-auto px-4">
         <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
             <h1 class="text-3xl font-bold text-slate-800">Iklan Saya</h1>
@@ -75,13 +80,19 @@
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex justify-end gap-2">
+                                    <a href="{{ route('listing_promotions.packages', ['listing' => $item->id, 'type' => 'sundul']) }}" class="inline-flex items-center justify-center h-9 px-3 rounded-xl bg-indigo-100 text-indigo-700 hover:bg-indigo-200 hover:text-indigo-900 transition text-xs font-bold" title="Sundulan">
+                                        <i data-lucide="arrow-up" class="w-4 h-4 mr-1"></i> Sundulan
+                                    </a>
+                                    <a href="{{ route('listing_promotions.packages', ['listing' => $item->id, 'type' => 'premium']) }}" class="inline-flex items-center justify-center h-9 px-3 rounded-xl bg-yellow-100 text-yellow-700 hover:bg-yellow-400 hover:text-yellow-900 transition text-xs font-bold" title="Premium">
+                                        <i data-lucide="star" class="w-4 h-4 mr-1"></i> Premium
+                                    </a>
                                     <a href="{{ route('iklan.saya.edit', $item->id) }}" class="inline-flex items-center justify-center h-9 w-9 rounded-xl bg-slate-100 text-slate-600 hover:bg-[#0194F3] hover:text-white transition" title="Edit">
                                         <i data-lucide="edit-2" class="w-4 h-4"></i>
                                     </a>
-                                    <form action="{{ route('iklan.saya.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Hapus iklan ini?');">
+                                    <form action="{{ route('iklan.saya.destroy', $item->id) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="inline-flex items-center justify-center h-9 w-9 rounded-xl bg-slate-100 text-slate-600 hover:bg-rose-500 hover:text-white transition" title="Hapus">
+                                        <button type="button" @click="openDelete($el.closest('form'))" class="inline-flex items-center justify-center h-9 w-9 rounded-xl bg-slate-100 text-slate-600 hover:bg-rose-500 hover:text-white transition" title="Hapus">
                                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                                         </button>
                                     </form>
@@ -104,5 +115,23 @@
         @endif
         
     </div>
+
+    {{-- MODAL DELETE --}}
+    <template x-teleport="body">
+        <div x-show="deleteModal" style="display: none;" class="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+            <div x-show="deleteModal" x-transition.opacity class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="deleteModal = false"></div>
+            <div x-show="deleteModal" x-transition class="relative bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center z-10">
+                <div class="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Hapus Iklan?</h3>
+                <p class="text-slate-500 mb-6 text-sm">Data iklan ini akan dihapus secara permanen dari sistem.</p>
+                <div class="flex gap-3 justify-center">
+                    <button type="button" @click="deleteModal = false" class="px-4 py-2 rounded-xl font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Batal</button>
+                    <button type="button" @click="submitDelete()" class="px-4 py-2 rounded-xl font-bold bg-rose-600 text-white hover:bg-rose-700 transition">Ya, Hapus</button>
+                </div>
+            </div>
+        </div>
+    </template>
 </div>
 @endsection

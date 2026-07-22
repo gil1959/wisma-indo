@@ -28,10 +28,10 @@ return [
         'address' => 'Adresse',
         'phone' => 'Téléphone',
         'email' => 'Email',
-        'copyright' => 'Bintang Wisata Indonesia. Tous droits réservés.',
+        'copyright' => 'Wisma Indo Indonesia. Tous droits réservés.',
     ],
     'home' => [
-        'page_title' => 'Accueil - Bintang Wisata',
+        'page_title' => 'Accueil - Wisma Indo',
         'badge' => 'Voyage • Tour • Location',
         'hero_fallback_title' => 'Voyages confortables & fiables',
         'hero_fallback_subtitle' => 'Profitez de nos forfaits et de la location de voiture avec un itinéraire clair et des prix transparents.',
@@ -45,7 +45,7 @@ return [
         'why_detail_title' => 'Détails',
         'why_detail_desc' => 'Parcours simple',
         'section_tag_services' => 'Services phares',
-        'section_why_choose' => 'Pourquoi choisir Bintang Wisata',
+        'section_why_choose' => 'Pourquoi choisir Wisma Indo',
         'cards' => [
             'best_spots_title' => 'Meilleurs spots',
             'best_spots_desc' => 'Découvrez des destinations populaires, toujours appréciées pour les vacances.',

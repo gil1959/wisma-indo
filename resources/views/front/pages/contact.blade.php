@@ -1,5 +1,5 @@
 @extends('layouts.front')
-@section('title', ($title ?? 'Contact') . ' - ' . ($siteSettings['seo_site_title'] ?? 'Bintang Wisata'))
+@section('title', ($title ?? 'Contact') . ' - ' . ($siteSettings['seo_site_title'] ?? 'Wisma Indo'))
 
 @section('content')
 @php

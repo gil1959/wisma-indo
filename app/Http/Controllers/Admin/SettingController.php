@@ -57,6 +57,7 @@ class SettingController extends Controller
             'footer_whatsapp'  => ['nullable', 'string', 'max:30'],
             'footer_tagline'   => ['nullable', 'string', 'max:400'],
             'footer_copyright' => ['nullable', 'string', 'max:200'],
+            'admin_notification_email' => ['nullable', 'email', 'max:255'],
 
             'site_logo'        => ['nullable', 'image', 'max:2048'],
             'site_favicon'     => ['nullable', 'file', 'mimes:ico,png,jpg,jpeg', 'max:1024'],
@@ -83,7 +84,7 @@ class SettingController extends Controller
         $keys = [
             'brand_name', 'seo_meta_title', 'seo_meta_desc', 'seo_meta_keywords',
             'footer_address', 'footer_phone', 'footer_email', 'footer_whatsapp',
-            'footer_tagline', 'footer_copyright',
+            'footer_tagline', 'footer_copyright', 'admin_notification_email',
             'tripay_merchant_code', 'tripay_api_key', 'tripay_private_key', 'tripay_active', 'tripay_mode',
             'xendit_api_key', 'xendit_active', 'xendit_callback_token',
             'offline_unique_code_min', 'offline_unique_code_max',

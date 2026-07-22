@@ -1,7 +1,7 @@
 @extends('layouts.front')
 @php $isEn = app()->getLocale() === 'en'; @endphp
 
-@section('title', $pageTitle . ' - ' . ($siteSettings['seo_site_title'] ?? 'Bintang Wisata'))
+@section('title', $pageTitle . ' - ' . ($siteSettings['seo_site_title'] ?? 'Wisma Indo'))
 @if(!empty($metaDesc))
 @section('meta_description', $metaDesc)
 @endif

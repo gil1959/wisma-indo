@@ -4,7 +4,7 @@ $isEn = app()->getLocale() === 'en';
 
 // Logo sama seperti navbar/footer (setting admin)
 $logoUrl = $siteSettings['site_logo'] ?? asset('images/logo.png');
-$brandName = $siteSettings['seo_site_title'] ?? 'Bintang Wisata';
+$brandName = $siteSettings['seo_site_title'] ?? 'Wisma Indo';
 
 // Dates
 $invoiceDate = optional($order->created_at);
@@ -591,7 +591,7 @@ if ($qty <= 0) $qty=1;
                             @endif
 
                             <div style="margin-top:14px; font-weight:900; text-align:right;">
-                                PT. BINTANG WISATA HOLIDAY
+                                PT. WISMA INDO HOLIDAY
                             </div>
                         </div>
                     </div>

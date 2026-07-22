@@ -26,14 +26,14 @@ document.addEventListener('alpine:init', () => {
             
             files.forEach(file => {
                 const totalImages = this.galleryImages.length + this.existingGallery.length;
-                if (totalImages < 12) {
+                if (totalImages < 18) {
                     this.galleryImages.push({
                         file: file,
                         previewUrl: URL.createObjectURL(file),
                         id: Date.now() + Math.random()
                     });
                 } else {
-                    alert('Maksimal 12 foto diperbolehkan.');
+                    Swal.fire('Batas Maksimal', 'Maksimal 18 foto diperbolehkan.', 'warning');
                 }
             });
             
@@ -46,16 +46,27 @@ document.addEventListener('alpine:init', () => {
         },
 
         removeExistingImage(id) {
-            if(confirm('Yakin ingin menghapus foto ini? (Akan terhapus permanen saat disimpan)')) {
-                // Add a hidden input to mark this image for deletion
-                let hidden = document.createElement('input');
-                hidden.type = 'hidden';
-                hidden.name = 'delete_images[]';
-                hidden.value = id;
-                this.$root.appendChild(hidden);
-                
-                this.existingGallery = this.existingGallery.filter(img => img.id !== id);
-            }
+            Swal.fire({
+                title: 'Hapus Foto?',
+                text: 'Yakin ingin menghapus foto ini? (Akan terhapus permanen saat disimpan)',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Add a hidden input to mark this image for deletion
+                    let hidden = document.createElement('input');
+                    hidden.type = 'hidden';
+                    hidden.name = 'delete_images[]';
+                    hidden.value = id;
+                    this.$root.appendChild(hidden);
+                    
+                    this.existingGallery = this.existingGallery.filter(img => img.id !== id);
+                }
+            });
         },
 
         syncGalleryInput() {

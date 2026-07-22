@@ -31,7 +31,7 @@ class ListingController extends Controller
             $query->where('location', 'like', '%' . $request->lokasi . '%')->orWhere('address', 'like', '%' . $request->lokasi . '%');
         }
         
-        $listings = $query->latest()->paginate(12);
+        $listings = $query->orderBy('is_premium', 'desc')->orderBy('bump_count', 'desc')->orderBy('bumped_at', 'desc')->latest()->paginate(12);
 
         return view('front.listings.index', ['type' => 'dijual', 'listings' => $listings]);
     }
@@ -48,7 +48,7 @@ class ListingController extends Controller
         if ($request->filled('max_price')) $query->where('price', '<=', $request->max_price);
         if ($request->filled('lokasi')) $query->where(function($q) use($request){ $q->where('location', 'like', '%'.$request->lokasi.'%')->orWhere('address', 'like', '%'.$request->lokasi.'%'); });
         
-        $listings = $query->latest()->paginate(12);
+        $listings = $query->orderBy('is_premium', 'desc')->orderBy('bump_count', 'desc')->orderBy('bumped_at', 'desc')->latest()->paginate(12);
 
         return view('front.listings.index', ['type' => 'disewakan', 'listings' => $listings]);
     }
@@ -64,7 +64,7 @@ class ListingController extends Controller
         if ($request->filled('max_price')) $query->where('price', '<=', $request->max_price);
         if ($request->filled('lokasi')) $query->where(function($q) use($request){ $q->where('location', 'like', '%'.$request->lokasi.'%')->orWhere('address', 'like', '%'.$request->lokasi.'%'); });
         
-        $listings = $query->latest()->paginate(12);
+        $listings = $query->orderBy('is_premium', 'desc')->orderBy('bump_count', 'desc')->orderBy('bumped_at', 'desc')->latest()->paginate(12);
 
         return view('front.listings.index', ['type' => 'properti', 'listings' => $listings]);
     }
@@ -81,7 +81,7 @@ class ListingController extends Controller
         if ($request->filled('max_price')) $query->where('price', '<=', $request->max_price);
         if ($request->filled('lokasi')) $query->where(function($q) use($request){ $q->where('location', 'like', '%'.$request->lokasi.'%')->orWhere('address', 'like', '%'.$request->lokasi.'%'); });
         
-        $listings = $query->latest()->paginate(12);
+        $listings = $query->orderBy('is_premium', 'desc')->orderBy('bump_count', 'desc')->orderBy('bumped_at', 'desc')->latest()->paginate(12);
 
         return view('front.listings.index', ['type' => 'barang-jasa', 'listings' => $listings]);
     }
@@ -89,6 +89,9 @@ class ListingController extends Controller
     public function show($slug)
     {
         $listing = Listing::where('slug', $slug)->firstOrFail();
+        
+        // Increment views
+        $listing->increment('views');
         
         // Cek status, kalau tidak tersedia dan bukan punya yang login atau bukan admin, 404
         if ($listing->status !== 'tersedia' && (!auth()->check() || (auth()->user()->id !== $listing->user_id && auth()->user()->role !== 'admin'))) {
@@ -99,6 +102,9 @@ class ListingController extends Controller
         $relatedListings = Listing::where('listing_category_id', $listing->listing_category_id)
             ->where('id', '!=', $listing->id)
             ->where('status', 'tersedia')
+            ->orderBy('is_premium', 'desc')
+            ->orderBy('bump_count', 'desc')
+            ->orderBy('bumped_at', 'desc')
             ->latest()
             ->take(4)
             ->get();
@@ -107,6 +113,9 @@ class ListingController extends Controller
         $userListings = Listing::where('user_id', $listing->user_id)
             ->where('id', '!=', $listing->id)
             ->where('status', 'tersedia')
+            ->orderBy('is_premium', 'desc')
+            ->orderBy('bump_count', 'desc')
+            ->orderBy('bumped_at', 'desc')
             ->latest()
             ->take(4)
             ->get();
@@ -119,5 +128,16 @@ class ListingController extends Controller
             ->get();
 
         return view('front.listings.show', compact('listing', 'relatedListings', 'userListings', 'recommendedListings'));
+    }
+
+    public function userListings($id)
+    {
+        $user = \App\Models\User::findOrFail($id);
+        $listings = Listing::where('user_id', $id)
+            ->where('status', 'tersedia')
+            ->latest()
+            ->paginate(12);
+        
+        return view('front.listings.user', compact('user', 'listings'));
     }
 }

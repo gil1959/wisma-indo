@@ -162,7 +162,7 @@
             <label class="text-sm font-medium text-slate-700">Muncul di path (include)</label>
             <textarea name="include_paths_text" rows="6"
                       class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 font-mono text-sm">{{ old('include_paths_text', implode("\n", $widget->include_paths ?? [])) }}</textarea>
-            <p class="text-xs text-slate-500 mt-1">1 path per baris. Support wildcard: <span class="font-mono">/tour/*</span>, <span class="font-mono">/artikel/*</span>.</p>
+            <p class="text-xs text-slate-500 mt-1">1 path per baris. Support wildcard: <span class="font-mono">/properti/*</span>, <span class="font-mono">/artikel/*</span>.</p>
             @error('include_paths_text')<div class="text-sm text-red-600 mt-1">{{ $message }}</div>@enderror
           </div>
 

@@ -8,7 +8,7 @@
 <body style="font-family: Arial, Helvetica, sans-serif; background:#f8fafc; padding:24px;">
   <div style="max-width: 760px; margin: 0 auto; background:#ffffff; border:1px solid #e2e8f0; border-radius:16px; overflow:hidden;">
     <div style="padding:18px 20px; background:#0194F3; color:#ffffff;">
-      <div style="font-size:18px; font-weight:bold;">Bintang Wisata - Partner</div>
+      <div style="font-size:18px; font-weight:bold;">Wisma Indo - Partner</div>
       <div style="font-size:12px; opacity:0.9;">
         Invoice: {{ $order->invoice_number }}
         <span style="opacity:0.75;">•</span>
@@ -43,7 +43,7 @@
       </div>
 
       <p style="margin:18px 0 0; font-size:12px; color:#64748b;">
-        Email ini dikirim otomatis. Jika ada pertanyaan, hubungi tim admin Bintang Wisata.
+        Email ini dikirim otomatis. Jika ada pertanyaan, hubungi tim admin Wisma Indo.
       </p>
     </div>
   </div>

@@ -40,10 +40,18 @@ class AppServiceProvider extends ServiceProvider
             // Retrieve actual settings from DB, falling back to empty array if not migrated
             try {
                 $dbSettings = \App\Models\Setting::pluck('value', 'key')->toArray();
+                $popupWidget = \App\Models\PopupWidget::first();
+                
+                if (!empty($dbSettings['seo_site_title'])) {
+                    config(['app.name' => $dbSettings['seo_site_title']]);
+                    config(['mail.from.name' => $dbSettings['seo_site_title']]);
+                }
             } catch (\Exception $e) {
                 $dbSettings = [];
+                $popupWidget = null;
             }
             $view->with('siteSettings', $dbSettings);
+            $view->with('popupWidget', $popupWidget);
         });
 
         // Set Google Auth config dynamically
