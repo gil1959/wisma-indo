@@ -88,6 +88,7 @@ Route::middleware(['auth', \Spatie\Permission\Middleware\RoleMiddleware::class .
     // Home Settings
     Route::get('/settings/home', [\App\Http\Controllers\Admin\HomeSettingController::class, 'index'])->name('settings.home');
     Route::post('/settings/home/hero', [\App\Http\Controllers\Admin\HomeSettingController::class, 'updateHero'])->name('settings.home.hero');
+    Route::post('/settings/home/features', [\App\Http\Controllers\Admin\HomeSettingController::class, 'updateFeaturesPanel'])->name('settings.home.features');
     Route::post('/settings/home/texts', [\App\Http\Controllers\Admin\HomeSettingController::class, 'updateSectionTexts'])->name('settings.home.texts');
     Route::post('/settings/home/banners', [\App\Http\Controllers\Admin\HomeSettingController::class, 'storeBanner'])->name('settings.home.banner.store');
     Route::delete('/settings/home/banners/{banner}', [\App\Http\Controllers\Admin\HomeSettingController::class, 'destroyBanner'])->name('settings.home.banner.destroy');
@@ -96,6 +97,14 @@ Route::middleware(['auth', \Spatie\Permission\Middleware\RoleMiddleware::class .
     Route::post('/settings/home/locations', [\App\Http\Controllers\Admin\HomeSettingController::class, 'storeLocation'])->name('settings.home.location.store');
     Route::put('/settings/home/locations/{location}', [\App\Http\Controllers\Admin\HomeSettingController::class, 'updateLocation'])->name('settings.home.location.update');
     Route::delete('/settings/home/locations/{location}', [\App\Http\Controllers\Admin\HomeSettingController::class, 'destroyLocation'])->name('settings.home.location.destroy');
+
+    Route::post('/settings/home/testimonials', [\App\Http\Controllers\Admin\HomeSettingController::class, 'storeTestimonial'])->name('settings.home.testimonial.store');
+    Route::put('/settings/home/testimonials/{testimonial}', [\App\Http\Controllers\Admin\HomeSettingController::class, 'updateTestimonial'])->name('settings.home.testimonial.update');
+    Route::delete('/settings/home/testimonials/{testimonial}', [\App\Http\Controllers\Admin\HomeSettingController::class, 'destroyTestimonial'])->name('settings.home.testimonial.destroy');
+
+    Route::post('/settings/home/bank-partners', [\App\Http\Controllers\Admin\HomeSettingController::class, 'storeBankPartner'])->name('settings.home.bank_partner.store');
+    Route::put('/settings/home/bank-partners/{bankPartner}', [\App\Http\Controllers\Admin\HomeSettingController::class, 'updateBankPartner'])->name('settings.home.bank_partner.update');
+    Route::delete('/settings/home/bank-partners/{bankPartner}', [\App\Http\Controllers\Admin\HomeSettingController::class, 'destroyBankPartner'])->name('settings.home.bank_partner.destroy');
 
     // Admin Profile
     Route::get('/profile/edit', [\App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile.edit');

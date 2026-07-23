@@ -27,6 +27,9 @@
         <button @click="tab = 'location'" :class="tab === 'location' ? 'border-b-2 border-[#0194F3] text-[#0194F3] bg-white' : 'text-slate-500 hover:text-slate-700'" class="px-6 py-4 font-bold text-sm">Lokasi Unggulan</button>
         <button @click="tab = 'banner'" :class="tab === 'banner' ? 'border-b-2 border-[#0194F3] text-[#0194F3] bg-white' : 'text-slate-500 hover:text-slate-700'" class="px-6 py-4 font-bold text-sm">Banner Iklan</button>
         <button @click="tab = 'button'" :class="tab === 'button' ? 'border-b-2 border-[#0194F3] text-[#0194F3] bg-white' : 'text-slate-500 hover:text-slate-700'" class="px-6 py-4 font-bold text-sm">Tombol & Icon</button>
+        <button @click="tab = 'features'" :class="tab === 'features' ? 'border-b-2 border-[#0194F3] text-[#0194F3] bg-white' : 'text-slate-500 hover:text-slate-700'" class="px-6 py-4 font-bold text-sm">Panel Fitur</button>
+        <button @click="tab = 'testimoni'" :class="tab === 'testimoni' ? 'border-b-2 border-[#0194F3] text-[#0194F3] bg-white' : 'text-slate-500 hover:text-slate-700'" class="px-6 py-4 font-bold text-sm">Testimoni</button>
+        <button @click="tab = 'partner'" :class="tab === 'partner' ? 'border-b-2 border-[#0194F3] text-[#0194F3] bg-white' : 'text-slate-500 hover:text-slate-700'" class="px-6 py-4 font-bold text-sm">Partner Bank</button>
     </div>
 
     <!-- TAB 1: HERO -->
@@ -103,19 +106,7 @@
                 </div>
             </div>
 
-            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                <h4 class="font-bold text-[#0194F3] mb-3">4. Section Lokasi Unggulan & Strategis</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">Judul</label>
-                        <input type="text" name="home_lokasi_title" value="{{ old('home_lokasi_title', $settings['home_lokasi_title'] ?? 'Lokasi Unggulan & Strategis') }}" class="w-full rounded-xl border-slate-300">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">Deskripsi</label>
-                        <textarea name="home_lokasi_desc" rows="2" class="w-full rounded-xl border-slate-300">{{ old('home_lokasi_desc', $settings['home_lokasi_desc'] ?? 'Daftar kawasan favorit dengan akses transportasi mudah, fasilitas publik lengkap, dan nilai investasi properti tinggi.') }}</textarea>
-                    </div>
-                </div>
-            </div>
+
 
             <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
                 <h4 class="font-bold text-[#0194F3] mb-3">5. Section Rekomendasi Jual Beli</h4>
@@ -132,15 +123,25 @@
             </div>
 
             <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                <h4 class="font-bold text-[#0194F3] mb-3">6. Section Kebutuhan Barang & Jasa</h4>
+                <h4 class="font-bold text-[#0194F3] mb-3">6. Section Testimoni</h4>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-500 mb-1">Judul</label>
-                        <input type="text" name="home_kebutuhan_title" value="{{ old('home_kebutuhan_title', $settings['home_kebutuhan_title'] ?? 'Kebutuhan Barang & Jasa') }}" class="w-full rounded-xl border-slate-300">
+                        <input type="text" name="home_testimoni_title" value="{{ old('home_testimoni_title', $settings['home_testimoni_title'] ?? 'TESTIMONI PENGGUNA') }}" class="w-full rounded-xl border-slate-300">
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 mt-4">
+                <h4 class="font-bold text-[#0194F3] mb-3">7. Section Partner Perbankan</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Judul</label>
+                        <input type="text" name="home_partner_title" value="{{ old('home_partner_title', $settings['home_partner_title'] ?? 'PARTNER PERBANKAN') }}" class="w-full rounded-xl border-slate-300">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 mb-1">Deskripsi</label>
-                        <textarea name="home_kebutuhan_desc" rows="2" class="w-full rounded-xl border-slate-300">{{ old('home_kebutuhan_desc', $settings['home_kebutuhan_desc'] ?? 'Pusat penyedia jasa renovasi rumah, perawatan properti, dan perlengkapan rumah tangga terpercaya terlengkap di sekitar Anda.') }}</textarea>
+                        <textarea name="home_partner_desc" rows="2" class="w-full rounded-xl border-slate-300">{{ old('home_partner_desc', $settings['home_partner_desc'] ?? 'Kredit properti makin mudah dengan partner bank terpercaya.') }}</textarea>
                     </div>
                 </div>
             </div>
@@ -148,6 +149,39 @@
             <div class="flex justify-end">
                 <button type="submit" class="bg-[#0194F3] text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-600">Simpan Teks</button>
             </div>
+        </form>
+    </div>
+
+    <!-- TAB: FEATURES PANEL -->
+    <div x-show="tab === 'features'" x-cloak class="p-6">
+        <h3 class="text-lg font-extrabold text-slate-800 mb-4">Kelola Panel Fitur Utama</h3>
+        <form action="{{ route('admin.settings.home.features') }}" method="POST" enctype="multipart/form-data" class="space-y-6 max-w-4xl">
+            @csrf
+            
+            @foreach(range(1, 4) as $i)
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <h4 class="font-bold text-[#0194F3] mb-3">Fitur {{ $i }}</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Judul Fitur {{ $i }}</label>
+                        <input type="text" name="feature_{{ $i }}_title" value="{{ old('feature_'.$i.'_title', $settings['feature_'.$i.'_title'] ?? '') }}" class="w-full rounded-xl border-slate-300">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Deskripsi Fitur {{ $i }}</label>
+                        <input type="text" name="feature_{{ $i }}_desc" value="{{ old('feature_'.$i.'_desc', $settings['feature_'.$i.'_desc'] ?? '') }}" class="w-full rounded-xl border-slate-300">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Icon Fitur {{ $i }}</label>
+                        @if(isset($settings['feature_'.$i.'_icon']) && $settings['feature_'.$i.'_icon'])
+                        <img src="{{ asset($settings['feature_'.$i.'_icon']) }}" class="h-12 object-contain mb-2 bg-slate-200 rounded p-1">
+                        @endif
+                        <input type="file" name="feature_{{ $i }}_icon" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[#0194F3] hover:file:bg-blue-100">
+                    </div>
+                </div>
+            </div>
+            @endforeach
+            
+            <button type="submit" class="bg-[#0194F3] text-white px-6 py-2 rounded-xl font-bold hover:bg-blue-600">Simpan Panel Fitur</button>
         </form>
     </div>
 
@@ -406,6 +440,238 @@
                 @endforeach
             </tbody>
         </table>
+    </div>
+
+    <!-- TAB: TESTIMONI -->
+    <div x-show="tab === 'testimoni'" x-cloak class="p-6">
+        <h3 class="text-lg font-extrabold text-slate-800 mb-4">Kelola Testimoni</h3>
+        
+        <!-- Form Tambah -->
+        <form action="{{ route('admin.settings.home.testimonial.store') }}" method="POST" enctype="multipart/form-data" class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-6 flex flex-col gap-3">
+            @csrf
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-end">
+                <div class="w-full">
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Foto (Avatar)</label>
+                    <input type="file" name="avatar" class="w-full text-sm rounded-xl border-slate-300 bg-white">
+                </div>
+                <div class="w-full">
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Nama</label>
+                    <input type="text" name="name" required class="w-full rounded-xl border-slate-300">
+                </div>
+                <div class="w-full">
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Peran (Membeli apa)</label>
+                    <input type="text" name="role" required class="w-full rounded-xl border-slate-300">
+                </div>
+                <div class="w-full">
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Rating (1-5)</label>
+                    <input type="number" name="rating" min="1" max="5" value="5" required class="w-full rounded-xl border-slate-300">
+                </div>
+                <div class="w-full md:col-span-2">
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Isi Testimoni</label>
+                    <textarea name="content" required rows="2" class="w-full rounded-xl border-slate-300"></textarea>
+                </div>
+            </div>
+            <div class="flex gap-4 items-center mt-2">
+                <div class="w-24">
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Order</label>
+                    <input type="number" name="order" value="0" class="w-full rounded-xl border-slate-300 text-sm py-1">
+                </div>
+                <div class="pt-5">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="is_active" value="1" checked class="rounded text-[#0194F3]">
+                        <span class="text-sm font-semibold text-slate-700">Aktif</span>
+                    </label>
+                </div>
+                <button type="submit" class="bg-[#0194F3] text-white px-6 py-2 rounded-xl font-bold hover:bg-blue-600 h-10 ml-auto">Tambah Testimoni</button>
+            </div>
+        </form>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            @foreach($testimonials ?? [] as $t)
+            <div x-data="{ showEdit: false, showDelete: false }" class="border border-slate-200 rounded-xl overflow-hidden relative group p-4">
+                <div class="flex gap-3 items-center mb-2">
+                    @if($t->avatar)
+                    <img src="{{ asset($t->avatar) }}" class="w-10 h-10 rounded-full object-cover">
+                    @else
+                    <div class="w-10 h-10 rounded-full bg-slate-200"></div>
+                    @endif
+                    <div>
+                        <div class="font-bold text-sm">{{ $t->name }}</div>
+                        <div class="text-xs text-slate-500">{{ $t->role }}</div>
+                    </div>
+                </div>
+                <div class="text-xs text-slate-700 mt-2">{{ $t->content }}</div>
+                
+                <div class="absolute flex gap-2" style="top: 0.5rem; right: 0.5rem; z-index: 10;">
+                    <button @click="showEdit = true" type="button" class="text-white px-3 py-1.5 rounded-lg shadow-md transition text-xs font-bold" style="background-color: #f59e0b;">Edit</button>
+                    <button @click="showDelete = true" type="button" class="text-white px-3 py-1.5 rounded-lg shadow-md transition text-xs font-bold" style="background-color: #ef4444;">Hapus</button>
+                </div>
+
+                <!-- Modal Delete -->
+                <div x-show="showDelete" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div @click.outside="showDelete = false" class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+                        <h3 class="text-lg font-bold mb-2">Konfirmasi Hapus</h3>
+                        <p class="text-sm text-slate-600 mb-6">Yakin ingin menghapus testimoni dari <strong>{{ $t->name }}</strong>?</p>
+                        <div class="flex justify-end gap-3">
+                            <button @click="showDelete = false" type="button" class="px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-xl">Batal</button>
+                            <form action="{{ route('admin.settings.home.testimonial.destroy', $t->id) }}" method="POST">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="px-4 py-2 text-sm font-bold text-white bg-red-500 hover:bg-red-600 rounded-xl">Ya, Hapus</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Edit -->
+                <div x-show="showEdit" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 text-left">
+                    <div @click.outside="showEdit = false" class="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold">Edit Testimoni</h3>
+                            <button @click="showEdit = false" type="button" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+                        </div>
+                        <form action="{{ route('admin.settings.home.testimonial.update', $t->id) }}" method="POST" enctype="multipart/form-data" class="flex flex-col gap-4">
+                            @csrf @method('PUT')
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">Avatar (Kosongkan jika tidak diubah)</label>
+                                <input type="file" name="avatar" class="w-full text-sm rounded-xl border-slate-300 bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">Nama</label>
+                                <input type="text" name="name" value="{{ $t->name }}" required class="w-full rounded-xl border-slate-300">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">Peran</label>
+                                <input type="text" name="role" value="{{ $t->role }}" required class="w-full rounded-xl border-slate-300">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">Rating</label>
+                                <input type="number" name="rating" min="1" max="5" value="{{ $t->rating }}" required class="w-full rounded-xl border-slate-300">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">Isi Testimoni</label>
+                                <textarea name="content" required rows="2" class="w-full rounded-xl border-slate-300">{{ $t->content }}</textarea>
+                            </div>
+                            <div class="flex gap-4 items-center">
+                                <div class="w-24">
+                                    <label class="block text-xs font-bold text-slate-500 mb-1">Order</label>
+                                    <input type="number" name="order" value="{{ $t->order }}" class="w-full rounded-xl border-slate-300 text-sm py-1">
+                                </div>
+                                <div class="pt-5">
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" name="is_active" value="1" {{ $t->is_active ? 'checked' : '' }} class="rounded text-[#0194F3]">
+                                        <span class="text-sm font-semibold text-slate-700">Aktif</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="flex justify-end gap-3 mt-4">
+                                <button type="button" @click="showEdit = false" class="px-6 py-2 rounded-xl text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200">Batal</button>
+                                <button type="submit" class="px-6 py-2 rounded-xl text-sm font-bold text-white bg-[#0194F3] hover:bg-blue-600">Simpan Perubahan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+
+    <!-- TAB: PARTNER BANK -->
+    <div x-show="tab === 'partner'" x-cloak class="p-6">
+        <h3 class="text-lg font-extrabold text-slate-800 mb-4">Kelola Partner Bank</h3>
+        
+        <!-- Form Tambah -->
+        <form action="{{ route('admin.settings.home.bank_partner.store') }}" method="POST" enctype="multipart/form-data" class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-6 flex flex-col gap-3">
+            @csrf
+            <div class="flex flex-col md:flex-row gap-3 items-end">
+                <div class="flex-1 w-full">
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Logo Bank</label>
+                    <input type="file" name="logo" required class="w-full text-sm rounded-xl border-slate-300 bg-white">
+                </div>
+                <div class="flex-1 w-full">
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Nama Bank</label>
+                    <input type="text" name="name" required class="w-full rounded-xl border-slate-300">
+                </div>
+            </div>
+            <div class="flex gap-4 items-center mt-2">
+                <div class="w-24">
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Order</label>
+                    <input type="number" name="order" value="0" class="w-full rounded-xl border-slate-300 text-sm py-1">
+                </div>
+                <div class="pt-5">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="is_active" value="1" checked class="rounded text-[#0194F3]">
+                        <span class="text-sm font-semibold text-slate-700">Aktif</span>
+                    </label>
+                </div>
+                <button type="submit" class="bg-[#0194F3] text-white px-6 py-2 rounded-xl font-bold hover:bg-blue-600 h-10 ml-auto">Tambah Partner</button>
+            </div>
+        </form>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            @foreach($bankPartners ?? [] as $b)
+            <div x-data="{ showEdit: false, showDelete: false }" class="border border-slate-200 rounded-xl p-4 flex flex-col items-center relative group">
+                <img src="{{ asset($b->logo) }}" class="h-10 object-contain mb-2">
+                <div class="font-bold text-xs text-center">{{ $b->name }}</div>
+                
+                <div class="absolute inset-0 bg-white/90 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2 rounded-xl">
+                    <button @click="showEdit = true" type="button" class="text-white px-2 py-1 rounded shadow-md transition text-xs font-bold" style="background-color: #f59e0b;">Edit</button>
+                    <button @click="showDelete = true" type="button" class="text-white px-2 py-1 rounded shadow-md transition text-xs font-bold" style="background-color: #ef4444;">Hapus</button>
+                </div>
+
+                <!-- Modal Delete -->
+                <div x-show="showDelete" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div @click.outside="showDelete = false" class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl text-left">
+                        <h3 class="text-lg font-bold mb-2">Konfirmasi Hapus</h3>
+                        <p class="text-sm text-slate-600 mb-6">Yakin ingin menghapus partner <strong>{{ $b->name }}</strong>?</p>
+                        <div class="flex justify-end gap-3">
+                            <button @click="showDelete = false" type="button" class="px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-xl">Batal</button>
+                            <form action="{{ route('admin.settings.home.bank_partner.destroy', $b->id) }}" method="POST">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="px-4 py-2 text-sm font-bold text-white bg-red-500 hover:bg-red-600 rounded-xl">Ya, Hapus</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Edit -->
+                <div x-show="showEdit" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 text-left">
+                    <div @click.outside="showEdit = false" class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold">Edit Partner</h3>
+                            <button @click="showEdit = false" type="button" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+                        </div>
+                        <form action="{{ route('admin.settings.home.bank_partner.update', $b->id) }}" method="POST" enctype="multipart/form-data" class="flex flex-col gap-4">
+                            @csrf @method('PUT')
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">Logo (Kosongkan jika tidak diubah)</label>
+                                <input type="file" name="logo" class="w-full text-sm rounded-xl border-slate-300 bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">Nama Bank</label>
+                                <input type="text" name="name" value="{{ $b->name }}" required class="w-full rounded-xl border-slate-300">
+                            </div>
+                            <div class="flex gap-4 items-center">
+                                <div class="w-24">
+                                    <label class="block text-xs font-bold text-slate-500 mb-1">Order</label>
+                                    <input type="number" name="order" value="{{ $b->order }}" class="w-full rounded-xl border-slate-300 text-sm py-1">
+                                </div>
+                                <div class="pt-5">
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" name="is_active" value="1" {{ $b->is_active ? 'checked' : '' }} class="rounded text-[#0194F3]">
+                                        <span class="text-sm font-semibold text-slate-700">Aktif</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="flex justify-end gap-3 mt-4">
+                                <button type="button" @click="showEdit = false" class="px-6 py-2 rounded-xl text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200">Batal</button>
+                                <button type="submit" class="px-6 py-2 rounded-xl text-sm font-bold text-white bg-[#0194F3] hover:bg-blue-600">Simpan Perubahan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
     </div>
 
 </div>

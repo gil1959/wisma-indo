@@ -26,8 +26,9 @@ class ArticleController extends Controller
 
         $articles = $query->paginate(9)->withQueryString();
         $categories = ArticleCategory::orderBy('name')->get();
+        $recentArticles = Article::where('is_published', true)->latest()->take(5)->get();
 
-        return view('front.pages.articles', compact('articles', 'categories'));
+        return view('front.pages.articles', compact('articles', 'categories', 'recentArticles'));
     }
 
     public function show($slug)

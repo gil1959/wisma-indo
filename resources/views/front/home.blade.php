@@ -20,13 +20,15 @@
     <div class="relative max-w-4xl mx-auto px-4" data-aos="fade-up">
 
 
-        <h1 class="mt-6 text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 drop-shadow-md">
+        <h1 class="mt-6 text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 drop-shadow-md">
             {{ $siteSettings['hero_title'] ?? ($isEn ? 'Comfortable & Trusted Trips' : 'Perjalanan Nyaman & Terpercaya') }}
         </h1>
 
-        <p class="mt-5 text-base md:text-lg text-slate-800 max-w-2xl mx-auto mb-14 drop-shadow-sm font-semibold">
+        <p class="mt-4 text-sm md:text-base text-slate-800 max-w-2xl mx-auto drop-shadow-sm font-semibold">
             {{ $siteSettings['hero_subtitle'] ?? ($isEn ? 'We help you plan your trip with professional service and transparent pricing.' : 'Kami membantu Anda merencanakan perjalanan dengan layanan profesional dan harga transparan.') }}
         </p>
+    </div>
+</section>
 
 
 
@@ -57,7 +59,7 @@
 
 
         @if(count($tabsWithId) > 0)
-        <div class="mt-8">
+        <section class="relative z-20 -mt-16 md:-mt-24 lg:-mt-32 w-full max-w-6xl mx-auto px-4 mb-10">
             <div
                 x-data="{
   tabs: @js($tabsWithId),
@@ -115,8 +117,7 @@ init() {
   this.canNext = el.scrollLeft < (maxLeft - 4);
 }
 }"
-
-                class="relative mx-auto max-w-6xl">
+                class="relative mx-auto w-full">
                 {{-- TABS BAR --}}
                 {{-- TABS BAR (NO SCROLLBAR + ARROWS) --}}
                 <div class="absolute left-1/2 -translate-x-1/2 w-[min(100%,980px)] px-3" style="top:-28px;">
@@ -191,18 +192,17 @@ init() {
 
                 {{-- PANEL CARD: CUMA UNTUK TO DO --}}
                 <div class="pt-[45px] hidden md:block">
-                    <div class="rounded-[28px] bg-white/95 backdrop-blur border border-white/70 shadow-[0_18px_60px_rgba(2,6,23,0.22)] overflow-hidden">
-                        <div class="px-6 pt-7 pb-5 border-b border-slate-200/70">
+                    <div class="rounded-[24px] bg-white/95 backdrop-blur border border-white/70 shadow-[0_12px_40px_rgba(2,6,23,0.15)] overflow-hidden">
+                        <div class="px-5 pt-5 pb-4 border-b border-slate-200/70">
                             <div class="text-base font-extrabold text-slate-900">
                                 {{ $siteSettings['home_search_title'] ?? ($isEn ? 'Find Tour Packages' : 'Cari Paket Wisata') }}
                             </div>
-                            <div class="text-sm text-slate-600 mt-1">
+                            <div class="text-xs text-slate-600 mt-1">
                                 {{ $siteSettings['home_search_desc'] ?? ($isEn ? 'Find packages by destination, category, and departure date.' : 'Temukan paket sesuai destinasi, kategori, dan tanggal keberangkatan.') }}
                             </div>
                         </div>
 
-
-                        <div class="p-6">
+                        <div class="p-5">
                             <div x-show="tabs.find(x => x.id === active)?.is_todo" x-cloak>
                                 <form method="GET" action="{{ route('tours.index') }}"
                                     x-data="{
@@ -241,31 +241,31 @@ init() {
               }"
                                     @submit.prevent="submit()">
 
-                                    <div class="grid gap-3 md:grid-cols-12 items-end">
+                                    <div class="grid gap-2.5 md:grid-cols-12 items-end">
 
                                         <div class="md:col-span-5">
-                                            <label class="text-[11px] font-extrabold text-slate-600">
+                                            <label class="text-[10px] uppercase tracking-wider font-extrabold text-slate-600">
                                                 {{ $isEn ? 'Destination / Keywords' : 'Destinasi / Kata Kunci' }}
                                             </label>
                                             <div class="mt-1 relative">
                                                 <input type="text" name="q" x-ref="q"
                                                     placeholder="{{ $isEn ? 'Example: Bali, Lombok, Japan, Labuan Bajo...' : 'Contoh: Bali, Lombok, Jepang, Labuan Bajo...' }}"
-                                                    class="w-full rounded-2xl border border-slate-200 pl-11 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#0194F3]/25">
-                                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                                                    <i data-lucide="search" class="w-5 h-5"></i>
+                                                    class="w-full rounded-xl border border-slate-200 pl-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0194F3]/25">
+                                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                                                    <i data-lucide="search" class="w-4 h-4"></i>
                                                 </span>
                                             </div>
                                         </div>
 
                                         <div class="md:col-span-3">
-                                            <label class="text-[11px] font-extrabold text-slate-600">
+                                            <label class="text-[10px] uppercase tracking-wider font-extrabold text-slate-600">
                                                 {{ $isEn ? 'Category' : 'Kategori' }}
                                             </label>
 
                                             <div class="mt-1">
                                                 <select
                                                     x-ref="categorySelect"
-                                                    class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#0194F3]/25 bg-white">
+                                                    class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0194F3]/25 bg-white">
                                                     <option value="">{{ $isEn ? 'All Categories' : 'Semua Kategori' }}</option>
 
                                                     @foreach(($tourMainCategories ?? collect()) as $cat)
@@ -279,21 +279,19 @@ init() {
                                             </div>
                                         </div>
 
-
-
                                         <div class="md:col-span-2">
-                                            <label class="text-[11px] font-extrabold text-slate-600">
+                                            <label class="text-[10px] uppercase tracking-wider font-extrabold text-slate-600">
                                                 {{ $isEn ? 'Departure Date' : 'Tanggal Berangkat' }}
                                             </label>
                                             <input type="date" name="date" x-ref="date"
-                                                class="mt-1 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#0194F3]/25">
+                                                class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0194F3]/25">
                                         </div>
 
                                         <div class="md:col-span-2">
                                             <button type="submit"
-                                                class="w-full rounded-2xl px-5 py-3 text-sm font-extrabold text-white transition-all duration-200
-                           shadow-[0_14px_22px_rgba(1,148,243,0.30)] hover:-translate-y-[1px]
-                           hover:shadow-[0_18px_28px_rgba(1,148,243,0.36)]"
+                                                class="w-full rounded-xl px-4 py-2.5 text-sm font-extrabold text-white transition-all duration-200
+                           shadow-[0_10px_20px_rgba(1,148,243,0.25)] hover:-translate-y-[1px]
+                           hover:shadow-[0_14px_24px_rgba(1,148,243,0.30)]"
                                                 style="background:#0194F3"
                                                 onmouseover="this.style.background='#0186DB'"
                                                 onmouseout="this.style.background='#0194F3'">
@@ -303,14 +301,13 @@ init() {
 
                                     </div>
 
-                                    <div class="mt-5 flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                                    <div class="mt-4 flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5">
                                         <span class="mt-0.5">
                                             <i data-lucide="sparkles" class="w-4 h-4" style="color:#0194F3;"></i>
                                         </span>
-                                        <span class="text-sm text-slate-600">
+                                        <span class="text-xs text-slate-600">
                                             {{ $siteSettings['home_search_hint'] ?? ($isEn ? 'Use specific keywords to get more relevant results.' : 'Pakai kata kunci yang spesifik agar hasil lebih relevan.') }}
                                         </span>
-
                                     </div>
                                 </form>
                             </div>
@@ -322,12 +319,8 @@ init() {
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
         @endif
-
-
-    </div>
-</section>
 
 @include('front.partials.home-banner-discount')
 @include('front.partials.home-banner-missions')

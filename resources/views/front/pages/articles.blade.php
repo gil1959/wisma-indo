@@ -1,97 +1,113 @@
 @extends('layouts.front')
 
 @section('content')
-<div class="pt-32 pb-20 min-h-screen bg-slate-50 px-4">
+<div class="pt-28 pb-20 min-h-screen bg-slate-50 px-4">
     <div class="max-w-7xl mx-auto">
-        <!-- Header -->
-        <div class="text-center mb-12">
-            <h1 class="text-4xl font-bold text-slate-800 mb-4">Artikel & Inspirasi</h1>
-            <p class="text-slate-600 max-w-xl mx-auto text-lg">Temukan beragam inspirasi desain, tips properti, dan informasi terbaru seputar hunian idaman Anda.</p>
+        
+        <!-- Search Bar at Top -->
+        <div class="mb-10 w-full">
+            <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100">
+                <h3 class="font-extrabold text-slate-800 mb-4 text-lg">Pencarian</h3>
+                <form action="{{ route('articles') }}" method="GET" class="flex flex-col sm:flex-row gap-3 md:gap-4">
+                    @if(request('category'))
+                    <input type="hidden" name="category" value="{{ request('category') }}">
+                    @endif
+                    <div class="relative flex-grow">
+                        <i data-lucide="search" class="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                        <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari artikel..." class="w-full pl-12 pr-4 py-3.5 border border-slate-200 rounded-xl focus:border-[#0194F3] focus:ring focus:ring-[#0194F3]/20 text-slate-700 bg-white shadow-sm transition-all">
+                    </div>
+                    <button type="submit" class="bg-[#0194F3] hover:bg-blue-600 text-white px-8 py-3.5 font-bold transition-colors rounded-xl shadow-sm flex items-center justify-center gap-2 shrink-0">
+                        <i data-lucide="search" class="w-4 h-4"></i> Cari
+                    </button>
+                </form>
+            </div>
         </div>
 
-        <!-- Filter & Search -->
-        <div class="flex flex-col md:flex-row gap-4 justify-between items-center mb-10">
-            <div class="flex gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-hide">
-                <a href="{{ route('articles') }}" class="px-5 py-2 rounded-full whitespace-nowrap text-sm font-semibold transition-all duration-300 {{ !request('category') ? 'bg-[#0194F3] text-white shadow-md shadow-[#0194F3]/30' : 'bg-white text-slate-600 border border-slate-200 hover:border-[#0194F3] hover:text-[#0194F3]' }}">
-                    Semua
-                </a>
-                @foreach($categories as $cat)
-                <a href="{{ route('articles', ['category' => $cat->slug]) }}" class="px-5 py-2 rounded-full whitespace-nowrap text-sm font-semibold transition-all duration-300 {{ request('category') == $cat->slug ? 'bg-[#0194F3] text-white shadow-md shadow-[#0194F3]/30' : 'bg-white text-slate-600 border border-slate-200 hover:border-[#0194F3] hover:text-[#0194F3]' }}">
-                    {{ $cat->name }}
-                </a>
-                @endforeach
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Left: Main Content (Articles Grid) -->
+            <div class="lg:w-3/4">
+                @if($articles->count() > 0)
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                    @foreach($articles as $article)
+                    <article class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-slate-100 flex flex-col h-full cursor-pointer group" onclick="window.location.href='{{ route('articles.show', $article->slug) }}'">
+                        <div class="relative overflow-hidden aspect-[16/10]">
+                            <img src="{{ $article->image ? asset($article->image) : 'https://placehold.co/800x600?text=No+Image' }}" alt="{{ $article->title }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                            
+                            <!-- Date Badge over image -->
+                            <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 shadow-sm flex items-center gap-1.5">
+                                <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#0194F3]"></i>
+                                {{ $article->created_at->translatedFormat('d M Y') }}
+                            </div>
+                        </div>
+                        
+                        <div class="p-6 flex flex-col flex-grow">
+                            <h2 class="text-xl font-extrabold text-slate-800 mb-3 line-clamp-3 group-hover:text-[#0194F3] transition-colors leading-tight">
+                                <a href="{{ route('articles.show', $article->slug) }}">
+                                    {{ $article->title }}
+                                </a>
+                            </h2>
+                            <p class="text-slate-500 line-clamp-3 mb-6 flex-grow text-sm leading-relaxed">
+                                {{ strip_tags($article->content) }}
+                            </p>
+                            <div class="mt-auto">
+                                <a href="{{ route('articles.show', $article->slug) }}" class="text-[15px] font-bold text-[#0194F3] inline-flex items-center gap-1 group-hover:gap-2 transition-all">
+                                    Baca Selengkapnya &rarr;
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                    @endforeach
+                </div>
+                
+                <!-- Pagination -->
+                <div class="flex justify-center">
+                    {{ $articles->links() }}
+                </div>
+                
+                @else
+                <!-- Empty State -->
+                <div class="flex flex-col items-center justify-center py-20 text-center bg-white rounded-3xl border border-slate-100">
+                    <div class="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-6">
+                        <i data-lucide="file-x" class="w-12 h-12 text-slate-300"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-800 mb-2">Artikel Tidak Ditemukan</h3>
+                    <p class="text-slate-500 max-w-md">Maaf, kami tidak dapat menemukan artikel yang Anda cari. Silakan coba kata kunci lain.</p>
+                </div>
+                @endif
             </div>
 
-            <form action="{{ route('articles') }}" method="GET" class="w-full md:w-80 relative">
-                @if(request('category'))
-                <input type="hidden" name="category" value="{{ request('category') }}">
-                @endif
-                <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari artikel..." class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:border-[#0194F3] focus:ring focus:ring-[#0194F3]/20 shadow-sm transition-all duration-300">
-                <i data-lucide="search" class="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
-            </form>
-        </div>
-
-        <!-- Articles Grid -->
-        @if($articles->count() > 0)
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            @foreach($articles as $article)
-            <article class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 group border border-slate-100 flex flex-col h-full cursor-pointer" onclick="window.location.href='{{ route('articles.show', $article->slug) }}'">
-                <div class="relative overflow-hidden aspect-[4/3]">
-                    <img src="{{ $article->image ? asset($article->image) : 'https://placehold.co/800x600?text=No+Image' }}" alt="{{ $article->title }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                    <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-[#0194F3] shadow-sm">
-                        {{ $article->category->name ?? 'Uncategorized' }}
-                    </div>
-                </div>
-                <div class="p-6 flex flex-col flex-grow">
-                    <div class="flex items-center gap-4 text-xs font-semibold text-slate-500 mb-4">
-                        <div class="flex items-center gap-1.5">
-                            <i data-lucide="calendar" class="w-4 h-4"></i>
-                            {{ $article->created_at->translatedFormat('d M Y') }}
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <i data-lucide="eye" class="w-4 h-4"></i>
-                            {{ number_format($article->views) }}x dibaca
-                        </div>
-                    </div>
-                    <h2 class="text-xl font-bold text-slate-800 mb-3 line-clamp-2 group-hover:text-[#0194F3] transition-colors">
-                        <a href="{{ route('articles.show', $article->slug) }}">
-                            {{ $article->title }}
-                        </a>
-                    </h2>
-                    <p class="text-slate-600 line-clamp-3 mb-6 flex-grow">
-                        {{ strip_tags($article->content) }}
-                    </p>
-                    <div class="flex items-center justify-between mt-auto pt-4 border-t border-slate-100">
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center">
-                                <img src="https://ui-avatars.com/api/?name=Admin&background=0194F3&color=fff" alt="Admin" class="w-full h-full object-cover">
-                            </div>
-                            <span class="text-sm font-semibold text-slate-700">Admin Wisma Indo</span>
-                        </div>
-                        <span class="text-sm font-bold text-[#0194F3] flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                            Baca <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            <!-- Right: Sidebar -->
+            <div class="lg:w-1/4">
+                <div class="bg-white rounded-3xl border border-slate-100 p-6 sticky top-28 shadow-sm">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-extrabold text-slate-800">Artikel Terbaru</h3>
+                        <span class="bg-blue-50 text-[#0194F3] px-2.5 py-1 rounded-xl text-xs font-bold flex items-center gap-1">
+                            <i data-lucide="sparkles" class="w-3 h-3"></i> Update
                         </span>
                     </div>
+
+                    <div class="space-y-4">
+                        @foreach($recentArticles ?? [] as $recent)
+                        <a href="{{ route('articles.show', $recent->slug) }}" class="flex gap-4 group">
+                            <div class="w-20 h-20 rounded-2xl overflow-hidden shrink-0 bg-slate-100">
+                                <img src="{{ $recent->image ? asset($recent->image) : 'https://placehold.co/100x100?text=No+Img' }}" alt="{{ $recent->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                            </div>
+                            <div class="flex flex-col justify-center">
+                                <h4 class="font-bold text-slate-800 text-sm line-clamp-3 group-hover:text-[#0194F3] transition-colors leading-snug mb-1">
+                                    {{ $recent->title }}
+                                </h4>
+                                <div class="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
+                                    <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                                    {{ $recent->created_at->translatedFormat('d M Y') }}
+                                </div>
+                            </div>
+                        </a>
+                        @endforeach
+                    </div>
                 </div>
-            </article>
-            @endforeach
-        </div>
-        
-        <!-- Pagination -->
-        <div class="flex justify-center">
-            {{ $articles->links() }}
-        </div>
-        
-        @else
-        <!-- Empty State -->
-        <div class="flex flex-col items-center justify-center py-20 text-center">
-            <div class="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mb-6">
-                <i data-lucide="file-x" class="w-12 h-12 text-slate-400"></i>
             </div>
-            <h3 class="text-2xl font-bold text-slate-800 mb-2">Artikel Tidak Ditemukan</h3>
-            <p class="text-slate-500 max-w-md">Maaf, kami tidak dapat menemukan artikel yang Anda cari. Silakan coba kata kunci lain atau pilih kategori yang berbeda.</p>
+
         </div>
-        @endif
     </div>
 </div>
 @endsection

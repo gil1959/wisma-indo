@@ -7,6 +7,8 @@ use App\Models\HomeBanner;
 use App\Models\HomeButton;
 use App\Models\HomeLocation;
 use App\Models\Setting;
+use App\Models\Testimonial;
+use App\Models\BankPartner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -18,8 +20,10 @@ class HomeSettingController extends Controller
         $banners = HomeBanner::orderBy('order')->get();
         $buttons = HomeButton::orderBy('order')->get();
         $locations = HomeLocation::orderBy('order')->get();
+        $testimonials = Testimonial::orderBy('order')->get();
+        $bankPartners = BankPartner::orderBy('order')->get();
 
-        return view('admin.home_settings.index', compact('settings', 'banners', 'buttons', 'locations'));
+        return view('admin.home_settings.index', compact('settings', 'banners', 'buttons', 'locations', 'testimonials', 'bankPartners'));
     }
 
     public function updateHero(Request $request)
@@ -62,12 +66,11 @@ class HomeSettingController extends Controller
             'home_kategori_barang_desc' => 'nullable|string|max:255',
             'home_kategori_jasa_title' => 'nullable|string|max:120',
             'home_kategori_jasa_desc' => 'nullable|string|max:255',
-            'home_lokasi_title' => 'nullable|string|max:120',
-            'home_lokasi_desc' => 'nullable|string|max:255',
             'home_rekomendasi_title' => 'nullable|string|max:120',
             'home_rekomendasi_desc' => 'nullable|string|max:255',
-            'home_kebutuhan_title' => 'nullable|string|max:120',
-            'home_kebutuhan_desc' => 'nullable|string|max:255',
+            'home_testimoni_title' => 'nullable|string|max:120',
+            'home_partner_title' => 'nullable|string|max:120',
+            'home_partner_desc' => 'nullable|string|max:255',
         ]);
 
         foreach ($data as $key => $value) {
@@ -75,6 +78,50 @@ class HomeSettingController extends Controller
         }
 
         return back()->with('success', 'Teks Section Beranda berhasil diupdate.');
+    }
+
+    public function updateFeaturesPanel(Request $request)
+    {
+        $validated = $request->validate([
+            'feature_1_title' => 'nullable|string|max:120',
+            'feature_1_desc' => 'nullable|string|max:255',
+            'feature_1_icon' => 'nullable|image|max:1024',
+            
+            'feature_2_title' => 'nullable|string|max:120',
+            'feature_2_desc' => 'nullable|string|max:255',
+            'feature_2_icon' => 'nullable|image|max:1024',
+            
+            'feature_3_title' => 'nullable|string|max:120',
+            'feature_3_desc' => 'nullable|string|max:255',
+            'feature_3_icon' => 'nullable|image|max:1024',
+            
+            'feature_4_title' => 'nullable|string|max:120',
+            'feature_4_desc' => 'nullable|string|max:255',
+            'feature_4_icon' => 'nullable|image|max:1024',
+        ]);
+
+        foreach (range(1, 4) as $i) {
+            $titleKey = "feature_{$i}_title";
+            $descKey = "feature_{$i}_desc";
+            $iconKey = "feature_{$i}_icon";
+
+            if ($request->has($titleKey)) {
+                Setting::updateOrCreate(['key' => $titleKey], ['value' => $request->input($titleKey) ?? '']);
+            }
+            if ($request->has($descKey)) {
+                Setting::updateOrCreate(['key' => $descKey], ['value' => $request->input($descKey) ?? '']);
+            }
+            if ($request->hasFile($iconKey)) {
+                $old = Setting::where('key', $iconKey)->value('value');
+                if ($old && str_starts_with($old, '/storage/')) {
+                    Storage::delete(str_replace('/storage/', 'public/', $old));
+                }
+                $path = $request->file($iconKey)->store('public/settings');
+                Setting::updateOrCreate(['key' => $iconKey], ['value' => Storage::url($path)]);
+            }
+        }
+
+        return back()->with('success', 'Panel Fitur Utama berhasil diupdate.');
     }
 
     // --- HOME BANNER CRUD ---
@@ -241,5 +288,115 @@ class HomeSettingController extends Controller
         }
         $location->delete();
         return back()->with('success', 'Lokasi berhasil dihapus.');
+    }
+
+    public function storeTestimonial(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'role' => 'required|string|max:255',
+            'rating' => 'required|integer|min:1|max:5',
+            'content' => 'required|string',
+            'avatar' => 'nullable|image|max:1024',
+            'order' => 'required|integer',
+            'is_active' => 'boolean'
+        ]);
+
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('public/testimonials');
+            $data['avatar'] = Storage::url($path);
+        }
+
+        $data['is_active'] = $request->has('is_active');
+        Testimonial::create($data);
+
+        return back()->with('success', 'Testimoni berhasil ditambahkan.');
+    }
+
+    public function updateTestimonial(Request $request, Testimonial $testimonial)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'role' => 'required|string|max:255',
+            'rating' => 'required|integer|min:1|max:5',
+            'content' => 'required|string',
+            'avatar' => 'nullable|image|max:1024',
+            'order' => 'required|integer',
+            'is_active' => 'boolean'
+        ]);
+
+        if ($request->hasFile('avatar')) {
+            if ($testimonial->avatar) {
+                Storage::delete(str_replace('/storage/', 'public/', $testimonial->avatar));
+            }
+            $path = $request->file('avatar')->store('public/testimonials');
+            $data['avatar'] = Storage::url($path);
+        }
+
+        $data['is_active'] = $request->has('is_active');
+        $testimonial->update($data);
+
+        return back()->with('success', 'Testimoni berhasil diupdate.');
+    }
+
+    public function destroyTestimonial(Testimonial $testimonial)
+    {
+        if ($testimonial->avatar) {
+            Storage::delete(str_replace('/storage/', 'public/', $testimonial->avatar));
+        }
+        $testimonial->delete();
+        return back()->with('success', 'Testimoni berhasil dihapus.');
+    }
+
+    public function storeBankPartner(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'logo' => 'required|image|max:1024',
+            'order' => 'required|integer',
+            'is_active' => 'boolean'
+        ]);
+
+        if ($request->hasFile('logo')) {
+            $path = $request->file('logo')->store('public/bank_partners');
+            $data['logo'] = Storage::url($path);
+        }
+
+        $data['is_active'] = $request->has('is_active');
+        BankPartner::create($data);
+
+        return back()->with('success', 'Partner Bank berhasil ditambahkan.');
+    }
+
+    public function updateBankPartner(Request $request, BankPartner $bankPartner)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'logo' => 'nullable|image|max:1024',
+            'order' => 'required|integer',
+            'is_active' => 'boolean'
+        ]);
+
+        if ($request->hasFile('logo')) {
+            if ($bankPartner->logo) {
+                Storage::delete(str_replace('/storage/', 'public/', $bankPartner->logo));
+            }
+            $path = $request->file('logo')->store('public/bank_partners');
+            $data['logo'] = Storage::url($path);
+        }
+
+        $data['is_active'] = $request->has('is_active');
+        $bankPartner->update($data);
+
+        return back()->with('success', 'Partner Bank berhasil diupdate.');
+    }
+
+    public function destroyBankPartner(BankPartner $bankPartner)
+    {
+        if ($bankPartner->logo) {
+            Storage::delete(str_replace('/storage/', 'public/', $bankPartner->logo));
+        }
+        $bankPartner->delete();
+        return back()->with('success', 'Partner Bank berhasil dihapus.');
     }
 }
