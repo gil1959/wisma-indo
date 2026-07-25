@@ -95,41 +95,6 @@
                    class="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-800">
         </div>
 
-        {{-- Partner fields --}}
-        <div x-show="role === 'partner'" x-cloak class="rounded-2xl border border-slate-200 bg-slate-50 p-5 space-y-4">
-            <div class="text-sm font-extrabold text-slate-900">Data Partner</div>
-
-            <div>
-                <label class="text-xs font-extrabold text-slate-600 uppercase">Tipe Partner</label>
-                <select name="partner_type"
-                        class="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-800">
-                    <option value="">-- pilih --</option>
-                    <option value="agency_paket_tour" {{ old('partner_type')==='agency_paket_tour'?'selected':'' }}>Agency Paket Tour</option>
-                    <option value="agency_rental_mobil" {{ old('partner_type')==='agency_rental_mobil'?'selected':'' }}>Agency Rental Mobil</option>
-                    <option value="agency_restoran" {{ old('partner_type')==='agency_restoran'?'selected':'' }}>Agency Restoran</option>
-                    <option value="agency_hotel_vila" {{ old('partner_type')==='agency_hotel_vila'?'selected':'' }}>Agency Hotel/Vila</option>
-                </select>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div>
-                    <label class="text-xs font-extrabold text-slate-600 uppercase">Nama Bank</label>
-                    <input type="text" name="partner_bank_name" value="{{ old('partner_bank_name') }}"
-                           class="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-800">
-                </div>
-                <div>
-                    <label class="text-xs font-extrabold text-slate-600 uppercase">No Rekening</label>
-                    <input type="text" name="partner_bank_account_number" value="{{ old('partner_bank_account_number') }}"
-                           class="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-800">
-                </div>
-                <div>
-                    <label class="text-xs font-extrabold text-slate-600 uppercase">Atas Nama</label>
-                    <input type="text" name="partner_bank_account_holder" value="{{ old('partner_bank_account_holder') }}"
-                           class="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-800">
-                </div>
-            </div>
-        </div>
-
         {{-- Site moderator permissions --}}
         <div x-show="role === 'site_moderator'" x-cloak class="rounded-2xl border border-slate-200 bg-slate-50 p-5 space-y-3">
             <div class="text-sm font-extrabold text-slate-900">Akses Site Moderator</div>

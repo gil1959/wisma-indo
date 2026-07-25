@@ -1,4 +1,4 @@
-@extends('partner.layouts.app')
+@extends('user.layouts.app')
 
 @section('title', 'Profile')
 @section('page-subtitle', 'Settings')
@@ -66,51 +66,16 @@
                     <textarea name="full_address" rows="3" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm"
                               placeholder="Alamat lengkap">{{ old('full_address', $user->full_address) }}</textarea>
                 </div>
-            </div>
-        </div>
-
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-5">
-            <div class="flex items-start justify-between gap-3">
-                <div>
-                    <h2 class="text-sm font-extrabold text-slate-900">Data Rekening</h2>
-                    <p class="text-sm text-slate-500 mt-1">Untuk kebutuhan payout/settlement (kalau ada).</p>
+                <div class="md:col-span-2 flex justify-end mt-4 pt-4 border-t border-slate-100">
+                    <button type="submit"
+                            class="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-extrabold text-white transition"
+                            style="background:#0194F3;"
+                            onmouseover="this.style.background='#0186DB'"
+                            onmouseout="this.style.background='#0194F3'">
+                        <i data-lucide="save" class="w-4 h-4"></i>
+                        Simpan Profile
+                    </button>
                 </div>
-                <span class="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-extrabold"
-                      style="background: rgba(1,148,243,0.08); border-color: rgba(1,148,243,0.22); color:#055a93;">
-                    <i data-lucide="credit-card" class="w-4 h-4" style="color:#0194F3;"></i>
-                    Bank
-                </span>
-            </div>
-
-            <div class="mt-5 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-xs font-extrabold text-slate-600 mb-1">Nama Bank</label>
-                    <input name="partner_bank_name" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm"
-                           value="{{ old('partner_bank_name', $user->partner_bank_name) }}" placeholder="BCA / Mandiri / BRI">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-extrabold text-slate-600 mb-1">No Rekening</label>
-                    <input name="partner_bank_account_number" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm"
-                           value="{{ old('partner_bank_account_number', $user->partner_bank_account_number) }}" placeholder="1234567890">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-extrabold text-slate-600 mb-1">Atas Nama</label>
-                    <input name="partner_bank_account_holder" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm"
-                           value="{{ old('partner_bank_account_holder', $user->partner_bank_account_holder) }}" placeholder="Nama pemilik rekening">
-                </div>
-            </div>
-
-            <div class="mt-5 flex justify-end">
-                <button type="submit"
-                        class="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-extrabold text-white transition"
-                        style="background:#0194F3;"
-                        onmouseover="this.style.background='#0186DB'"
-                        onmouseout="this.style.background='#0194F3'">
-                    <i data-lucide="save" class="w-4 h-4"></i>
-                    Simpan Profile
-                </button>
             </div>
         </div>
     </form>

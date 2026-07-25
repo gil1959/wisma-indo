@@ -379,7 +379,14 @@
                         @endif
                     </div>
                     <div class="p-3 flex flex-col flex-1">
-                        <h3 class="font-bold text-slate-800 text-xs mb-1 line-clamp-2 group-hover:text-[#0194F3] transition">{{ $listing->title }}</h3>
+                        <div class="flex flex-col gap-1.5 mb-1">
+                            <h3 class="font-bold text-slate-800 text-xs line-clamp-2 group-hover:text-[#0194F3] transition">{{ $listing->title }}</h3>
+                            @if(optional($listing->user)->hasRole('partner'))
+                                <span class="w-fit px-1.5 py-0.5 rounded text-[8px] font-bold bg-[#0194F3]/10 text-[#0194F3] border border-[#0194F3]/20 flex items-center gap-1">
+                                    <i data-lucide="shield-check" class="w-2 h-2"></i> Agen Partner
+                                </span>
+                            @endif
+                        </div>
                         <p class="text-[10px] text-slate-400 mb-2 truncate">by {{ $listing->user->name ?? 'Wisma Indo' }}</p>
 
                         <div class="text-sm font-bold text-[#0194F3] mb-3">Rp {{ number_format($listing->price, 0, ',', '.') }}</div>
@@ -403,6 +410,67 @@
             @else
                 <div class="col-span-full py-12 text-center text-slate-500 bg-white rounded-3xl border border-dashed border-slate-300">
                     Belum ada properti yang tersedia saat ini.
+                </div>
+            @endif
+        </div>
+    </div>
+</section>
+
+{{-- REKOMENDASI BARANG DAN JASA --}}
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+                <div class="w-1.5 h-6 bg-[#0194F3] rounded-full shrink-0"></div>
+                <h2 class="text-xl md:text-2xl font-black text-slate-900 uppercase">{{ $siteSettings['home_rekomendasi_barang_jasa_title'] ?? 'Rekomendasi Barang dan Jasa' }}</h2>
+            </div>
+            <a href="{{ route('barangjasa') }}" class="shrink-0 font-bold text-[#0194F3] hover:text-blue-700 flex items-center gap-1 text-sm md:text-base">
+                Lihat Semua <i data-lucide="arrow-right" class="w-4 h-4 md:w-5 md:h-5"></i>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
+            @if(isset($goodsServicesListings) && $goodsServicesListings->count() > 0)
+                @foreach ($goodsServicesListings as $listing)
+                <a href="{{ route('listing.show', $listing->slug) }}" class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all group flex flex-col h-full border border-slate-100">
+                    <div class="relative aspect-[4/3] overflow-hidden bg-slate-100">
+                        @if($listing->primary_image)
+                        <img src="{{ asset($listing->primary_image) }}" alt="{{ $listing->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        @else
+                        <div class="w-full h-full flex items-center justify-center text-slate-300">
+                            <i data-lucide="image" class="w-8 h-8"></i>
+                        </div>
+                        @endif
+                        
+                        <!-- Heart Icon top right -->
+                        <div class="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/20 backdrop-blur-sm flex items-center justify-center text-white/80 hover:bg-white hover:text-red-500 transition-colors">
+                            <i data-lucide="heart" class="w-4 h-4"></i>
+                        </div>
+                        
+                        @if($listing->is_premium)
+                        <div class="absolute bottom-2 right-2 bg-[#0194F3] text-white px-2 py-0.5 rounded-full text-[10px] font-bold shadow-md flex items-center gap-1 z-10">
+                            <i class="fas fa-crown text-[10px]"></i> Premium
+                        </div>
+                        @endif
+                    </div>
+                    <div class="p-3 flex flex-col flex-1">
+                        <div class="flex flex-col gap-1.5 mb-1">
+                            <h3 class="font-bold text-slate-800 text-xs line-clamp-2 group-hover:text-[#0194F3] transition">{{ $listing->title }}</h3>
+                            @if(optional($listing->user)->hasRole('partner'))
+                                <span class="w-fit px-1.5 py-0.5 rounded text-[8px] font-bold bg-[#0194F3]/10 text-[#0194F3] border border-[#0194F3]/20 flex items-center gap-1">
+                                    <i data-lucide="shield-check" class="w-2 h-2"></i> Agen Partner
+                                </span>
+                            @endif
+                        </div>
+                        <p class="text-[10px] text-slate-400 mb-2 truncate">by {{ $listing->user->name ?? 'Wisma Indo' }}</p>
+
+                        <div class="text-sm font-bold text-[#0194F3] mb-3">Rp {{ number_format($listing->price, 0, ',', '.') }}</div>
+                    </div>
+                </a>
+                @endforeach
+            @else
+                <div class="col-span-full py-12 text-center text-slate-500 bg-slate-50 rounded-3xl border border-dashed border-slate-300">
+                    Belum ada barang dan jasa yang tersedia saat ini.
                 </div>
             @endif
         </div>
@@ -498,7 +566,7 @@
         <div x-ref="partnerContainer" class="flex gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 px-2" style="scrollbar-width: none; -ms-overflow-style: none;">
             @foreach($bankPartners as $b)
             <div class="snap-start shrink-0 bg-white rounded-2xl border border-slate-100 py-4 px-6 md:py-5 md:px-8 shadow-sm hover:shadow-md transition duration-300 w-36 md:w-44 flex items-center justify-center group/logo">
-                <img src="{{ asset($b->logo) }}" alt="{{ $b->name }}" class="h-6 md:h-8 object-contain grayscale opacity-60 group-hover/logo:grayscale-0 group-hover/logo:opacity-100 transition-all duration-300">
+                <img src="{{ asset($b->logo) }}" alt="{{ $b->name }}" class="h-6 md:h-8 object-contain transition-transform duration-300 group-hover/logo:scale-110">
             </div>
             @endforeach
         </div>

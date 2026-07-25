@@ -74,22 +74,7 @@ public function store(Request $request)
         // permissions untuk site moderator
         'permissions'   => ['nullable', 'array'],
         'permissions.*' => ['string', 'exists:permissions,name'],
-
-        // partner fields (wajib kalau role partner)
-        'partner_type' => ['nullable', 'in:agency_paket_tour,agency_rental_mobil,agency_restoran,agency_hotel_vila'],
-        'partner_bank_name' => ['nullable', 'string', 'max:100'],
-        'partner_bank_account_number' => ['nullable', 'string', 'max:50'],
-        'partner_bank_account_holder' => ['nullable', 'string', 'max:100'],
     ]);
-
-    if ($data['role'] === 'partner') {
-        $request->validate([
-           'partner_type' => ['required', 'in:agency_paket_tour,agency_rental_mobil,agency_restoran,agency_hotel_vila'],
-            'partner_bank_name' => ['required', 'string', 'max:100'],
-            'partner_bank_account_number' => ['required', 'string', 'max:50'],
-            'partner_bank_account_holder' => ['required', 'string', 'max:100'],
-        ]);
-    }
 
     $isVerified = (bool)($data['is_verified'] ?? false);
 
@@ -102,12 +87,6 @@ public function store(Request $request)
         'sub_district' => $data['sub_district'] ?? null,
         'email_verified_at' => $isVerified ? now() : null,
         'password' => Hash::make($data['password']),
-
-        // partner fields (kalau ada kolomnya di users)
-        'partner_type' => $data['partner_type'] ?? null,
-        'partner_bank_name' => $data['partner_bank_name'] ?? null,
-        'partner_bank_account_number' => $data['partner_bank_account_number'] ?? null,
-        'partner_bank_account_holder' => $data['partner_bank_account_holder'] ?? null,
     ]);
 
     $user->syncRoles([$data['role']]);
@@ -116,6 +95,45 @@ public function store(Request $request)
         $user->syncPermissions($data['permissions'] ?? []);
     } else {
         $user->syncPermissions([]);
+    }
+
+    if ($data['role'] === 'partner') {
+        // Assign Free Package
+        $freePackage = \App\Models\PartnerPackage::firstOrCreate(
+            ['is_free' => true],
+            [
+                'name' => 'Paket Dasar (Free)',
+                'description' => 'Paket bawaan untuk semua partner baru.',
+                'price' => 0,
+                'listing_quota' => 10,
+                'duration_days' => 30,
+                'is_active' => true,
+                'is_voucher' => false
+            ]
+        );
+
+        $userQuota = \App\Models\UserQuota::firstOrCreate(['user_id' => $user->id]);
+        if ($freePackage->listing_quota != -1) {
+            $userQuota->listing_quota += $freePackage->listing_quota;
+        } else {
+            $userQuota->listing_quota = -1;
+        }
+        $userQuota->save();
+
+        \App\Models\PartnerSubscription::create([
+            'user_id' => $user->id,
+            'partner_package_id' => $freePackage->id,
+            'amount' => 0,
+            'status' => 'active',
+            'starts_at' => now(),
+            'ends_at' => now()->addDays($freePackage->duration_days)
+        ]);
+    } elseif ($data['role'] === 'user') {
+        // Aktifkan kuota gratis 1x bawaan (Paket Free User)
+        \App\Models\UserQuota::firstOrCreate(
+            ['user_id' => $user->id],
+            ['listing_quota' => 1, 'has_free_quota' => true]
+        );
     }
 
     return redirect()
@@ -254,5 +272,32 @@ return redirect()
             $quota->save();
             return back()->with('success', 'Kuota Gratis 1x berhasil diaktifkan kembali.');
         }
+    }
+    public function impersonate(User $user)
+    {
+        if ($user->hasRole('admin')) {
+            return back()->with('error', 'Tidak bisa login sebagai sesama admin.');
+        }
+
+        // Simpan ID admin yang asli di session
+        session()->put('impersonator_id', auth()->id());
+        
+        // Login sebagai user
+        auth()->loginUsingId($user->id);
+
+        $route = $user->hasRole('partner') ? 'partner.statistics' : 'akun';
+
+        return redirect()->route($route)->with('success', 'Anda sekarang login sebagai ' . $user->name);
+    }
+
+    public function leaveImpersonate()
+    {
+        if (session()->has('impersonator_id')) {
+            $adminId = session()->pull('impersonator_id');
+            auth()->loginUsingId($adminId);
+            return redirect()->route('admin.dashboard')->with('success', 'Kembali ke sesi Admin.');
+        }
+
+        return redirect()->route('home');
     }
 }

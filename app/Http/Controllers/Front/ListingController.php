@@ -140,4 +140,51 @@ class ListingController extends Controller
         
         return view('front.listings.user', compact('user', 'listings'));
     }
+    public function storeLead(Request $request, $id)
+    {
+        $listing = Listing::findOrFail($id);
+        
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:50',
+            'message' => 'required|string',
+        ]);
+
+        \App\Models\BuyerLead::create([
+            'partner_id' => $listing->user_id,
+            'listing_id' => $listing->id,
+            'name' => $request->name,
+            'phone' => $request->phone,
+            'message' => $request->message,
+            'status' => 'new'
+        ]);
+
+        return back()->with('success', 'Pesan Anda berhasil dikirim ke Penjual.');
+    }
+
+    public function storeSurvey(Request $request, $id)
+    {
+        $listing = Listing::findOrFail($id);
+        
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:50',
+            'survey_date' => 'required|date',
+            'survey_time' => 'required',
+            'message' => 'nullable|string',
+        ]);
+
+        \App\Models\SurveySchedule::create([
+            'partner_id' => $listing->user_id,
+            'listing_id' => $listing->id,
+            'name' => $request->name,
+            'phone' => $request->phone,
+            'survey_date' => $request->survey_date,
+            'survey_time' => $request->survey_time,
+            'message' => $request->message,
+            'status' => 'pending'
+        ]);
+
+        return back()->with('success', 'Jadwal survey berhasil diajukan.');
+    }
 }

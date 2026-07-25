@@ -88,7 +88,7 @@
                             </div>
                             <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
                         </a>
-                        <a href="{{ route('profile.edit') }}" class="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-sm transition group">
+                        <a href="{{ route('user.profile.edit') }}" class="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-sm transition group">
                             <div class="flex items-center gap-3">
                                 <i data-lucide="edit" class="w-5 h-5 text-slate-500 group-hover:text-slate-700 transition"></i>
                                 Edit Profil

@@ -31,12 +31,27 @@ class AuthenticatedSessionController extends Controller
         return redirect()->route('admin.dashboard');
     }
 
-    // PARTNER → PARTNER DASHBOARD (JANGAN intended)
-    if ($user && $user->hasRole('partner')) {
-        return redirect('/partner/dashboard'); // Jika rute ini sudah usang nanti bisa disesuaikan
+    // PARTNER -> DASHBOARD / INTERCEPT
+    if ($user) {
+        $partnerReg = \App\Models\PartnerRegistration::where('user_id', $user->id)->first();
+        if ($partnerReg && $partnerReg->status === 'pending') {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('partner.register.success')->with('registered_user', [
+                'name' => $user->name,
+                'email' => $user->email,
+            ]);
+        }
     }
 
-    // USER → USER DASHBOARD (JANGAN intended)
+    // PARTNER -> DASHBOARD
+    if ($user && $user->hasRole('partner')) {
+        return redirect()->route('partner.statistics');
+    }
+
+    // USER → DASHBOARD (JANGAN intended)
     return redirect('/akun');
 }
 

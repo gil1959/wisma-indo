@@ -34,27 +34,53 @@
                 ['label' => 'Disewakan', 'route' => 'disewakan'],
                 ['label' => 'Properti Terbaru', 'route' => 'properti'],
                 ['label' => 'Cari Barang & Jasa', 'route' => 'barangjasa'],
-                ['label' => 'Simulasi Nilai Properti', 'route' => 'simulasi'],
+                ['label' => 'Kalkulator KPR', 'dropdown' => [
+                    ['label' => 'Simulasi Angsuran', 'route' => 'simulasi'],
+                    ['label' => 'Cek Kemampuan Cicilan', 'route' => 'simulasi.kemampuan'],
+                ]],
             ];
         }
       @endphp
 
       @foreach($nav as $n)
-        @php
-            // Simple active check logic
-            $active = false;
-            try { $active = request()->routeIs($n['route']); } catch(\Exception $e) {}
-        @endphp
-        <a
-          href="{{ \Route::has($n['route']) ? route($n['route']) : '#' }}"
-          class="group relative px-3 py-2 rounded-xl text-sm font-semibold transition hover:bg-slate-50 flex items-center gap-2 whitespace-nowrap
-                 {{ $active ? 'text-slate-900' : 'text-slate-700 hover:text-slate-900' }}">
-          <span>{{ $n['label'] }}</span>
-          <span
-            class="absolute left-3 right-3 -bottom-0.5 h-[2px] rounded-full transition-all duration-300
-                   {{ $active ? 'opacity-100' : 'opacity-0 group-hover:opacity-100' }}"
-            style="background:#0194F3;"></span>
-        </a>
+        @if(isset($n['dropdown']))
+          <div x-data="{ open: false }" class="relative group" @mouseenter="open = true" @mouseleave="open = false">
+            <button class="px-3 py-2 rounded-xl text-sm font-semibold transition hover:bg-slate-50 flex items-center gap-1 text-slate-700 hover:text-slate-900 focus:outline-none">
+              {{ $n['label'] }}
+              <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
+            </button>
+            <div x-show="open" 
+                 x-transition:enter="transition ease-out duration-200" 
+                 x-transition:enter-start="opacity-0 translate-y-1" 
+                 x-transition:enter-end="opacity-100 translate-y-0" 
+                 x-transition:leave="transition ease-in duration-150" 
+                 x-transition:leave-start="opacity-100 translate-y-0" 
+                 x-transition:leave-end="opacity-0 translate-y-1" 
+                 class="absolute left-0 mt-1 w-56 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden z-50"
+                 style="display: none;">
+              @foreach($n['dropdown'] as $dropItem)
+                <a href="{{ route($dropItem['route']) }}" class="block px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#0194F3] transition border-b border-slate-100 last:border-b-0">
+                  {{ $dropItem['label'] }}
+                </a>
+              @endforeach
+            </div>
+          </div>
+        @else
+          @php
+              $active = false;
+              try { $active = request()->routeIs($n['route']); } catch(\Exception $e) {}
+          @endphp
+          <a
+            href="{{ \Route::has($n['route']) ? route($n['route']) : '#' }}"
+            class="group relative px-3 py-2 rounded-xl text-sm font-semibold transition hover:bg-slate-50 flex items-center gap-2 whitespace-nowrap
+                   {{ $active ? 'text-slate-900' : 'text-slate-700 hover:text-slate-900' }}">
+            <span>{{ $n['label'] }}</span>
+            <span
+              class="absolute left-3 right-3 -bottom-0.5 h-[2px] rounded-full transition-all duration-300
+                     {{ $active ? 'opacity-100' : 'opacity-0 group-hover:opacity-100' }}"
+              style="background:#0194F3;"></span>
+          </a>
+        @endif
       @endforeach
     </nav>
 
@@ -109,7 +135,11 @@
           
           @auth
           <div class="py-1">
-            <a href="{{ \Route::has('akun') ? route('akun') : '#' }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 font-medium">Akun Saya</a>
+            @if(auth()->user()->hasRole('partner') && \Route::has('partner.statistics'))
+                <a href="{{ route('partner.statistics') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 font-medium">Dashboard Partner</a>
+            @else
+                <a href="{{ \Route::has('akun') ? route('akun') : '#' }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 font-medium">Akun Saya</a>
+            @endif
             <a href="{{ route('user.notifications.index') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 font-medium flex justify-between items-center">
                 Notifikasi
                 @if($unreadCount > 0)
@@ -121,6 +151,9 @@
           @endauth
           <div class="border-t border-slate-100 py-1">
             <a href="{{ \Route::has('articles') ? route('articles') : '#' }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 font-medium">Artikel Inspirasi</a>
+            @guest
+                <a href="{{ route('partner.register') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 font-medium">Daftar Partner</a>
+            @endguest
           </div>
           <div class="border-t border-slate-100 py-1">
             @auth

@@ -58,6 +58,13 @@
   @endif
 
   <div class="min-h-screen flex flex-col">
+    @if(session()->has('impersonator_id'))
+    <div class="bg-amber-100 border-b border-amber-200 text-amber-800 px-4 py-2 text-center text-sm font-bold shadow-sm z-[9999] relative flex items-center justify-center gap-4">
+        Anda sedang login sebagai {{ auth()->user()->name }}
+        <a href="{{ route('leave-impersonate') }}" class="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs transition">Kembali ke Admin</a>
+    </div>
+    @endif
+    
     @include('front.partials.navbar')
 
     <main class="flex-1 pb-24 lg:pb-0">

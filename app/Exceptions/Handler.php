@@ -52,7 +52,7 @@ class Handler extends ExceptionHandler
         $isPartner = $user && method_exists($user, 'hasRole') && $user->hasRole('partner');
 
         $goAdminHome = fn($msg) => redirect()->route('admin.dashboard')->with('error', $msg);
-        $goPartnerHome = fn($msg) => redirect()->route('partner.dashboard')->with('error', $msg);
+        $goPartnerHome = fn($msg) => redirect()->route('partner.statistics')->with('error', $msg);
         $goPublicHome = fn($msg) => redirect()->route('home')->with('error', $msg);
 
         // 419 Page Expired

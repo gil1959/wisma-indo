@@ -23,6 +23,14 @@
             font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
     </style>
+    
+    @if(!empty($siteSettings['google_ads_tag']))
+        {!! $siteSettings['google_ads_tag'] !!}
+    @endif
+
+    @if(!empty($siteSettings['fb_ads_tag']))
+        {!! $siteSettings['fb_ads_tag'] !!}
+    @endif
 </head>
 <body class="min-h-screen bg-slate-50 antialiased">
 

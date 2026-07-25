@@ -1,8 +1,8 @@
-@extends('layouts.front')
+@extends('user.layouts.app')
 
 @section('content')
-<div class="pt-24 pb-20 min-h-screen bg-slate-50" x-data="listingForm()">
-    <div class="max-w-4xl mx-auto px-4">
+<div x-data="listingForm()">
+    <div class="mx-auto w-full">
         
         <div class="mb-8">
             <a href="{{ route('iklan.saya') }}" class="text-[#0194F3] font-semibold flex items-center gap-1 hover:underline mb-4">

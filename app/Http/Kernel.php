@@ -44,7 +44,7 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\CaptureAffiliateRef::class,
-
+            \App\Http\Middleware\TrackVisitor::class,
         ],
 
 

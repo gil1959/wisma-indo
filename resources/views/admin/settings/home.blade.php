@@ -242,6 +242,36 @@
 
 
         </div>
+        
+        {{-- ================= TEKS SECTION BERANDA ================= --}}
+        <div class="card p-0 overflow-hidden mb-6">
+            <div class="px-5 py-4 border-b bg-slate-50">
+                <div class="text-sm font-extrabold text-slate-900">Teks Section Beranda</div>
+                <div class="text-xs text-slate-600 mt-1">Atur judul dan deskripsi untuk section rekomendasi.</div>
+            </div>
+            <div class="p-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs font-extrabold text-slate-700">Judul Rekomendasi Properti</label>
+                        <input type="text" name="home_rekomendasi_title" value="{{ old('home_rekomendasi_title', $siteSettings['home_rekomendasi_title'] ?? '') }}" class="mt-1 w-full rounded-xl border-slate-200" placeholder="Mis: Rekomendasi Jual Beli & Sewa Properti" />
+                    </div>
+                    <div>
+                        <label class="text-xs font-extrabold text-slate-700">Deskripsi Rekomendasi Properti</label>
+                        <input type="text" name="home_rekomendasi_desc" value="{{ old('home_rekomendasi_desc', $siteSettings['home_rekomendasi_desc'] ?? '') }}" class="mt-1 w-full rounded-xl border-slate-200" placeholder="" />
+                    </div>
+                    <div class="mt-4 md:col-span-2 border-t pt-4"></div>
+                    <div>
+                        <label class="text-xs font-extrabold text-slate-700">Judul Rekomendasi Barang & Jasa</label>
+                        <input type="text" name="home_rekomendasi_barang_jasa_title" value="{{ old('home_rekomendasi_barang_jasa_title', $siteSettings['home_rekomendasi_barang_jasa_title'] ?? '') }}" class="mt-1 w-full rounded-xl border-slate-200" placeholder="Mis: Rekomendasi Barang dan Jasa" />
+                    </div>
+                    <div>
+                        <label class="text-xs font-extrabold text-slate-700">Deskripsi Rekomendasi Barang & Jasa</label>
+                        <input type="text" name="home_rekomendasi_barang_jasa_desc" value="{{ old('home_rekomendasi_barang_jasa_desc', $siteSettings['home_rekomendasi_barang_jasa_desc'] ?? '') }}" class="mt-1 w-full rounded-xl border-slate-200" placeholder="" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
         @php
         $as = $articlesSettings ?? [
         'enabled' => (old('home_articles_enabled') ?? '0') === '1',

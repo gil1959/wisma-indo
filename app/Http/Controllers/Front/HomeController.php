@@ -23,9 +23,19 @@ class HomeController extends Controller
             ->take(18)
             ->get();
 
+        $goodsServicesListings = \App\Models\Listing::with('listingCategory')
+            ->where('status', 'tersedia')
+            ->whereIn('type', ['goods', 'services'])
+            ->orderBy('is_premium', 'desc')
+            ->orderBy('bump_count', 'desc')
+            ->orderBy('bumped_at', 'desc')
+            ->latest()
+            ->take(18)
+            ->get();
+
         $testimonials = \App\Models\Testimonial::where('is_active', true)->orderBy('order')->get();
         $bankPartners = \App\Models\BankPartner::where('is_active', true)->orderBy('order')->get();
 
-        return view('front.pages.home', compact('banners', 'buttons', 'categories', 'propertyListings', 'testimonials', 'bankPartners'));
+        return view('front.pages.home', compact('banners', 'buttons', 'categories', 'propertyListings', 'goodsServicesListings', 'testimonials', 'bankPartners'));
     }
 }

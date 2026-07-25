@@ -22,10 +22,31 @@
                     @endif
                 </div>
                 <div>
-                    <h1 class="text-3xl font-bold text-slate-800">
+                    <h1 class="text-3xl font-bold text-slate-800 flex items-center gap-3">
                         Iklan oleh {{ $user->name }}
+                        @if($user->hasRole('partner'))
+                            <span class="px-2.5 py-1 rounded-md text-[11px] font-bold bg-[#0194F3]/10 text-[#0194F3] border border-[#0194F3]/20 flex items-center gap-1.5">
+                                <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Agen Partner
+                            </span>
+                        @endif
                     </h1>
                     <p class="text-slate-500 text-sm mt-1">Bergabung sejak {{ optional($user->created_at)->format('M Y') }}</p>
+                    <button onclick="shareProfile()" class="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
+                        <i data-lucide="share-2" class="w-3.5 h-3.5"></i> Bagikan Profil
+                    </button>
+                    <script>
+                        function shareProfile() {
+                            navigator.clipboard.writeText(window.location.href).then(() => {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil disalin!',
+                                    text: 'Link profil telah disalin ke clipboard.',
+                                    confirmButtonColor: '#0194F3',
+                                    timer: 2000
+                                });
+                            });
+                        }
+                    </script>
                 </div>
             </div>
         </div>
@@ -59,7 +80,14 @@
                             </div>
                         </div>
                         <div class="p-4 flex flex-col flex-1">
-                            <h3 class="font-bold text-slate-800 text-sm mb-1.5 line-clamp-2 group-hover:text-[#0194F3] transition">{{ $item->title }}</h3>
+                            <div class="flex flex-col gap-1.5 mb-1.5">
+                                <h3 class="font-bold text-slate-800 text-sm line-clamp-2 group-hover:text-[#0194F3] transition">{{ $item->title }}</h3>
+                                @if(optional($item->user)->hasRole('partner'))
+                                    <span class="w-fit px-2 py-0.5 rounded text-[9px] font-bold bg-[#0194F3]/10 text-[#0194F3] border border-[#0194F3]/20 flex items-center gap-1">
+                                        <i data-lucide="shield-check" class="w-2.5 h-2.5"></i> Agen Partner
+                                    </span>
+                                @endif
+                            </div>
                             <div class="flex justify-between items-center mb-3">
                                 <div class="text-slate-400 text-xs flex items-center gap-1">
                                     <i data-lucide="map-pin" class="w-3.5 h-3.5 shrink-0"></i>

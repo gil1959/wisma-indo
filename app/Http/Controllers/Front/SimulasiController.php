@@ -11,4 +11,9 @@ class SimulasiController extends Controller
     {
         return view('front.pages.simulasi');
     }
+
+    public function kemampuan()
+    {
+        return view('front.pages.kemampuan');
+    }
 }

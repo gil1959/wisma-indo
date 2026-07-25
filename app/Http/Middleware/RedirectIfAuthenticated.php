@@ -30,7 +30,7 @@ class RedirectIfAuthenticated
                 }
 
                 if ($user && $user->hasRole('partner')) {
-                    return redirect('/partner/dashboard');
+                    return redirect()->route('partner.statistics');
                 }
 
                 return redirect('/akun');

@@ -37,6 +37,12 @@
 </head>
 
 <body class="bg-slate-50 antialiased">
+    @if(session()->has('impersonator_id'))
+    <div class="bg-amber-100 border-b border-amber-200 text-amber-800 px-4 py-2 text-center text-sm font-bold shadow-sm z-[9999] relative flex items-center justify-center gap-4">
+        Anda sedang login sebagai {{ auth()->user()->name }}
+        <a href="{{ route('leave-impersonate') }}" class="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs transition">Kembali ke Admin</a>
+    </div>
+    @endif
 
     <div x-data="{ sidebarOpen:false }" x-init="if (window.lucide) lucide.createIcons()" class="min-h-screen">
 
@@ -86,26 +92,22 @@
                     @php
                     $isEn = app()->getLocale() === 'en';
 
-                    $nav = [
-                    ['label'=> ($isEn ? 'Dashboard' : 'Dashboard'),'route'=>'user.dashboard','match'=>'user.dashboard','icon'=>'layout-dashboard'],
-                    ['label'=> ($isEn ? 'Orders' : 'Pesanan'),'route'=>'user.orders','match'=>'user.orders.*','icon'=>'receipt'],
-                    ['label'=> ($isEn ? 'Umrah Savings' : 'Tabungan Umrah'),'route'=>'user.tabungan-umrah.index','match'=>'user.tabungan-umrah.*','icon'=>'wallet'],
+                    $nav = [];
 
-                    [
-                    'label' => ($isEn ? 'Affiliate' : 'Afiliasi'),
-                    'icon' => 'badge-percent',
-                    'match' => 'user.affiliate.*',
-                    'children' => [
-                    ['label'=> ($isEn ? 'Commission' : 'Komisi'),'route'=>'user.affiliate.commission','match'=>'user.affiliate.commission','icon'=>'percent'],
-                    ['label'=> ($isEn ? 'Links' : 'Tautan'),'route'=>'user.affiliate.links','match'=>'user.affiliate.links*','icon'=>'link'],
-                    ['label'=> ($isEn ? 'Coupons' : 'Kupon'),'route'=>'user.affiliate.coupons','match'=>'user.affiliate.coupons*','icon'=>'ticket'],
-                    ['label'=> ($isEn ? 'Orders' : 'Pesanan'),'route'=>'user.affiliate.orders','match'=>'user.affiliate.orders','icon'=>'shopping-bag'],
-                    ['label'=> ($isEn ? 'Withdraw' : 'Tarik Dana'),'route'=>'user.withdrawals','match'=>'user.withdrawals*','icon'=>'wallet'],
-                    ],
-                    ],
+                    if (auth()->user()->hasRole('partner')) {
+                        $nav[] = ['label' => 'Dashboard Partner', 'route' => 'partner.statistics', 'match' => 'partner.statistics', 'icon' => 'layout-dashboard'];
+                        $nav[] = ['label' => 'Iklan Saya', 'route' => 'iklan.saya', 'match' => 'iklan.saya*', 'icon' => 'home'];
+                        $nav[] = ['label' => 'Lead Pembeli', 'route' => 'partner.leads', 'match' => 'partner.leads', 'icon' => 'users'];
+                        $nav[] = ['label' => 'Jadwal Survey', 'route' => 'partner.surveys', 'match' => 'partner.surveys', 'icon' => 'calendar'];
+                        $nav[] = ['label' => 'Pengajuan KPR', 'route' => 'partner.kpr', 'match' => 'partner.kpr', 'icon' => 'file-text'];
+                        $nav[] = ['label' => 'Tagihan Bulanan', 'route' => 'partner.billing', 'match' => 'partner.billing', 'icon' => 'receipt'];
+                        $nav[] = ['label' => 'Pengaturan WhatsApp', 'route' => 'partner.whatsapp', 'match' => 'partner.whatsapp', 'icon' => 'message-circle'];
+                        $nav[] = ['label' => 'Profil', 'route' => 'partner.profile.edit', 'match' => 'partner.profile.*', 'icon' => 'user'];
+                    } else {
+                        $nav[] = ['label' => 'Dashboard User', 'route' => 'akun', 'match' => 'akun', 'icon' => 'layout-dashboard'];
+                        $nav[] = ['label' => 'Profil', 'route' => 'user.profile.edit', 'match' => 'user.profile.*', 'icon' => 'user'];
+                    }
 
-                    ['label'=> ($isEn ? 'Profile' : 'Profil'),'route'=>'user.profile.edit','match'=>'user.profile.*','icon'=>'user'],
-                    ];
                     @endphp
 
 

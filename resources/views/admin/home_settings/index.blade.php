@@ -123,6 +123,20 @@
             </div>
 
             <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <h4 class="font-bold text-[#0194F3] mb-3">5B. Section Rekomendasi Barang dan Jasa</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Judul</label>
+                        <input type="text" name="home_rekomendasi_barang_jasa_title" value="{{ old('home_rekomendasi_barang_jasa_title', $settings['home_rekomendasi_barang_jasa_title'] ?? 'Rekomendasi Barang dan Jasa') }}" class="w-full rounded-xl border-slate-300">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Deskripsi</label>
+                        <textarea name="home_rekomendasi_barang_jasa_desc" rows="2" class="w-full rounded-xl border-slate-300">{{ old('home_rekomendasi_barang_jasa_desc', $settings['home_rekomendasi_barang_jasa_desc'] ?? 'Temukan berbagai macam barang dan jasa terbaik dari penyedia terpercaya.') }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
                 <h4 class="font-bold text-[#0194F3] mb-3">6. Section Testimoni</h4>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>

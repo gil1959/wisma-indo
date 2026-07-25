@@ -21,6 +21,9 @@
     {{-- Lucide --}}
     <script src="https://unpkg.com/lucide@latest"></script>
 
+    {{-- SweetAlert2 --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         [x-cloak] {
             display: none !important;
@@ -89,28 +92,37 @@
 
                 {{-- NAV --}}
                 @php
-                $nav = [
-                    ['label'=>'Dashboard','route'=>'admin.dashboard','match'=>'admin.dashboard','icon'=>'layout-dashboard'],
-                    
-                    [
-                        'label' => 'Data Properti',
-                        'icon' => 'home',
-                        'children' => [
-                            ['label'=>'Semua Iklan','route'=>'admin.listings.index','match'=>'admin.listings.*','icon'=>'list'],
-                            ['label'=>'Kategori Iklan','route'=>'admin.listing-categories.index','match'=>'admin.listing-categories.*','icon'=>'tags'],
+                    $nav = [
+                        ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'match' => 'admin.dashboard', 'icon' => 'layout-dashboard'],
+                        
+                        [
+                            'label' => 'Iklan (Listings)',
+                            'icon' => 'home',
+                            'children' => [
+                                ['label'=>'Semua Iklan','route'=>'admin.listings.index','match'=>'admin.listings.*','icon'=>'list'],
+                                ['label'=>'Kategori','route'=>'admin.listing-categories.index','match'=>'admin.listing-categories.*','icon'=>'tags'],
+                            ],
                         ],
-                    ],
-                    
-                    [
-                        'label' => 'Transaksi & Saldo',
-                        'icon' => 'credit-card',
-                        'children' => [
-                            ['label'=>'Paket Top Up','route'=>'admin.topup-packages.index','match'=>'admin.topup-packages.*','icon'=>'package'],
-                            ['label'=>'Paket Promosi','route'=>'admin.listing-packages.index','match'=>'admin.listing-packages.*','icon'=>'star'],
-                            ['label'=>'Permintaan Top Up','route'=>'admin.topups.index','match'=>'admin.topups.*','icon'=>'wallet'],
-                            ['label'=>'Promosi Iklan','route'=>'admin.listing-promotions.index','match'=>'admin.listing-promotions.*','icon'=>'trending-up'],
+                        
+                        [
+                            'label' => 'Pengajuan Partner',
+                            'icon' => 'user-check',
+                            'route' => 'admin.partner_registrations.index',
+                            'match' => 'admin.partner_registrations.*',
                         ],
-                    ],
+                        
+                        [
+                            'label' => 'Paket Iklan (Promo)',
+                            'icon' => 'credit-card',
+                            'children' => [
+                                ['label'=>'Paket Top Up','route'=>'admin.topup-packages.index','match'=>'admin.topup-packages.*','icon'=>'package'],
+                                ['label'=>'Paket Promosi','route'=>'admin.listing-packages.index','match'=>'admin.listing-packages.*','icon'=>'star'],
+                                ['label'=>'Paket Bulanan Partner','route'=>'admin.partner_packages.index','match'=>'admin.partner_packages.*','icon'=>'briefcase'],
+                                ['label'=>'Permintaan Top Up','route'=>'admin.topups.index','match'=>'admin.topups.*','icon'=>'wallet'],
+                                ['label'=>'Permintaan Langganan','route'=>'admin.partner_subscriptions.index','match'=>'admin.partner_subscriptions.*','icon'=>'check-square'],
+                                ['label'=>'Promosi Iklan','route'=>'admin.listing-promotions.index','match'=>'admin.listing-promotions.*','icon'=>'trending-up'],
+                            ],
+                        ],
                     
                     [
                         'label' => 'Pengguna (Users)',
@@ -118,6 +130,20 @@
                         'children' => [
                             ['label'=>'Semua Akun','route'=>'admin.users.index','match'=>'admin.users.*','icon'=>'users'],
                         ],
+                    ],
+
+                    [
+                        'label' => 'Distribusi Lead (CRM)',
+                        'icon' => 'share-2',
+                        'route' => 'admin.referrals.index',
+                        'match' => 'admin.referrals.*',
+                    ],
+
+                    [
+                        'label' => 'Laporan Transaksi',
+                        'icon' => 'pie-chart',
+                        'route' => 'admin.reports.index',
+                        'match' => 'admin.reports.*',
                     ],
                     
                     ['label'=>'Push Notifikasi','route'=>'admin.notifications.create','match'=>'admin.notifications.*','icon'=>'bell'],
@@ -141,6 +167,8 @@
                             ['label'=>'Kontak Kami','route'=>'admin.legal.contact','match'=>'admin.legal.contact','icon'=>'phone'],
                         ],
                     ],
+                    
+                    ['label'=>'Kelola Halaman (CMS)','route'=>'admin.pages.index','match'=>'admin.pages.*','icon'=>'layout-template'],
                     
                     [
                         'label' => 'Settings',

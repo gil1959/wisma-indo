@@ -28,10 +28,6 @@ class ProfileController extends Controller
             'full_address' => ['nullable', 'string'],
             'sub_district' => ['nullable', 'string', 'max:120'],
 
-            // rekening partner
-            'partner_bank_name'           => ['nullable', 'string', 'max:100'],
-            'partner_bank_account_number' => ['nullable', 'string', 'max:50'],
-            'partner_bank_account_holder' => ['nullable', 'string', 'max:100'],
         ]);
 
         $user->fill($validated);

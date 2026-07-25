@@ -3,22 +3,33 @@
 use Illuminate\Support\Facades\Route;
 
 // FRONT ROUTES
+Route::get('/register-partner', [\App\Http\Controllers\Front\PartnerRegistrationController::class, 'create'])->name('partner.register');
+Route::post('/register-partner', [\App\Http\Controllers\Front\PartnerRegistrationController::class, 'store'])->name('partner.register.store');
+Route::get('/register-partner/success', [\App\Http\Controllers\Front\PartnerRegistrationController::class, 'success'])->name('partner.register.success');
+
 Route::get('/', [\App\Http\Controllers\Front\HomeController::class, 'index'])->name('home');
 Route::get('/dijual', [\App\Http\Controllers\Front\ListingController::class, 'dijual'])->name('dijual');
 Route::get('/disewakan', [\App\Http\Controllers\Front\ListingController::class, 'disewakan'])->name('disewakan');
 Route::get('/properti', [\App\Http\Controllers\Front\ListingController::class, 'properti'])->name('properti');
 Route::get('/barang-dan-jasa', [\App\Http\Controllers\Front\ListingController::class, 'barangJasa'])->name('barangjasa');
 Route::get('/simulasi', [\App\Http\Controllers\Front\SimulasiController::class, 'index'])->name('simulasi');
+Route::get('/kemampuan-cicilan', [\App\Http\Controllers\Front\SimulasiController::class, 'kemampuan'])->name('simulasi.kemampuan');
 Route::get('/quran', [\App\Http\Controllers\Front\QuranController::class, 'index'])->name('quran');
+Route::get('/kategori/{categorySlug}', [\App\Http\Controllers\Front\ListingController::class, 'category'])->name('category.show');
 Route::get('/co-broke', [\App\Http\Controllers\Front\CoBrokeController::class, 'index'])->name('cobroke');
 Route::get('/artikel', [\App\Http\Controllers\Front\ArticleController::class, 'index'])->name('articles');
 Route::get('/artikel/{slug}', [\App\Http\Controllers\Front\ArticleController::class, 'show'])->name('articles.show');
 Route::get('/listing/{slug}', [\App\Http\Controllers\Front\ListingController::class, 'show'])->name('listing.show');
-Route::get('/pengguna/{id}', [\App\Http\Controllers\Front\ListingController::class, 'userListings'])->name('user.listings');
-Route::get('/simulasi', [\App\Http\Controllers\Front\SimulasiController::class, 'index'])->name('simulasi');
+Route::get('/profil/{id}', [\App\Http\Controllers\Front\AgentController::class, 'show'])->name('agent.show');
+
+Route::post('/iklan/{id}/lead', [\App\Http\Controllers\Front\ListingController::class, 'storeLead'])->name('front.lead.store');
+Route::post('/iklan/{id}/survey', [\App\Http\Controllers\Front\ListingController::class, 'storeSurvey'])->name('front.survey.store');
+
 Route::get('/privacy-policy', [\App\Http\Controllers\Front\LegalController::class, 'privacy'])->name('privacy');
 Route::get('/terms-conditions', [\App\Http\Controllers\Front\LegalController::class, 'terms'])->name('terms');
 Route::get('/contact', [\App\Http\Controllers\Front\LegalController::class, 'contact'])->name('contact');
+
+Route::get('/page/{slug}', [\App\Http\Controllers\Front\PageController::class, 'show'])->name('page.show');
 
 // Google Auth Routes (Outside auth middleware)
 Route::get('/auth/google', [\App\Http\Controllers\Auth\GoogleController::class, 'redirectToGoogle'])->name('google.login');
@@ -34,6 +45,40 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/top-up', [\App\Http\Controllers\User\TopupController::class, 'index'])->name('topup');
     Route::get('/top-up/checkout/{package}', [\App\Http\Controllers\User\TopupController::class, 'checkout'])->name('topup.checkout');
     Route::post('/top-up/process/{package}', [\App\Http\Controllers\User\TopupController::class, 'process'])->name('topup.process');
+
+    // Partner Routes
+    Route::middleware(['role:partner'])->group(function () {
+        Route::get('/partner/leads', [\App\Http\Controllers\User\PartnerController::class, 'leads'])->name('partner.leads');
+        Route::get('/partner/leads/{id}', [\App\Http\Controllers\User\PartnerController::class, 'showLead'])->name('partner.leads.show');
+        Route::post('/partner/leads/{id}/activity', [\App\Http\Controllers\User\PartnerController::class, 'addLeadActivity'])->name('partner.leads.activity');
+        
+        Route::get('/partner/surveys', [\App\Http\Controllers\User\PartnerController::class, 'surveys'])->name('partner.surveys');
+        Route::post('/partner/surveys/{id}/status', [\App\Http\Controllers\User\PartnerController::class, 'updateSurveyStatus'])->name('partner.surveys.status');
+        
+        Route::get('/partner/statistics', [\App\Http\Controllers\User\PartnerController::class, 'statistics'])->name('partner.statistics');
+        
+        Route::get('/partner/billing', [\App\Http\Controllers\User\PartnerController::class, 'billing'])->name('partner.billing');
+        
+        Route::get('/partner/whatsapp', [\App\Http\Controllers\User\PartnerController::class, 'whatsapp'])->name('partner.whatsapp');
+        Route::post('/partner/whatsapp', [\App\Http\Controllers\User\PartnerController::class, 'updateWhatsapp'])->name('partner.whatsapp.update');
+
+        // Partner Profile
+        Route::get('/partner/profile', [\App\Http\Controllers\Partner\ProfileController::class, 'edit'])->name('partner.profile.edit');
+        Route::put('/partner/profile', [\App\Http\Controllers\Partner\ProfileController::class, 'update'])->name('partner.profile.update');
+        Route::put('/partner/profile/password', [\App\Http\Controllers\Partner\ProfileController::class, 'updatePassword'])->name('partner.profile.password');
+        
+        // Partner KPR
+        Route::get('/partner/kpr', function () {
+            return view('user.partner.kpr.index');
+        })->name('partner.kpr');
+
+        // Partner Billing / Subscription
+        Route::get('/partner/billing/checkout/{package}', [\App\Http\Controllers\User\PartnerSubscriptionController::class, 'checkout'])->name('partner.billing.checkout');
+        Route::post('/partner/billing/process/{package}', [\App\Http\Controllers\User\PartnerSubscriptionController::class, 'process'])->name('partner.billing.process');
+        Route::get('/partner/billing/upload-proof/{transaction}', [\App\Http\Controllers\User\PartnerSubscriptionController::class, 'uploadProof'])->name('partner.billing.upload_proof');
+        Route::post('/partner/billing/upload-proof/{transaction}', [\App\Http\Controllers\User\PartnerSubscriptionController::class, 'storeProof'])->name('partner.billing.store_proof');
+
+    });
     Route::get('/top-up/waiting/{transaction}', [\App\Http\Controllers\User\TopupController::class, 'waiting'])->name('topup.waiting');
     Route::get('/top-up/upload-proof/{transaction}', [\App\Http\Controllers\User\TopupController::class, 'uploadProof'])->name('topup.upload_proof');
     Route::post('/top-up/upload-proof/{transaction}', [\App\Http\Controllers\User\TopupController::class, 'storeProof'])->name('topup.store_proof');
@@ -53,9 +98,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Verified only
     Route::middleware(['verified'])->group(function () {
-        Route::get('/profil/edit', [\App\Http\Controllers\User\ProfileController::class, 'edit'])->name('profile.edit');
-        Route::put('/profil/update', [\App\Http\Controllers\User\ProfileController::class, 'update'])->name('profile.update');
-        Route::post('/profil/reset-password-link', [\App\Http\Controllers\User\ProfileController::class, 'sendPasswordResetLink'])->name('profile.reset-password-link');
+        Route::get('/user/profile/edit', [\App\Http\Controllers\User\ProfileController::class, 'edit'])->name('user.profile.edit');
+        Route::put('/user/profile/update', [\App\Http\Controllers\User\ProfileController::class, 'update'])->name('user.profile.update');
+        Route::post('/user/profile/reset-password-link', [\App\Http\Controllers\User\ProfileController::class, 'sendPasswordResetLink'])->name('user.profile.reset-password-link');
         Route::get('/pasang-iklan', [\App\Http\Controllers\User\ListingController::class, 'create'])->name('pasang.iklan');
         Route::post('/pasang-iklan', [\App\Http\Controllers\User\ListingController::class, 'store'])->name('pasang.iklan.store');
         Route::get('/iklan-saya/{listing}/edit', [\App\Http\Controllers\User\ListingController::class, 'edit'])->name('iklan.saya.edit');
@@ -67,6 +112,12 @@ Route::middleware(['auth'])->group(function () {
         // AI Generator Route
         Route::post('/ai/generate', [\App\Http\Controllers\AiController::class, 'generate'])->name('ai.generate');
     });
+
+    // Leave Impersonation
+    Route::get('/leave-impersonate', [\App\Http\Controllers\Admin\UserController::class, 'leaveImpersonate'])->name('leave-impersonate');
+
+    // Push Subscriptions
+    Route::post('/push/subscribe', [\App\Http\Controllers\PushSubscriptionController::class, 'store'])->name('push.subscribe');
 });
 
 Route::middleware(['auth', \Spatie\Permission\Middleware\RoleMiddleware::class . ':admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -106,6 +157,11 @@ Route::middleware(['auth', \Spatie\Permission\Middleware\RoleMiddleware::class .
     Route::put('/settings/home/bank-partners/{bankPartner}', [\App\Http\Controllers\Admin\HomeSettingController::class, 'updateBankPartner'])->name('settings.home.bank_partner.update');
     Route::delete('/settings/home/bank-partners/{bankPartner}', [\App\Http\Controllers\Admin\HomeSettingController::class, 'destroyBankPartner'])->name('settings.home.bank_partner.destroy');
 
+    // Admin Referral Leads
+    Route::get('/referrals', [\App\Http\Controllers\Admin\ReferralLeadController::class, 'index'])->name('referrals.index');
+    Route::get('/referrals/create', [\App\Http\Controllers\Admin\ReferralLeadController::class, 'create'])->name('referrals.create');
+    Route::post('/referrals', [\App\Http\Controllers\Admin\ReferralLeadController::class, 'store'])->name('referrals.store');
+
     // Admin Profile
     Route::get('/profile/edit', [\App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile/update', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');
@@ -113,10 +169,14 @@ Route::middleware(['auth', \Spatie\Permission\Middleware\RoleMiddleware::class .
     // System Cache
     Route::post('/system/clear-cache', [\App\Http\Controllers\Admin\SystemController::class, 'clearCache'])->name('system.clear-cache');
     
-    // Users
+    // Users Management
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
+    Route::post('/users/{user}/impersonate', [\App\Http\Controllers\Admin\UserController::class, 'impersonate'])->name('users.impersonate');
     Route::post('users/{user}/toggle-quota', [\App\Http\Controllers\Admin\UserController::class, 'toggleFreeQuota'])->name('users.toggle_quota');
     
+    // Pages CMS
+    Route::resource('pages', \App\Http\Controllers\Admin\PageController::class)->except('show');
+
     // Listing Categories
     Route::resource('listing-categories', \App\Http\Controllers\Admin\ListingCategoryController::class)->except(['show']);
     
@@ -127,6 +187,15 @@ Route::middleware(['auth', \Spatie\Permission\Middleware\RoleMiddleware::class .
     // Notifications
     Route::get('/notifications/create', [\App\Http\Controllers\Admin\NotificationController::class, 'create'])->name('notifications.create');
     Route::post('/notifications/store', [\App\Http\Controllers\Admin\NotificationController::class, 'store'])->name('notifications.store');
+
+    // Partner Registrations
+    Route::get('/partner-registrations', [\App\Http\Controllers\Admin\PartnerRegistrationController::class, 'index'])->name('partner_registrations.index');
+    Route::get('/partner-registrations/{id}', [\App\Http\Controllers\Admin\PartnerRegistrationController::class, 'show'])->name('partner_registrations.show');
+    Route::post('/partner-registrations/{id}/approve', [\App\Http\Controllers\Admin\PartnerRegistrationController::class, 'approve'])->name('partner_registrations.approve');
+    Route::post('/partner-registrations/{id}/reject', [\App\Http\Controllers\Admin\PartnerRegistrationController::class, 'reject'])->name('partner_registrations.reject');
+    Route::post('/partner-registrations/{id}/suspend', [\App\Http\Controllers\Admin\PartnerRegistrationController::class, 'suspend'])->name('partner_registrations.suspend');
+    Route::post('/partner-registrations/{id}/unsuspend', [\App\Http\Controllers\Admin\PartnerRegistrationController::class, 'unsuspend'])->name('partner_registrations.unsuspend');
+    Route::delete('/partner-registrations/{id}', [\App\Http\Controllers\Admin\PartnerRegistrationController::class, 'destroy'])->name('partner_registrations.destroy');
 
     // Listings
     Route::resource('listings', \App\Http\Controllers\Admin\ListingController::class);
@@ -146,6 +215,32 @@ Route::middleware(['auth', \Spatie\Permission\Middleware\RoleMiddleware::class .
     Route::post('topups/{topup}/approve', [\App\Http\Controllers\Admin\TopupController::class, 'approve'])->name('topups.approve');
     Route::post('topups/{topup}/reject', [\App\Http\Controllers\Admin\TopupController::class, 'reject'])->name('topups.reject');
     Route::resource('topup-packages', \App\Http\Controllers\Admin\TopupPackageController::class);
+    
+    // Partner Subscriptions
+    Route::resource('partner-subscriptions', \App\Http\Controllers\Admin\PartnerSubscriptionController::class)->names([
+        'index' => 'partner_subscriptions.index',
+        'create' => 'partner_subscriptions.create',
+        'store' => 'partner_subscriptions.store',
+        'show' => 'partner_subscriptions.show',
+        'edit' => 'partner_subscriptions.edit',
+        'update' => 'partner_subscriptions.update',
+        'destroy' => 'partner_subscriptions.destroy',
+    ]);
+    
+    // Partner Packages
+    Route::resource('partner-packages', \App\Http\Controllers\Admin\PartnerPackageController::class)->names([
+        'index' => 'partner_packages.index',
+        'create' => 'partner_packages.create',
+        'store' => 'partner_packages.store',
+        'edit' => 'partner_packages.edit',
+        'update' => 'partner_packages.update',
+        'destroy' => 'partner_packages.destroy',
+    ]);
+    Route::post('partner-packages/update-free', [\App\Http\Controllers\Admin\PartnerPackageController::class, 'updateFree'])->name('partner_packages.update_free');
+    
+    // Reports
+    Route::get('reports', [\App\Http\Controllers\Admin\TransactionReportController::class, 'index'])->name('reports.index');
+    
     Route::resource('offline-payment-methods', \App\Http\Controllers\Admin\OfflinePaymentMethodController::class)->only(['store', 'destroy']);
     
     // Listing Promotions

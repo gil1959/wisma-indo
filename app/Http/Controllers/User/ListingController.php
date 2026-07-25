@@ -23,7 +23,7 @@ class ListingController extends Controller
     {
         $quota = Auth::user()->quota;
         if (!$quota || $quota->listing_quota <= 0) {
-            return redirect()->route('topup')->with('error', 'Kuota iklan Anda habis. Silakan beli paket Top Up untuk memasang iklan baru.');
+            return redirect()->route('topup')->with('error', 'Klaim diskon anda sekarang. Manfaatkan Voucher Promo Spesial di bawah untuk top up dengan harga lebih hemat!');
         }
 
         $kategori = $request->query('kategori', 'properti');
@@ -35,7 +35,7 @@ class ListingController extends Controller
     {
         $quota = Auth::user()->quota;
         if (!$quota || $quota->listing_quota <= 0) {
-            return redirect()->route('topup')->with('error', 'Kuota iklan Anda habis. Silakan beli paket Top Up untuk memasang iklan baru.');
+            return redirect()->route('topup')->with('error', 'Klaim diskon anda sekarang. Manfaatkan Voucher Promo Spesial di bawah untuk top up dengan harga lebih hemat!');
         }
 
         $validated = $request->validate([

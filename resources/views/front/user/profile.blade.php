@@ -17,7 +17,7 @@
 
 
         <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm">
-            <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="space-y-6">
+            <form method="POST" action="{{ route('user.profile.update') }}" enctype="multipart/form-data" class="space-y-6">
                 @csrf
                 @method('PUT')
 

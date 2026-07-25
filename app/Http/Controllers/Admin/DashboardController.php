@@ -20,14 +20,37 @@ class DashboardController extends Controller
         // TOTAL USERS
         $totalUsers = User::count();
 
-        // TOTAL TOPUP REVENUE (Success)
+        // TOTAL REVENUE (Success)
         $totalRevenue = TopupTransaction::where('status', 'success')->sum('price');
+
+        // VISITOR ANALYTICS
+        $todayVisitors = \App\Models\Visitor::whereDate('date', today())->sum('hits');
+        $weekVisitors = \App\Models\Visitor::whereBetween('date', [now()->startOfWeek(), now()->endOfWeek()])->sum('hits');
+        $totalVisitors = \App\Models\Visitor::sum('hits');
+        
+        // VISITOR CHART DATA (Last 7 Days)
+        $chartLabels = [];
+        $chartData = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i);
+            $chartLabels[] = $date->translatedFormat('d M');
+            $chartData[] = \App\Models\Visitor::whereDate('date', $date->format('Y-m-d'))->sum('hits');
+        }
+
+        // LATEST USERS (For Impersonate from Dashboard)
+        $latestUsers = User::orderBy('created_at', 'desc')->take(5)->get();
 
         return view('admin.dashboard', compact(
             'totalListings',
             'activeListings',
             'totalUsers',
-            'totalRevenue'
+            'totalRevenue',
+            'todayVisitors',
+            'weekVisitors',
+            'totalVisitors',
+            'chartLabels',
+            'chartData',
+            'latestUsers'
         ));
     }
 }

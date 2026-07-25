@@ -7,6 +7,90 @@ use Illuminate\Http\Request;
 
 class PaymentCallbackController extends Controller
 {
+    private function processTransactionSuccess($merchantRef)
+    {
+        if (str_starts_with($merchantRef, 'PARTNER-')) {
+            $transaction = \App\Models\PartnerSubscription::where('payment_reference', $merchantRef)->first();
+            if ($transaction && $transaction->status !== 'success' && $transaction->status !== 'active') {
+                $transaction->update(['status' => 'active']);
+                $package = $transaction->package;
+                $transaction->update([
+                    'starts_at' => now(),
+                    'ends_at' => now()->addDays($package->duration_days)
+                ]);
+                
+                $user = $transaction->user;
+                $userQuota = \App\Models\UserQuota::firstOrCreate(['user_id' => $user->id]);
+                if ($package->listing_quota != -1) {
+                    $userQuota->listing_quota += $package->listing_quota;
+                } else {
+                    $userQuota->listing_quota = -1;
+                }
+                $userQuota->save();
+                return true;
+            }
+        } else if (str_starts_with($merchantRef, 'PROMO-')) {
+            $transaction = \App\Models\ListingPromotionTransaction::where('payment_reference', $merchantRef)->first();
+            if ($transaction && $transaction->status !== 'success') {
+                $transaction->update(['status' => 'success']);
+                
+                $listing = $transaction->listing;
+                $package = $transaction->listingPackage;
+                
+                $listing->update([
+                    'is_promoted' => true,
+                    'promotion_type' => $package->type,
+                    'promoted_until' => now()->addDays($package->duration_days),
+                    'promoted_at' => now()
+                ]);
+                return true;
+            }
+        } else {
+            $transaction = \App\Models\TopupTransaction::where('payment_reference', $merchantRef)->first();
+            if ($transaction && $transaction->status !== 'success') {
+                $transaction->update(['status' => 'success']);
+                
+                $user = $transaction->user;
+                $package = $transaction->topupPackage;
+                
+                $totalBonus = $package->bonus ?? 0;
+                $quota = $user->quota;
+                if ($quota) {
+                    $quota->increment('listing_quota', $package->amount + $totalBonus);
+                } else {
+                    \App\Models\UserQuota::create([
+                        'user_id' => $user->id,
+                        'listing_quota' => $package->amount + $totalBonus
+                    ]);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function processTransactionFailed($merchantRef)
+    {
+        if (str_starts_with($merchantRef, 'PARTNER-')) {
+            \App\Models\PartnerSubscription::where('payment_reference', $merchantRef)->update(['status' => 'failed']);
+        } else if (str_starts_with($merchantRef, 'PROMO-')) {
+            \App\Models\ListingPromotionTransaction::where('payment_reference', $merchantRef)->update(['status' => 'failed']);
+        } else {
+            \App\Models\TopupTransaction::where('payment_reference', $merchantRef)->update(['status' => 'failed']);
+        }
+    }
+
+    private function getTransaction($merchantRef)
+    {
+        if (str_starts_with($merchantRef, 'PARTNER-')) {
+            return \App\Models\PartnerSubscription::where('payment_reference', $merchantRef)->first();
+        } else if (str_starts_with($merchantRef, 'PROMO-')) {
+            return \App\Models\ListingPromotionTransaction::where('payment_reference', $merchantRef)->first();
+        } else {
+            return \App\Models\TopupTransaction::where('payment_reference', $merchantRef)->first();
+        }
+    }
+
     public function tripayCallback(Request $request)
     {
         $callbackSignature = $request->server('HTTP_X_CALLBACK_SIGNATURE');
@@ -37,7 +121,7 @@ class PaymentCallbackController extends Controller
             ], 400);
         }
 
-        $transaction = \App\Models\TopupTransaction::where('payment_reference', $data->merchant_ref)->first();
+        $transaction = $this->getTransaction($data->merchant_ref);
         if (!$transaction) {
             return response()->json([
                 'success' => false,
@@ -45,7 +129,7 @@ class PaymentCallbackController extends Controller
             ], 404);
         }
 
-        if ($transaction->status === 'success') {
+        if ($transaction->status === 'success' || $transaction->status === 'active') {
             return response()->json([
                 'success' => true,
                 'message' => 'Transaction already processed',
@@ -53,24 +137,9 @@ class PaymentCallbackController extends Controller
         }
 
         if ($data->status === 'PAID' || $data->status === 'SETTLED') {
-            // Proses Top Up
-            $transaction->update(['status' => 'success']);
-            
-            $user = $transaction->user;
-            $package = $transaction->topupPackage;
-            
-            $totalBonus = $package->bonus ?? 0;
-            $quota = $user->quota;
-            if ($quota) {
-                $quota->increment('listing_quota', $package->amount + $totalBonus);
-            } else {
-                \App\Models\UserQuota::create([
-                    'user_id' => $user->id,
-                    'listing_quota' => $package->amount + $totalBonus
-                ]);
-            }
+            $this->processTransactionSuccess($data->merchant_ref);
         } else if ($data->status === 'EXPIRED' || $data->status === 'FAILED') {
-            $transaction->update(['status' => 'failed']);
+            $this->processTransactionFailed($data->merchant_ref);
         }
 
         return response()->json(['success' => true]);
@@ -97,7 +166,7 @@ class PaymentCallbackController extends Controller
             ], 400);
         }
 
-        $transaction = \App\Models\TopupTransaction::where('payment_reference', $data['external_id'])->first();
+        $transaction = $this->getTransaction($data['external_id']);
         if (!$transaction) {
             return response()->json([
                 'success' => false,
@@ -105,7 +174,7 @@ class PaymentCallbackController extends Controller
             ], 404);
         }
 
-        if ($transaction->status === 'success') {
+        if ($transaction->status === 'success' || $transaction->status === 'active') {
             return response()->json([
                 'success' => true,
                 'message' => 'Transaction already processed',
@@ -121,25 +190,11 @@ class PaymentCallbackController extends Controller
             if ($response->successful()) {
                 $invoice = $response->json();
                 if ($invoice['status'] === 'PAID' || $invoice['status'] === 'SETTLED') {
-                    $transaction->update(['status' => 'success']);
-                    
-                    $user = $transaction->user;
-                    $package = $transaction->topupPackage;
-                    
-                    $totalBonus = $package->bonus ?? 0;
-                    $quota = $user->quota;
-                    if ($quota) {
-                        $quota->increment('listing_quota', $package->amount + $totalBonus);
-                    } else {
-                        \App\Models\UserQuota::create([
-                            'user_id' => $user->id,
-                            'listing_quota' => $package->amount + $totalBonus
-                        ]);
-                    }
+                    $this->processTransactionSuccess($data['external_id']);
                 }
             }
         } else if ($data['status'] === 'EXPIRED') {
-            $transaction->update(['status' => 'failed']);
+            $this->processTransactionFailed($data['external_id']);
         }
 
         return response()->json(['success' => true]);

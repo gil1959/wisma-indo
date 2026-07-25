@@ -68,6 +68,8 @@ class HomeSettingController extends Controller
             'home_kategori_jasa_desc' => 'nullable|string|max:255',
             'home_rekomendasi_title' => 'nullable|string|max:120',
             'home_rekomendasi_desc' => 'nullable|string|max:255',
+            'home_rekomendasi_barang_jasa_title' => 'nullable|string|max:120',
+            'home_rekomendasi_barang_jasa_desc' => 'nullable|string|max:255',
             'home_testimoni_title' => 'nullable|string|max:120',
             'home_partner_title' => 'nullable|string|max:120',
             'home_partner_desc' => 'nullable|string|max:255',

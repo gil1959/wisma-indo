@@ -160,7 +160,14 @@
                             </div>
                         </div>
                         <div class="p-4 flex flex-col flex-1">
-                            <h3 class="font-bold text-slate-800 text-base mb-1.5 line-clamp-2 group-hover:text-[#0194F3] transition">{{ $item->title }}</h3>
+                            <div class="flex flex-col gap-1.5 mb-1.5">
+                                <h3 class="font-bold text-slate-800 text-base line-clamp-2 group-hover:text-[#0194F3] transition">{{ $item->title }}</h3>
+                                @if(optional($item->user)->hasRole('partner'))
+                                    <span class="w-fit px-2 py-0.5 rounded text-[9px] font-bold bg-[#0194F3]/10 text-[#0194F3] border border-[#0194F3]/20 flex items-center gap-1">
+                                        <i data-lucide="shield-check" class="w-2.5 h-2.5"></i> Agen Partner
+                                    </span>
+                                @endif
+                            </div>
                             <div class="flex justify-between items-center mb-3">
                                 <div class="text-slate-400 text-xs flex items-center gap-1">
                                     <i data-lucide="map-pin" class="w-3.5 h-3.5 shrink-0"></i>
