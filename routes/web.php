@@ -29,6 +29,8 @@ Route::get('/privacy-policy', [\App\Http\Controllers\Front\LegalController::clas
 Route::get('/terms-conditions', [\App\Http\Controllers\Front\LegalController::class, 'terms'])->name('terms');
 Route::get('/contact', [\App\Http\Controllers\Front\LegalController::class, 'contact'])->name('contact');
 
+Route::get('/sitemap.xml', [\App\Http\Controllers\Front\SitemapController::class, 'index']);
+
 Route::get('/page/{slug}', [\App\Http\Controllers\Front\PageController::class, 'show'])->name('page.show');
 
 // Google Auth Routes (Outside auth middleware)

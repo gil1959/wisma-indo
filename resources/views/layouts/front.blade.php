@@ -7,16 +7,23 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>{{ $siteSettings['seo_meta_title'] ?? ($siteSettings['brand_name'] ?? 'Rumaindo') }} | Portal Properti Terpercaya</title>
-  <meta name="description" content="{{ $siteSettings['seo_meta_desc'] ?? 'Temukan properti impian Anda di ' . ($siteSettings['brand_name'] ?? 'Rumaindo') . '. Jual beli dan sewa rumah, apartemen, ruko, tanah, serta temukan kebutuhan barang dan jasa terkait properti.' }}">
-  <meta name="keywords" content="{{ $siteSettings['seo_meta_keywords'] ?? 'properti, jual rumah, sewa apartemen, ruko, tanah kavling, barang jasa properti, rumaindo' }}">
+  <title>@hasSection('title') @yield('title') @else {{ $siteSettings['seo_meta_title'] ?? ($siteSettings['brand_name'] ?? 'Rumaindo') }} | Portal Properti Terpercaya @endif</title>
+  <meta name="description" content="@hasSection('meta_desc') @yield('meta_desc') @else {{ $siteSettings['seo_meta_desc'] ?? 'Temukan properti impian Anda di ' . ($siteSettings['brand_name'] ?? 'Rumaindo') . '. Jual beli dan sewa rumah, apartemen, ruko, tanah, serta temukan kebutuhan barang dan jasa terkait properti.' }} @endif">
+  <meta name="keywords" content="@hasSection('meta_keywords') @yield('meta_keywords') @else {{ $siteSettings['seo_meta_keywords'] ?? 'properti, jual rumah, sewa apartemen, ruko, tanah kavling, barang jasa properti, rumaindo' }} @endif">
   <meta name="author" content="{{ $siteSettings['brand_name'] ?? 'Rumaindo' }}">
   <meta name="robots" content="index, follow">
 
   <meta property="og:type" content="website">
-  <meta property="og:url" content="{{ url('/') }}">
-  <meta property="og:title" content="{{ $siteSettings['seo_meta_title'] ?? ($siteSettings['brand_name'] ?? 'Rumaindo') }} | Portal Properti Terpercaya">
-  <meta property="og:description" content="{{ $siteSettings['seo_meta_desc'] ?? 'Temukan properti impian Anda di ' . ($siteSettings['brand_name'] ?? 'Rumaindo') . '.' }}">
+  <meta property="og:url" content="{{ url()->current() }}">
+  <meta property="og:title" content="@hasSection('social_title') @yield('social_title') @elseif(View::hasSection('title')) @yield('title') @else {{ $siteSettings['seo_meta_title'] ?? ($siteSettings['brand_name'] ?? 'Rumaindo') }} | Portal Properti Terpercaya @endif">
+  <meta property="og:description" content="@hasSection('social_desc') @yield('social_desc') @elseif(View::hasSection('meta_desc')) @yield('meta_desc') @else {{ $siteSettings['seo_meta_desc'] ?? 'Temukan properti impian Anda di ' . ($siteSettings['brand_name'] ?? 'Rumaindo') . '.' }} @endif">
+  @hasSection('seo_image')
+  <meta property="og:image" content="@yield('seo_image')">
+  <meta name="twitter:image" content="@yield('seo_image')">
+  @endif
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="@hasSection('social_title') @yield('social_title') @elseif(View::hasSection('title')) @yield('title') @else {{ $siteSettings['seo_meta_title'] ?? ($siteSettings['brand_name'] ?? 'Rumaindo') }} | Portal Properti Terpercaya @endif">
+  <meta name="twitter:description" content="@hasSection('social_desc') @yield('social_desc') @elseif(View::hasSection('meta_desc')) @yield('meta_desc') @else {{ $siteSettings['seo_meta_desc'] ?? 'Temukan properti impian Anda di ' . ($siteSettings['brand_name'] ?? 'Rumaindo') . '.' }} @endif">
   
   <link rel="canonical" href="{{ url('/') }}">
 

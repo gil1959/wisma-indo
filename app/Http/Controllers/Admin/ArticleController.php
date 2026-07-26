@@ -33,6 +33,10 @@ class ArticleController extends Controller
             'is_published' => 'boolean',
             'meta_title' => 'nullable|string|max:255',
             'meta_desc' => 'nullable|string',
+            'seo_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'meta_keywords' => 'nullable|string',
+            'social_title' => 'nullable|string|max:255',
+            'social_desc' => 'nullable|string',
         ]);
 
         $validated['slug'] = Str::slug($request->title);
@@ -41,6 +45,18 @@ class ArticleController extends Controller
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('public/articles');
             $validated['image'] = Storage::url($path);
+        }
+
+        if ($request->hasFile('seo_image')) {
+            $seoPath = $request->file('seo_image')->store('public/articles/seo');
+            $validated['seo_image'] = Storage::url($seoPath);
+        }
+
+        if ($request->has('meta_keywords') && $request->meta_keywords) {
+            $keywords = json_decode($request->meta_keywords, true);
+            if (is_array($keywords)) {
+                $validated['meta_keywords'] = implode(', ', array_column($keywords, 'value'));
+            }
         }
 
         Article::create($validated);
@@ -64,6 +80,10 @@ class ArticleController extends Controller
             'is_published' => 'boolean',
             'meta_title' => 'nullable|string|max:255',
             'meta_desc' => 'nullable|string',
+            'seo_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'meta_keywords' => 'nullable|string',
+            'social_title' => 'nullable|string|max:255',
+            'social_desc' => 'nullable|string',
         ]);
 
         $validated['slug'] = Str::slug($request->title);
@@ -78,6 +98,22 @@ class ArticleController extends Controller
             $validated['image'] = Storage::url($path);
         }
 
+        if ($request->hasFile('seo_image')) {
+            if ($article->seo_image) {
+                $oldSeoPath = str_replace('/storage/', 'public/', $article->seo_image);
+                Storage::delete($oldSeoPath);
+            }
+            $seoPath = $request->file('seo_image')->store('public/articles/seo');
+            $validated['seo_image'] = Storage::url($seoPath);
+        }
+
+        if ($request->has('meta_keywords') && $request->meta_keywords) {
+            $keywords = json_decode($request->meta_keywords, true);
+            if (is_array($keywords)) {
+                $validated['meta_keywords'] = implode(', ', array_column($keywords, 'value'));
+            }
+        }
+
         $article->update($validated);
 
         return redirect()->route('admin.articles.index')->with('success', 'Artikel berhasil diupdate.');
@@ -88,6 +124,10 @@ class ArticleController extends Controller
         if ($article->image) {
             $oldPath = str_replace('/storage/', 'public/', $article->image);
             Storage::delete($oldPath);
+        }
+        if ($article->seo_image) {
+            $oldSeoPath = str_replace('/storage/', 'public/', $article->seo_image);
+            Storage::delete($oldSeoPath);
         }
         $article->delete();
         return back()->with('success', 'Artikel berhasil dihapus.');

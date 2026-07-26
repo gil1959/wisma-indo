@@ -1,7 +1,21 @@
 @extends('layouts.front')
 
-@section('title', $article->title . ' - Wisma Indo')
-@section('meta_description', $article->meta_desc ?? strip_tags(Str::limit($article->content, 150)))
+@section('title', $article->meta_title ?: ($article->title . ' - Wisma Indo'))
+@section('meta_desc', $article->meta_desc ?? strip_tags(Str::limit($article->content, 150)))
+@if($article->meta_keywords)
+    @section('meta_keywords', $article->meta_keywords)
+@endif
+@if($article->social_title)
+    @section('social_title', $article->social_title)
+@endif
+@if($article->social_desc)
+    @section('social_desc', $article->social_desc)
+@endif
+@if($article->seo_image)
+    @section('seo_image', asset($article->seo_image))
+@elseif($article->image)
+    @section('seo_image', asset($article->image))
+@endif
 
 @section('content')
 <div class="pt-32 pb-20 bg-slate-50 min-h-screen">
