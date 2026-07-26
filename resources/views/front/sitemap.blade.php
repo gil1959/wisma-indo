@@ -21,7 +21,7 @@
 
     @foreach($partners as $partner)
     <url>
-        <loc>{{ route('agent.show', $partner->id) }}</loc>
+        <loc>{{ route('agent.show', $partner->slug) }}</loc>
         <lastmod>{{ $partner->updated_at->tz('Asia/Jakarta')->toAtomString() }}</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>

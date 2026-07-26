@@ -36,7 +36,7 @@
                     </button>
                     <script>
                         function shareProfile() {
-                            navigator.clipboard.writeText('{{ route('agent.show', $user->id) }}').then(() => {
+                            navigator.clipboard.writeText('{{ route('agent.show', $user->slug) }}').then(() => {
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Berhasil disalin!',

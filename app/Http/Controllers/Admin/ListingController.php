@@ -86,7 +86,6 @@ class ListingController extends Controller
         ]);
 
         $validated['user_id'] = Auth::id(); // Admin makes it for themselves by default or we could add a user select field.
-        $validated['slug'] = Str::slug($validated['title']) . '-' . uniqid();
         $validated['co_broke'] = $request->has('co_broke');
         $validated['negotiable'] = $request->has('negotiable');
         $validated['imb'] = $request->has('imb');
@@ -213,7 +212,6 @@ class ListingController extends Controller
             'images.*' => 'nullable|image|max:20480',
         ]);
 
-        $validated['slug'] = Str::slug($validated['title']) . '-' . uniqid();
         $validated['co_broke'] = $request->has('co_broke');
         $validated['negotiable'] = $request->has('negotiable');
         $validated['imb'] = $request->has('imb');

@@ -467,10 +467,10 @@
                     </div>
                     
                     <div class="grid grid-cols-2 gap-2 mt-4" x-data>
-                        <a href="{{ route('agent.show', $listing->user_id) }}" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg flex items-center justify-center transition">
+                        <a href="{{ route('agent.show', $listing->user->slug) }}" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg flex items-center justify-center transition">
                             <i data-lucide="user" class="w-3.5 h-3.5 mr-1.5"></i> Buka Profil
                         </a>
-                        <button type="button" @click="navigator.clipboard.writeText('{{ route('agent.show', $listing->user_id) }}'); Swal.fire({title: 'Tersalin!', text: 'Link profil berhasil disalin', icon: 'success', timer: 1500, showConfirmButton: false})" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg flex items-center justify-center transition">
+                        <button type="button" @click="navigator.clipboard.writeText('{{ route('agent.show', $listing->user->slug) }}'); Swal.fire({title: 'Tersalin!', text: 'Link profil berhasil disalin', icon: 'success', timer: 1500, showConfirmButton: false})" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg flex items-center justify-center transition">
                             <i data-lucide="share-2" class="w-3.5 h-3.5 mr-1.5"></i> Bagikan Profil
                         </button>
                     </div>
@@ -479,7 +479,7 @@
                 {{-- IKLAN LAIN DARI PENJUAL INI --}}
                 @if(isset($userListings) && $userListings->count() > 0)
                 <div class="mt-6">
-                    <a href="{{ route('agent.show', $listing->user_id) }}" class="block w-full py-3 px-4 border border-slate-200 rounded-xl text-center text-sm font-bold text-slate-600 bg-white shadow-sm mb-4 hover:bg-slate-50 transition block">
+                    <a href="{{ route('agent.show', $listing->user->slug) }}" class="block w-full py-3 px-4 border border-slate-200 rounded-xl text-center text-sm font-bold text-slate-600 bg-white shadow-sm mb-4 hover:bg-slate-50 transition block">
                         <i data-lucide="layout-grid" class="inline-block w-4 h-4 mr-1.5 -mt-0.5"></i> BUKA IKLAN LAINNYA
                     </a>
                     

@@ -14,6 +14,26 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasRoles, HasFactory, Notifiable;
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($user) {
+            if (empty($user->slug) || $user->isDirty('name')) {
+                $slug = \Illuminate\Support\Str::slug($user->name);
+                $originalSlug = $slug;
+                $count = 1;
+
+                while (static::where('slug', $slug)->where('id', '!=', $user->id ?? 0)->exists()) {
+                    $slug = "{$originalSlug}-{$count}";
+                    $count++;
+                }
+
+                $user->slug = $slug;
+            }
+        });
+    }
+
     /**
      * The attributes that are mass assignable.
      *

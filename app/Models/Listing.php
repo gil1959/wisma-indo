@@ -9,6 +9,26 @@ class Listing extends Model
 {
     use HasFactory;
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($listing) {
+            if (empty($listing->slug) || $listing->isDirty('title')) {
+                $slug = \Illuminate\Support\Str::slug($listing->title);
+                $originalSlug = $slug;
+                $count = 1;
+
+                while (static::where('slug', $slug)->where('id', '!=', $listing->id ?? 0)->exists()) {
+                    $slug = "{$originalSlug}-{$count}";
+                    $count++;
+                }
+
+                $listing->slug = $slug;
+            }
+        });
+    }
+
     protected $guarded = ['id'];
 
     protected $casts = [

@@ -19,8 +19,8 @@ Route::get('/kategori/{categorySlug}', [\App\Http\Controllers\Front\ListingContr
 Route::get('/co-broke', [\App\Http\Controllers\Front\CoBrokeController::class, 'index'])->name('cobroke');
 Route::get('/artikel', [\App\Http\Controllers\Front\ArticleController::class, 'index'])->name('articles');
 Route::get('/artikel/{slug}', [\App\Http\Controllers\Front\ArticleController::class, 'show'])->name('articles.show');
-Route::get('/listing/{slug}', [\App\Http\Controllers\Front\ListingController::class, 'show'])->name('listing.show');
-Route::get('/profil/{id}', [\App\Http\Controllers\Front\AgentController::class, 'show'])->name('agent.show');
+Route::get('/properti/{slug}', [\App\Http\Controllers\Front\ListingController::class, 'show'])->name('listing.show');
+Route::get('/profil/{slug}', [\App\Http\Controllers\Front\AgentController::class, 'show'])->name('agent.show');
 
 Route::post('/iklan/{id}/lead', [\App\Http\Controllers\Front\ListingController::class, 'storeLead'])->name('front.lead.store');
 Route::post('/iklan/{id}/survey', [\App\Http\Controllers\Front\ListingController::class, 'storeSurvey'])->name('front.survey.store');

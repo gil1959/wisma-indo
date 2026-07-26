@@ -7,12 +7,12 @@ use Illuminate\Http\Request;
 
 class AgentController extends Controller
 {
-    public function show($id)
+    public function show($slug)
     {
-        $user = \App\Models\User::findOrFail($id);
+        $user = \App\Models\User::where('slug', $slug)->firstOrFail();
         
         // Include user's listings
-        $listings = \App\Models\Listing::where('user_id', $id)
+        $listings = \App\Models\Listing::where('user_id', $user->id)
             ->where('status', 'tersedia')
             ->latest()
             ->paginate(12);
