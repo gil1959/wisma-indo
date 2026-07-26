@@ -64,4 +64,15 @@ class Listing extends Model
     {
         return $this->hasMany(FavoriteListing::class);
     }
+
+    public function getUrlAttribute()
+    {
+        $prefix = match ($this->category) {
+            'property' => 'properti',
+            'services' => 'jasa',
+            'goods' => 'barang',
+            default => 'properti',
+        };
+        return url("/{$prefix}/{$this->slug}");
+    }
 }

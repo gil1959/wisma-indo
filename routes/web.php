@@ -19,7 +19,7 @@ Route::get('/kategori/{categorySlug}', [\App\Http\Controllers\Front\ListingContr
 Route::get('/co-broke', [\App\Http\Controllers\Front\CoBrokeController::class, 'index'])->name('cobroke');
 Route::get('/artikel', [\App\Http\Controllers\Front\ArticleController::class, 'index'])->name('articles');
 Route::get('/artikel/{slug}', [\App\Http\Controllers\Front\ArticleController::class, 'show'])->name('articles.show');
-Route::get('/properti/{slug}', [\App\Http\Controllers\Front\ListingController::class, 'show'])->name('listing.show');
+
 Route::get('/profil/{slug}', [\App\Http\Controllers\Front\AgentController::class, 'show'])->name('agent.show');
 
 Route::post('/iklan/{id}/lead', [\App\Http\Controllers\Front\ListingController::class, 'storeLead'])->name('front.lead.store');
@@ -36,6 +36,9 @@ Route::get('/page/{slug}', [\App\Http\Controllers\Front\PageController::class, '
 // Google Auth Routes (Outside auth middleware)
 Route::get('/auth/google', [\App\Http\Controllers\Auth\GoogleController::class, 'redirectToGoogle'])->name('google.login');
 Route::get('/auth/google/callback', [\App\Http\Controllers\Auth\GoogleController::class, 'handleGoogleCallback']);
+
+// Dynamic Listing Route (must be at the end of public routes)
+Route::get('/{kategori}/{slug}', [\App\Http\Controllers\Front\ListingController::class, 'show'])->name('listing.show');
 
 // USER DASHBOARD (Requires Auth)
 Route::middleware(['auth'])->group(function () {

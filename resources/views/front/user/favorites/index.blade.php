@@ -9,7 +9,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             @foreach($favorites as $fav)
             @php $item = $fav->listing; @endphp
-            <a href="{{ route('listing.show', $item->slug) }}" class="group bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl hover:border-[#0194F3]/30 transition-all duration-300 flex flex-col h-full relative">
+            <a href="{{ $item->url }}" class="group bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl hover:border-[#0194F3]/30 transition-all duration-300 flex flex-col h-full relative">
                 
                 {{-- Tombol Hapus Favorit --}}
                 <button type="button" x-data @click.prevent="

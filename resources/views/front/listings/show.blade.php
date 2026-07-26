@@ -485,7 +485,7 @@
                     
                     <div class="flex flex-col gap-4">
                         @foreach($userListings as $uItem)
-                        <a href="{{ route('listing.show', $uItem->slug) }}" class="group bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl hover:border-[#0194F3]/30 transition-all duration-300 flex flex-col">
+                        <a href="{{ $uItem->url }}" class="group bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl hover:border-[#0194F3]/30 transition-all duration-300 flex flex-col">
                             <div class="relative overflow-hidden bg-slate-100" style="aspect-ratio:4/3;">
                                 @if($uItem->cover_image)<img src="{{ asset($uItem->cover_image) }}" alt="{{ $uItem->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                                 @else<div class="w-full h-full flex items-center justify-center text-slate-300"><i data-lucide="image" style="width:40px;height:40px;"></i></div>@endif
@@ -523,7 +523,7 @@
         <h2 class="text-2xl font-bold text-slate-800 mb-6">Mungkin Anda juga tertarik</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             @foreach($relatedListings as $item)
-            <a href="{{ route('listing.show', $item->slug) }}" class="group bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl hover:border-[#0194F3]/30 transition-all duration-300 flex flex-col">
+            <a href="{{ $item->url }}" class="group bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl hover:border-[#0194F3]/30 transition-all duration-300 flex flex-col">
                 <div class="relative overflow-hidden bg-slate-100" style="aspect-ratio:4/3;">
                     @if($item->cover_image)<img src="{{ asset($item->cover_image) }}" alt="{{ $item->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                     @else<div class="w-full h-full flex items-center justify-center text-slate-300"><i data-lucide="image" style="width:40px;height:40px;"></i></div>@endif
@@ -556,7 +556,7 @@
         <h2 class="text-2xl font-bold text-slate-800 mb-6">Rekomendasi Iklan</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             @foreach($recommendedListings as $item)
-            <a href="{{ route('listing.show', $item->slug) }}" class="group bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl hover:border-[#0194F3]/30 transition-all duration-300 flex flex-col">
+            <a href="{{ $item->url }}" class="group bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl hover:border-[#0194F3]/30 transition-all duration-300 flex flex-col">
                 <div class="relative overflow-hidden bg-slate-100" style="aspect-ratio:4/3;">
                     @if($item->cover_image)<img src="{{ asset($item->cover_image) }}" alt="{{ $item->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                     @else<div class="w-full h-full flex items-center justify-center text-slate-300"><i data-lucide="image" style="width:40px;height:40px;"></i></div>@endif
@@ -670,7 +670,7 @@ document.addEventListener('keydown', function(e) {
 });
 
 function shareListing() {
-    navigator.clipboard.writeText('{{ route('listing.show', $listing->slug) }}').then(() => {
+    navigator.clipboard.writeText('{{ $listing->url }}').then(() => {
         Swal.fire({
             icon: 'success',
             title: 'Berhasil disalin!',

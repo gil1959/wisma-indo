@@ -12,7 +12,7 @@
 
     @foreach($listings as $listing)
     <url>
-        <loc>{{ route('listing.show', $listing->slug) }}</loc>
+        <loc>{{ $listing->url }}</loc>
         <lastmod>{{ $listing->updated_at->tz('Asia/Jakarta')->toAtomString() }}</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>

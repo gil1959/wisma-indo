@@ -30,7 +30,7 @@
                     @forelse($surveys as $survey)
                         <tr class="hover:bg-slate-50 transition">
                             <td class="px-6 py-4">
-                                <a href="{{ route('listing.show', $survey->listing->slug) }}" class="font-bold text-[#0194F3] hover:underline" target="_blank">{{ $survey->listing->title }}</a>
+                                <a href="{{ $survey->listing->url }}" class="font-bold text-[#0194F3] hover:underline" target="_blank">{{ $survey->listing->title }}</a>
                             </td>
                             <td class="px-6 py-4">
                                 <div class="font-bold text-slate-800">{{ $survey->name }}</div>

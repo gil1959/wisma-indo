@@ -86,8 +86,12 @@ class ListingController extends Controller
         return view('front.listings.index', ['type' => 'barang-jasa', 'listings' => $listings]);
     }
 
-    public function show($slug)
+    public function show($kategori, $slug)
     {
+        if (!in_array($kategori, ['properti', 'jasa', 'barang'])) {
+            return redirect()->route('home');
+        }
+
         $listing = Listing::where('slug', $slug)->firstOrFail();
         
         // Increment views

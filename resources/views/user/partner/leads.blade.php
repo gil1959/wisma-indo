@@ -31,7 +31,7 @@
                         <tr class="hover:bg-slate-50 transition">
                             <td class="px-6 py-4">
                                 @if($lead->listing)
-                                    <a href="{{ route('listing.show', $lead->listing->slug) }}" class="font-bold text-[#0194F3] hover:underline" target="_blank">{{ $lead->listing->title }}</a>
+                                    <a href="{{ $lead->listing->url }}" class="font-bold text-[#0194F3] hover:underline" target="_blank">{{ $lead->listing->title }}</a>
                                 @else
                                     <span class="font-bold text-slate-500 text-xs">Pencarian Umum</span>
                                 @endif

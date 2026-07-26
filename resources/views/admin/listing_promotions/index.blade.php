@@ -87,7 +87,7 @@
                     <td class="px-5 py-3">{{ $item->created_at->format('d M Y, H:i') }}</td>
                     <td class="px-5 py-3 font-medium">
                         {{ $item->user->name ?? 'Unknown' }}<br>
-                        <a href="{{ route('listing.show', $item->listing->slug ?? '') }}" target="_blank" class="text-xs text-blue-500 hover:underline">{{ $item->listing->title ?? 'Iklan Tidak Ditemukan' }}</a>
+                        <a href="{{ optional($item->listing)->url ?? '#' }}" target="_blank" class="text-xs text-blue-500 hover:underline">{{ $item->listing->title ?? 'Iklan Tidak Ditemukan' }}</a>
                     </td>
                     <td class="px-5 py-3">
                         <span class="font-bold text-slate-900">{{ $item->listingPackage->name ?? 'Unknown' }}</span> 

@@ -149,7 +149,7 @@
                         <p class="text-xs font-bold text-[#0194F3]">Rp {{ number_format($lead->listing->price, 0, ',', '.') }}</p>
                     </div>
                 </div>
-                <a href="{{ route('listing.show', $lead->listing->slug) }}" target="_blank" class="block text-center w-full py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 text-sm font-semibold rounded-xl border border-slate-200 transition">
+                <a href="{{ $lead->listing->url }}" target="_blank" class="block text-center w-full py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 text-sm font-semibold rounded-xl border border-slate-200 transition">
                     Lihat Iklan
                 </a>
             </div>

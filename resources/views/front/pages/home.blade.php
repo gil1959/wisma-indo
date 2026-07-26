@@ -357,7 +357,7 @@
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
             @if(isset($propertyListings) && $propertyListings->count() > 0)
                 @foreach ($propertyListings as $listing)
-                <a href="{{ route('listing.show', $listing->slug) }}" class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all group flex flex-col h-full border border-slate-100">
+                <a href="{{ $listing->url }}" class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all group flex flex-col h-full border border-slate-100">
                     <div class="relative aspect-[4/3] overflow-hidden bg-slate-100">
                         @if($listing->primary_image)
                         <img src="{{ asset($listing->primary_image) }}" alt="{{ $listing->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
@@ -432,7 +432,7 @@
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
             @if(isset($goodsServicesListings) && $goodsServicesListings->count() > 0)
                 @foreach ($goodsServicesListings as $listing)
-                <a href="{{ route('listing.show', $listing->slug) }}" class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all group flex flex-col h-full border border-slate-100">
+                <a href="{{ $listing->url }}" class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all group flex flex-col h-full border border-slate-100">
                     <div class="relative aspect-[4/3] overflow-hidden bg-slate-100">
                         @if($listing->primary_image)
                         <img src="{{ asset($listing->primary_image) }}" alt="{{ $listing->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">

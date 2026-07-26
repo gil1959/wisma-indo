@@ -31,7 +31,7 @@
                     <td class="px-6 py-4">
                         <p class="font-bold text-slate-800">{{ $lead->name }}</p>
                         @if($lead->listing_id && $lead->listing)
-                            <a href="{{ route('listing.show', $lead->listing->slug) }}" target="_blank" class="text-xs text-[#0194F3] hover:underline flex items-center gap-1 mt-1">
+                            <a href="{{ $lead->listing->url }}" target="_blank" class="text-xs text-[#0194F3] hover:underline flex items-center gap-1 mt-1">
                                 <i data-lucide="home" class="w-3 h-3"></i> {{ Str::limit($lead->listing->title, 30) }}
                             </a>
                         @else
