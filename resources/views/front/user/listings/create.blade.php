@@ -1,6 +1,11 @@
-@extends('user.layouts.app')
+@php $isPartner = auth()->check() && auth()->user()->hasRole('partner'); @endphp
+@extends($isPartner ? 'user.layouts.app' : 'layouts.front')
 
 @section('content')
+@if(!$isPartner)
+<div class="pt-24 pb-20 min-h-screen bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+@endif
 <div x-data="listingForm()">
     <div class="mx-auto w-full">
         
@@ -354,6 +359,10 @@
 
     </div>
 </div>
+@if(!$isPartner)
+    </div>
+</div>
+@endif
 @endsection
 
 @push('scripts')
