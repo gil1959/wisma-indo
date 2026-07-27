@@ -26,7 +26,7 @@ class RedirectIfAuthenticated
                 $user = Auth::user();
 
                 if ($user && ($user->hasRole('admin') || $user->hasRole('site_moderator'))) {
-                    return redirect('/admin');
+                    return redirect()->route('admin.dashboard');
                 }
 
                 if ($user && $user->hasRole('partner')) {

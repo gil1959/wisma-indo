@@ -135,7 +135,9 @@
           
           @auth
           <div class="py-1">
-            @if(auth()->user()->hasRole('partner') && \Route::has('partner.statistics'))
+            @if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('site_moderator'))
+                <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 font-medium">Dashboard Admin</a>
+            @elseif(auth()->user()->hasRole('partner') && \Route::has('partner.statistics'))
                 <a href="{{ route('partner.statistics') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 font-medium">Dashboard Partner</a>
             @else
                 <a href="{{ \Route::has('akun') ? route('akun') : '#' }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 font-medium">Akun Saya</a>

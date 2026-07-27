@@ -50,8 +50,31 @@ class GoogleController extends Controller
 
                 Auth::login($newUser);
             }
+            $loggedInUser = Auth::user();
 
-            return redirect()->intended('/dashboard');
+            if ($loggedInUser && ($loggedInUser->hasRole('admin') || $loggedInUser->hasRole('site_moderator'))) {
+                return redirect()->route('admin.dashboard');
+            }
+
+            if ($loggedInUser) {
+                $partnerReg = \App\Models\PartnerRegistration::where('user_id', $loggedInUser->id)->first();
+                if ($partnerReg && $partnerReg->status === 'pending') {
+                    Auth::logout();
+                    request()->session()->invalidate();
+                    request()->session()->regenerateToken();
+
+                    return redirect()->route('partner.register.success')->with('registered_user', [
+                        'name' => $loggedInUser->name,
+                        'email' => $loggedInUser->email,
+                    ]);
+                }
+            }
+
+            if ($loggedInUser && $loggedInUser->hasRole('partner')) {
+                return redirect()->route('partner.statistics');
+            }
+
+            return redirect('/akun');
 
         } catch (\Exception $e) {
             return redirect('/login')->with('error', 'Terjadi kesalahan saat login dengan Google: ' . $e->getMessage());

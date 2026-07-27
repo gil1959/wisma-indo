@@ -37,8 +37,6 @@ Route::get('/page/{slug}', [\App\Http\Controllers\Front\PageController::class, '
 Route::get('/auth/google', [\App\Http\Controllers\Auth\GoogleController::class, 'redirectToGoogle'])->name('google.login');
 Route::get('/auth/google/callback', [\App\Http\Controllers\Auth\GoogleController::class, 'handleGoogleCallback']);
 
-// Dynamic Listing Route (must be at the end of public routes)
-Route::get('/{kategori}/{slug}', [\App\Http\Controllers\Front\ListingController::class, 'show'])->name('listing.show');
 
 // USER DASHBOARD (Requires Auth)
 Route::middleware(['auth'])->group(function () {
@@ -125,7 +123,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/push/subscribe', [\App\Http\Controllers\PushSubscriptionController::class, 'store'])->name('push.subscribe');
 });
 
-Route::middleware(['auth', \Spatie\Permission\Middleware\RoleMiddleware::class . ':admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', \Spatie\Permission\Middleware\RoleMiddleware::class . ':admin|site_moderator'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
     // Settings
@@ -254,6 +252,9 @@ Route::middleware(['auth', \Spatie\Permission\Middleware\RoleMiddleware::class .
 });
 
 require __DIR__ . '/auth.php';
+
+// Dynamic Listing Route (must be at the very end to avoid capturing /admin/dashboard, etc)
+Route::get('/{kategori}/{slug}', [\App\Http\Controllers\Front\ListingController::class, 'show'])->name('listing.show');
 
 // Fallback route for storage files when symlink is not available (common on shared hosting)
 Route::get('storage/{path}', function ($path) {
