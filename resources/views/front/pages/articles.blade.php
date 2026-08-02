@@ -27,7 +27,7 @@
             <!-- Left: Main Content (Articles Grid) -->
             <div class="lg:w-3/4">
                 @if($articles->count() > 0)
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 md:gap-10 mb-12">
                     @foreach($articles as $article)
                     <article class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-slate-100 flex flex-col h-full cursor-pointer group" onclick="window.location.href='{{ route('articles.show', $article->slug) }}'">
                         <div class="relative overflow-hidden aspect-[16/10]">

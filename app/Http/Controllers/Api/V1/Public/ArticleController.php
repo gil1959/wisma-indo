@@ -12,8 +12,8 @@ class ArticleController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Article::with(['category', 'author'])
-            ->where('status', 'published');
+        $query = Article::with(['category'])
+            ->where('is_published', true);
 
         if ($request->has('category_slug')) {
             $query->whereHas('category', function($q) use ($request) {
@@ -34,9 +34,9 @@ class ArticleController extends Controller
 
     public function show($slug)
     {
-        $article = Article::with(['category', 'author'])
+        $article = Article::with(['category'])
             ->where('slug', $slug)
-            ->where('status', 'published')
+            ->where('is_published', true)
             ->first();
 
         if (!$article) {

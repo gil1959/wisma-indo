@@ -54,15 +54,16 @@
     [x-cloak] { display: none !important; }
   </style>
 
-  @if(!empty($siteSettings['tracking_head']))
-  {!! $siteSettings['tracking_head'] !!}
+  @if(!empty($siteSettings['google_ads_tag']))
+  {!! $siteSettings['google_ads_tag'] !!}
+  @endif
+
+  @if(!empty($siteSettings['fb_ads_tag']))
+  {!! $siteSettings['fb_ads_tag'] !!}
   @endif
 </head>
 
 <body class="bg-slate-50 font-[Poppins] text-slate-800 antialiased">
-  @if(!empty($siteSettings['tracking_body']))
-  {!! $siteSettings['tracking_body'] !!}
-  @endif
 
   <div class="min-h-screen flex flex-col">
     @if(session()->has('impersonator_id'))

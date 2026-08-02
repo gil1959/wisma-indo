@@ -104,12 +104,12 @@
 
         <!-- Related Articles -->
         @if($relatedArticles->count() > 0)
-        <div>
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
             <div class="flex items-center justify-between mb-8">
                 <h3 class="text-2xl font-bold text-slate-800">Artikel Terkait</h3>
                 <a href="{{ route('articles', ['category' => $article->category->slug]) }}" class="text-[#0194F3] font-semibold hover:underline">Lihat Semua</a>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
                 @foreach($relatedArticles as $related)
                 <article class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 group border border-slate-100 flex flex-col cursor-pointer" onclick="window.location.href='{{ route('articles.show', $related->slug) }}'">
                     <div class="relative overflow-hidden aspect-[4/3]">

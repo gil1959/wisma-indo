@@ -14,11 +14,30 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $banners = HomeBanner::orderBy('order', 'asc')->get();
-        $locations = HomeLocation::orderBy('order', 'asc')->get();
-        $testimonials = Testimonial::orderBy('order', 'asc')->get();
-        $bankPartners = BankPartner::orderBy('order', 'asc')->get();
-        $categories = ListingCategory::where('is_active', true)->get();
+        $banners = HomeBanner::orderBy('order', 'asc')->get()->map(function($banner) {
+            $banner->image = $banner->image ? url($banner->image) : null;
+            return $banner;
+        });
+
+        $locations = HomeLocation::orderBy('order', 'asc')->get()->map(function($loc) {
+            $loc->image = $loc->image ? url($loc->image) : null;
+            return $loc;
+        });
+
+        $testimonials = Testimonial::orderBy('order', 'asc')->get()->map(function($t) {
+            $t->avatar = $t->avatar ? url($t->avatar) : null;
+            return $t;
+        });
+
+        $bankPartners = BankPartner::orderBy('order', 'asc')->get()->map(function($b) {
+            $b->logo = $b->logo ? url($b->logo) : null;
+            return $b;
+        });
+
+        $allCategories = ListingCategory::where('is_active', true)->get()->map(function($c) {
+            $c->photo = $c->photo ? url($c->photo) : null;
+            return $c;
+        });
 
         return response()->json([
             'success' => true,
@@ -27,7 +46,11 @@ class HomeController extends Controller
                 'locations' => $locations,
                 'testimonials' => $testimonials,
                 'bank_partners' => $bankPartners,
-                'categories' => $categories,
+                'categories' => [
+                    'property' => $allCategories->where('type', 'property')->values(),
+                    'goods' => $allCategories->where('type', 'goods')->values(),
+                    'services' => $allCategories->where('type', 'services')->values(),
+                ],
             ]
         ]);
     }

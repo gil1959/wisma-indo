@@ -24,16 +24,34 @@ class ProfileController extends Controller
         
         $request->validate([
             'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'phone' => 'required|string|max:20|unique:users,phone,' . $user->id,
             'whatsapp_template' => 'nullable|string',
-            'password' => 'nullable|string|min:8|confirmed'
+            'password' => 'nullable|string|min:8|confirmed',
+            'address' => 'nullable|string',
+            'full_address' => 'nullable|string',
+            'sub_district' => 'nullable|string',
+            'bio' => 'nullable|string',
         ]);
 
         $user->name = $request->name;
+        $user->email = $request->email;
         $user->phone = $request->phone;
         
         if ($request->has('whatsapp_template')) {
             $user->whatsapp_template = $request->whatsapp_template;
+        }
+        if ($request->has('address')) {
+            $user->address = $request->address;
+        }
+        if ($request->has('full_address')) {
+            $user->full_address = $request->full_address;
+        }
+        if ($request->has('sub_district')) {
+            $user->sub_district = $request->sub_district;
+        }
+        if ($request->has('bio')) {
+            $user->bio = $request->bio;
         }
 
         if ($request->filled('password')) {

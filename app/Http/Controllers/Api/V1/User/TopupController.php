@@ -34,24 +34,26 @@ class TopupController extends Controller
         ]);
 
         $package = TopupPackage::findOrFail($package_id);
+        if (!$package->is_active) abort(404);
+
         $user = $request->user();
 
         $transaction = new TopupTransaction();
         $transaction->user_id = $user->id;
         $transaction->topup_package_id = $package->id;
-        $transaction->invoice_number = 'INV-TP-' . time() . '-' . Str::random(5);
-        $transaction->amount = $package->price;
-        $transaction->quota_amount = $package->quota_amount;
-        $transaction->payment_method = $request->payment_method;
+        $transaction->amount = $package->amount;
+        $transaction->price = $package->price;
+        $transaction->payment_method = $request->payment_method == 'offline' ? 'offline' : $request->payment_channel;
         
         if ($request->payment_method == 'offline') {
-            $transaction->payment_channel = $request->payment_channel;
-            // Generate unique code for offline transfer
-            $transaction->unique_code = rand(1, 999);
-            $transaction->status = 'waiting_payment';
-        } else {
+            $uniqueCode = rand(1, 999);
+            $transaction->unique_code = $uniqueCode;
+            $transaction->total_amount = $package->price + $uniqueCode;
             $transaction->status = 'pending';
-            // Integrate with payment gateway logic here
+        } else {
+            $transaction->total_amount = $package->price;
+            $transaction->status = 'pending';
+            // Integrate with payment gateway logic here if needed
         }
 
         $transaction->save();
@@ -66,17 +68,17 @@ class TopupController extends Controller
     public function uploadProof(Request $request, $transaction_id)
     {
         $request->validate([
-            'proof_of_payment' => 'required|image|mimes:jpeg,png,jpg|max:2048'
+            'payment_proof' => 'required|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
         $transaction = TopupTransaction::where('user_id', $request->user()->id)
-            ->where('status', 'waiting_payment')
+            ->where('status', 'pending')
             ->findOrFail($transaction_id);
 
-        $path = $request->file('proof_of_payment')->store('payment_proofs', 'public');
+        $path = $request->file('payment_proof')->store('payments', 'public');
         
-        $transaction->proof_of_payment = $path;
-        $transaction->status = 'waiting_verification';
+        $transaction->payment_proof = \Illuminate\Support\Facades\Storage::url($path);
+        $transaction->status = 'pending'; // Stays pending until admin approves
         $transaction->save();
 
         return response()->json([

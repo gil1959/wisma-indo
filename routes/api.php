@@ -81,6 +81,11 @@ Route::prefix('v1')->namespace('App\Http\Controllers\Api\V1')->group(function ()
         Route::put('/user/listings/{id}', [App\Http\Controllers\Api\V1\User\ListingController::class, 'update']);
         Route::delete('/user/listings/{id}', [App\Http\Controllers\Api\V1\User\ListingController::class, 'destroy']);
         
+        // Listing Promotions
+        Route::get('/user/listings/{id}/promotions/packages', [App\Http\Controllers\Api\V1\User\ListingPromotionController::class, 'packages']);
+        Route::post('/user/listings/{id}/promotions/checkout/{package_id}', [App\Http\Controllers\Api\V1\User\ListingPromotionController::class, 'checkout']);
+        Route::post('/user/listing-promotions/{transaction_id}/upload-proof', [App\Http\Controllers\Api\V1\User\ListingPromotionController::class, 'uploadProof']);
+        
         // Favorites
         Route::get('/user/favorites', [App\Http\Controllers\Api\V1\User\FavoriteController::class, 'index']);
         Route::post('/user/favorites/{listing_id}', [App\Http\Controllers\Api\V1\User\FavoriteController::class, 'store']);

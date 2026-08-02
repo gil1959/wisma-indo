@@ -13,23 +13,43 @@ class ListingController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Listing::with(['category', 'user', 'images'])
+        $query = Listing::with(['listingCategory', 'user', 'images'])
             ->where('is_active', true)
-            ->where('status', 'approved');
+            ->where('status', 'tersedia');
 
         // Filters
         if ($request->has('category_slug')) {
-            $query->whereHas('category', function($q) use ($request) {
+            $query->whereHas('listingCategory', function($q) use ($request) {
                 $q->where('slug', $request->category_slug);
             });
         }
+        // Jenis Transaksi
+        if ($request->has('transaction_type')) {
+            $query->where('transaction_type', $request->transaction_type);
+        }
         
-        if ($request->has('listing_type')) {
-            $query->where('listing_type', $request->listing_type); // dijual / disewakan
+        // Lokasi / Daerah
+        if ($request->has('location')) {
+            $query->where(function($q) use ($request) {
+                $q->where('location', 'like', '%' . $request->location . '%')
+                  ->orWhere('address', 'like', '%' . $request->location . '%');
+            });
+        }
+        
+        // Rentang Harga
+        if ($request->has('min_price')) {
+            $query->where('price', '>=', $request->min_price);
+        }
+        if ($request->has('max_price')) {
+            $query->where('price', '<=', $request->max_price);
         }
         
         if ($request->has('type')) {
-            $query->where('type', $request->type); // properti / barang_jasa
+            if ($request->type === 'barang_jasa') {
+                $query->whereIn('type', ['goods', 'services']);
+            } else {
+                $query->where('type', $request->type);
+            }
         }
 
         if ($request->has('search')) {
@@ -41,7 +61,7 @@ class ListingController extends Controller
         $order = $request->get('order', 'desc');
         
         // Prioritize sundul/premium
-        $query->orderByRaw('is_sundul DESC, sundul_at DESC, is_premium DESC, premium_until DESC');
+        $query->orderByRaw('is_premium DESC, bump_count DESC, bumped_at DESC');
         $query->orderBy($sort, $order);
 
         $listings = $query->paginate(12);
@@ -53,10 +73,10 @@ class ListingController extends Controller
 
     public function show($slug)
     {
-        $listing = Listing::with(['category', 'user', 'images'])
+        $listing = Listing::with(['listingCategory', 'user', 'images'])
             ->where('slug', $slug)
             ->where('is_active', true)
-            ->where('status', 'approved')
+            ->where('status', 'tersedia')
             ->first();
 
         if (!$listing) {

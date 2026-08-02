@@ -105,6 +105,16 @@
                             </td>
                             <td class="px-5 py-4">
                                 <div class="flex items-center justify-end gap-2">
+                                    <form action="{{ route('admin.users.add_quota', $u) }}" method="POST" class="inline-block" id="form-add-50-{{ $u->id }}">
+                                        @csrf
+                                        <input type="hidden" name="amount" value="50">
+                                        <button type="button" onclick="confirmAdd50('form-add-50-{{ $u->id }}', '{{ addslashes($u->name) }}')"
+                                                class="px-3 py-2 rounded-xl font-extrabold text-white hover:opacity-90"
+                                                style="background:#f59e0b;">
+                                            +50 Iklan
+                                        </button>
+                                    </form>
+
                                     <a href="{{ route('admin.users.show', $u) }}"
                                        class="px-3 py-2 rounded-xl font-extrabold text-slate-700 border border-slate-200 hover:bg-slate-50">
                                         Detail
@@ -189,4 +199,24 @@
     </template>
 
 </div>
+
+@push('scripts')
+<script>
+    function confirmAdd50(formId, userName) {
+        Swal.fire({
+            title: 'Tambahkan 50 Kuota?',
+            text: "User " + userName + " akan mendapatkan 50 kuota iklan gratis tambahan.",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#0194F3',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Ya, Tambahkan'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(formId).submit();
+            }
+        });
+    }
+</script>
+@endpush
 @endsection

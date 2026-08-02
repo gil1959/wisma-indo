@@ -13,7 +13,7 @@ class FavoriteController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $favorites = FavoriteListing::with('listing.category')
+        $favorites = FavoriteListing::with('listing.listingCategory')
             ->where('user_id', $user->id)
             ->get()
             ->pluck('listing');

@@ -273,6 +273,43 @@ return redirect()
             return back()->with('success', 'Kuota Gratis 1x berhasil diaktifkan kembali.');
         }
     }
+
+    public function addQuota(Request $request, User $user)
+    {
+        $request->validate(['amount' => 'required|integer|min:1']);
+        
+        $quota = \App\Models\UserQuota::firstOrCreate(
+            ['user_id' => $user->id],
+            ['listing_quota' => 0, 'has_free_quota' => true]
+        );
+        
+        $quota->increment('listing_quota', $request->amount);
+        $quota->update(['has_free_quota' => true]);
+        
+        return back()->with('success', "Berhasil menambahkan {$request->amount} kuota iklan gratis untuk {$user->name}.");
+    }
+
+    public function subtractQuota(Request $request, User $user)
+    {
+        $request->validate(['amount' => 'required|integer|min:1']);
+        
+        $quota = $user->quota;
+        
+        if (!$quota) {
+            return back()->with('error', 'Gagal: User ini belum memiliki kuota iklan.');
+        }
+
+        if ($quota->listing_quota != -1 && $quota->listing_quota < $request->amount) {
+            return back()->with('error', "Gagal: Jumlah yang dikurangi ({$request->amount}) melebihi sisa kuota yang tersedia ({$quota->listing_quota}).");
+        }
+        
+        if ($quota->listing_quota != -1) {
+            $quota->decrement('listing_quota', $request->amount);
+        }
+        
+        return back()->with('success', "Berhasil mengurangi {$request->amount} kuota iklan dari {$user->name}.");
+    }
+
     public function impersonate(User $user)
     {
         if ($user->hasRole('admin')) {

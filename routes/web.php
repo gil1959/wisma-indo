@@ -176,6 +176,8 @@ Route::middleware(['auth', \Spatie\Permission\Middleware\RoleMiddleware::class .
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
     Route::post('/users/{user}/impersonate', [\App\Http\Controllers\Admin\UserController::class, 'impersonate'])->name('users.impersonate');
     Route::post('users/{user}/toggle-quota', [\App\Http\Controllers\Admin\UserController::class, 'toggleFreeQuota'])->name('users.toggle_quota');
+    Route::post('users/{user}/add-quota', [\App\Http\Controllers\Admin\UserController::class, 'addQuota'])->name('users.add_quota');
+    Route::post('users/{user}/subtract-quota', [\App\Http\Controllers\Admin\UserController::class, 'subtractQuota'])->name('users.subtract_quota');
     
     // Pages CMS
     Route::resource('pages', \App\Http\Controllers\Admin\PageController::class)->except('show');

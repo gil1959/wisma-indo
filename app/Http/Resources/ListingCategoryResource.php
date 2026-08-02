@@ -12,8 +12,8 @@ class ListingCategoryResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
-            'icon' => $this->icon,
-            'type' => $this->type, // properti, barang_jasa
+            'photo' => $this->photo ? url($this->photo) : null,
+            'type' => $this->type,
             'is_active' => $this->is_active,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
