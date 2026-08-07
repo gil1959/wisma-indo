@@ -18,9 +18,14 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
             <h1 class="text-3xl font-bold text-slate-800">Iklan Saya</h1>
             
-            <button type="button" @click="pasangIklanModal = true" class="px-6 py-2 bg-[#0194F3] text-white font-bold rounded-xl hover:bg-blue-600 transition flex items-center gap-2">
-                <i data-lucide="plus" class="w-4 h-4"></i> Pasang Iklan Baru
-            </button>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('bulk-uploads.index') }}" class="px-5 py-2 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 transition flex items-center gap-2">
+                    <i data-lucide="upload-cloud" class="w-4 h-4"></i> Upload Massal
+                </a>
+                <button type="button" @click="pasangIklanModal = true" class="px-6 py-2 bg-[#0194F3] text-white font-bold rounded-xl hover:bg-blue-600 transition flex items-center gap-2">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Pasang Iklan Baru
+                </button>
+            </div>
         </div>
 
         @if(session('success'))

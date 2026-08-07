@@ -149,6 +149,7 @@
                 @endif
             </a>
             <a href="{{ \Route::has('iklan.saya') ? route('iklan.saya') : '#' }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 font-medium">Iklan Saya</a>
+            <a href="{{ route('bulk-uploads.index') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 font-medium">Upload Massal (Excel)</a>
           </div>
           @endauth
           <div class="border-t border-slate-100 py-1">

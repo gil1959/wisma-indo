@@ -6,6 +6,8 @@
 @section('content')
 <div x-data="{ 
     pasangIklanModal: false,
+    uploadMassalModal: false,
+    type: 'property',
     rejectModal: false,
     approveModal: false,
     deleteModal: false,
@@ -68,6 +70,9 @@
                     <option value="nonaktif" {{ request('status') == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
                 </select>
             </form>
+            <button @click="uploadMassalModal = true" type="button" class="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-emerald-700 transition shadow-sm">
+                <i data-lucide="upload-cloud" class="w-4 h-4"></i> Upload Massal
+            </button>
             <button @click="pasangIklanModal = true" class="inline-flex items-center gap-2 bg-[#0194F3] text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-600 transition shadow-sm">
                 <i data-lucide="plus" class="w-4 h-4"></i> Tambah
             </button>
@@ -254,6 +259,63 @@
             </div>
     
           </div>
+        </div>
+    </template>
+
+    {{-- MODAL UPLOAD MASSAL (ADMIN) --}}
+    <template x-teleport="body">
+        <div x-show="uploadMassalModal" style="display: none;" class="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+            <div x-show="uploadMassalModal" 
+                 x-transition.opacity
+                 class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" 
+                 @click="uploadMassalModal = false"></div>
+            
+            <div x-show="uploadMassalModal" 
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-8 scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-8 scale-95"
+                 class="relative bg-white rounded-3xl shadow-2xl w-full max-w-md mx-auto overflow-hidden z-10"
+                 @click.stop>
+                
+                <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+                    <h3 class="text-lg font-bold text-slate-800">Upload Massal Iklan</h3>
+                    <button @click="uploadMassalModal = false" class="p-2 text-slate-400 hover:text-slate-600 transition bg-slate-100 rounded-full hover:bg-slate-200 flex items-center justify-center">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <form action="{{ route('bulk-uploads.store') }}" method="POST" enctype="multipart/form-data" class="p-6">
+                    @csrf
+                    <div class="mb-5">
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">1. Pilih Tipe Iklan</label>
+                        <select name="type" x-model="type" class="w-full text-sm rounded-xl border-slate-200 focus:border-blue-500 focus:ring focus:ring-blue-500/20">
+                            <option value="property">Properti (Rumah, Tanah, dll)</option>
+                            <option value="goods">Barang</option>
+                            <option value="services">Jasa</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-5 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">2. Download Template</label>
+                        <p class="text-xs text-slate-500 mb-3">Download format Excel terbaru sesuai tipe yang Anda pilih.</p>
+                        <a :href="'/bulk-uploads/template/' + type" class="w-full block text-center bg-white border border-blue-200 text-blue-600 hover:bg-blue-50 font-medium py-2 px-4 rounded-lg transition text-sm">
+                            Download Template .XLSX
+                        </a>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">3. Upload File Excel Anda</label>
+                        <input type="file" name="file" accept=".xlsx,.xls" required class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer border border-slate-200 rounded-xl p-1">
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition shadow-md shadow-blue-500/20">
+                        Mulai Upload Data
+                    </button>
+                </form>
+            </div>
         </div>
     </template>
 

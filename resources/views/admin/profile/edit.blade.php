@@ -32,6 +32,7 @@
 
         <form class="mt-6 space-y-6" method="POST" action="{{ route('admin.profile.update') }}" enctype="multipart/form-data">
             @csrf
+            @method('PUT')
 
             {{-- Photo Profile --}}
             <div x-data="{ imageUrl: '{{ $user->avatar ? asset($user->avatar) : '' }}', fileChosen(event) { if(event.target.files.length > 0){ this.imageUrl = URL.createObjectURL(event.target.files[0]) } } }" class="flex flex-col mb-6 pb-6 border-b border-slate-100">

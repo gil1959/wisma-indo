@@ -44,6 +44,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/iklan-saya', [\App\Http\Controllers\User\ListingController::class, 'index'])->name('iklan.saya');
     Route::get('/iklan-favorit', [\App\Http\Controllers\User\FavoriteController::class, 'index'])->name('iklan.favorit');
     
+    // Bulk Uploads
+    Route::get('/bulk-uploads', [\App\Http\Controllers\User\BulkListingController::class, 'index'])->name('bulk-uploads.index');
+    Route::post('/bulk-uploads', [\App\Http\Controllers\User\BulkListingController::class, 'store'])->name('bulk-uploads.store');
+    Route::get('/bulk-uploads/template/{type}', [\App\Http\Controllers\User\BulkListingController::class, 'downloadTemplate'])->name('bulk-uploads.template');
+
+    
     // Top Up
     Route::get('/top-up', [\App\Http\Controllers\User\TopupController::class, 'index'])->name('topup');
     Route::get('/top-up/checkout/{package}', [\App\Http\Controllers\User\TopupController::class, 'checkout'])->name('topup.checkout');
