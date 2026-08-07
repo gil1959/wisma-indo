@@ -12,6 +12,8 @@ class BulkListingImport implements ToCollection, WithHeadingRow
 
     public function collection(Collection $rows)
     {
-        $this->data = $rows;
+        if ($this->data === null) {
+            $this->data = $rows;
+        }
     }
 }

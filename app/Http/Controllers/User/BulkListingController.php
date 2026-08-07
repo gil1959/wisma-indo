@@ -58,8 +58,18 @@ class BulkListingController extends Controller
             // This eliminates any possibility of the "zip member" temp file bug on Windows.
             $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($fullPath);
             $worksheet = $spreadsheet->getActiveSheet();
-            $highestRow = $worksheet->getHighestDataRow();
-            $totalRows = $highestRow - 1; // Exclude heading row
+            // Fix the "getHighestDataRow" bug that counts validations as data.
+            // Loop through Column A (Judul Iklan) to find the actual last row with text.
+            $highestRow = 1;
+            foreach ($worksheet->getColumnIterator('A') as $column) {
+                foreach ($column->getCellIterator(2) as $cell) {
+                    $val = $cell->getValue();
+                    if ($val !== null && trim((string)$val) !== '') {
+                        $highestRow = max($highestRow, $cell->getRow());
+                    }
+                }
+            }
+            $totalRows = max(0, $highestRow - 1); // Exclude heading row
         } catch (\Exception $e) {
             // Hapus file jika gagal dibaca
             @unlink($fullPath);

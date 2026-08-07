@@ -87,7 +87,7 @@ class PartnerRegistrationController extends Controller
             return redirect()->route('partner.register');
         }
 
-        $waNumber = \App\Models\Setting::getValue('whatsapp_number') ?? '6281234567890';
+        $waNumber = \App\Models\Setting::getValue('footer_whatsapp') ?? '6281234567890';
         $user = session('registered_user');
         
         $waText = "Halo admin Wismaindo,\n\nSaya baru saja mendaftar sebagai Partner.\n\nNama: {$user['name']}\nEmail: {$user['email']}\n\nMohon bantuannya untuk proses verifikasi akun saya. Terima kasih!";

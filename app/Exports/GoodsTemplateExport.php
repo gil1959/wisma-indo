@@ -13,7 +13,7 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
 use App\Models\ListingCategory;
 
-class GoodsTemplateExport implements WithHeadings, WithTitle, ShouldAutoSize, WithStyles, WithEvents
+class GoodsTemplateExport implements WithHeadings, WithTitle, WithStyles, WithEvents
 {
     public function headings(): array
     {
@@ -77,6 +77,36 @@ class GoodsTemplateExport implements WithHeadings, WithTitle, ShouldAutoSize, Wi
                 $this->addValidation($sheet, 'D2:D'.$highestRow, '"Ya,Tidak"');
                 $this->addValidation($sheet, 'E2:E'.$highestRow, $categoryList);
                 $this->addValidation($sheet, 'F2:F'.$highestRow, '"Baru,Bekas"');
+
+                // Set column widths
+                $colWidths = [
+                    'A' => 35, // Judul Iklan
+                    'B' => 50, // Deskripsi
+                    'C' => 18, // Harga
+                    'D' => 18, // Bisa Nego
+                    'E' => 30, // Kategori
+                    'F' => 18, // Kondisi
+                    'G' => 25, // Merek/Brand
+                    'H' => 25, // Lokasi Singkat
+                    'I' => 35, // Alamat Lengkap
+                    'J' => 35, // Google Maps URL
+                    'K' => 20, // WhatsApp
+                    'L' => 20, // Telepon
+                    'M' => 35, // YouTube URL
+                    'N' => 30, // Cover Image URL
+                    'O' => 25, 'P' => 25, 'Q' => 25, 'R' => 25, 'S' => 25,
+                    'T' => 25, 'U' => 25, 'V' => 25, 'W' => 25, 'X' => 25,
+                    'Y' => 25,
+                ];
+                foreach ($colWidths as $col => $width) {
+                    $sheet->getColumnDimension($col)->setWidth($width);
+                }
+
+                // Wrap text for ALL data rows and headers
+                $sheet->getStyle('A1:Y1000')->getAlignment()->setWrapText(true);
+
+                // Freeze first row
+                $sheet->freezePane('A2');
             },
         ];
     }

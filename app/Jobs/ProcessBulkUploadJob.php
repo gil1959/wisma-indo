@@ -73,10 +73,12 @@ class ProcessBulkUploadJob implements ShouldQueue
                     $deskripsi = $this->matchKey($row, 'deskripsi', 'description');
                     $lokasiSingkat = $this->matchKey($row, 'lokasi_singkat', 'lokasi');
                     $alamatLengkap = $this->matchKey($row, 'alamat_lengkap', 'alamat');
-                    $googleMapsUrl = $this->matchKey($row, 'google_maps', 'maps');
+                    // Heading "Google Maps URL (Opsional)" → slug "google_maps_url_opsional"
+                    $googleMapsUrl = $this->matchKey($row, 'google_maps_url_opsional', 'google_maps', 'maps_url', 'maps');
                     $whatsapp = $this->matchKey($row, 'whatsapp', 'wa');
-                    $telepon = $this->matchKey($row, 'telepon', 'phone');
-                    $youtube = $this->matchKey($row, 'youtube', 'yt');
+                    // Heading "Telepon (Opsional)" dikonversi Maatwebsite jadi "telepon_opsional"
+                    $telepon = $this->matchKey($row, 'telepon_opsional', 'telepon', 'phone');
+                    $youtube = $this->matchKey($row, 'youtube_url', 'youtube', 'yt');
 
                     $listingData = [
                         'user_id' => $this->bulkUpload->user_id,
@@ -206,16 +208,23 @@ class ProcessBulkUploadJob implements ShouldQueue
     private function downloadImage($url)
     {
         try {
-            $response = Http::timeout(15)->get($url);
+            $response = Http::timeout(5)->get($url);
             if ($response->successful()) {
                 $ext = 'jpg';
                 $contentType = $response->header('Content-Type');
                 if (strpos($contentType, 'image/png') !== false) $ext = 'png';
                 if (strpos($contentType, 'image/webp') !== false) $ext = 'webp';
 
-                $filename = 'listings/' . Str::random(40) . '.' . $ext;
-                Storage::disk('public')->put($filename, $response->body());
-                return '/storage/' . $filename;
+                $filename = Str::random(40) . '.' . $ext;
+                $path = 'public/listings/' . $filename;
+                
+                // Menyimpan gambar dengan disk local agar path cocok dengan fungsi watermark
+                Storage::disk('local')->put($path, $response->body());
+                
+                // Memberikan watermark
+                $this->applyWatermark($path);
+                
+                return '/storage/listings/' . $filename;
             }
         } catch (\Exception $e) {
             return null;
@@ -225,6 +234,18 @@ class ProcessBulkUploadJob implements ShouldQueue
 
     private function matchKey($row, ...$keywords)
     {
+        // Priority 1: exact key match (after Maatwebsite heading slug conversion)
+        foreach ($keywords as $kw) {
+            $slug = strtolower(trim($kw));
+            if (array_key_exists($slug, $row->toArray())) {
+                $val = $row[$slug];
+                if ($val !== null && $val !== '') {
+                    return $val;
+                }
+            }
+        }
+
+        // Priority 2: str_contains fallback for partial matches
         foreach ($row as $key => $val) {
             foreach ($keywords as $kw) {
                 if (str_contains(strtolower($key), strtolower($kw))) {
@@ -233,5 +254,79 @@ class ProcessBulkUploadJob implements ShouldQueue
             }
         }
         return '';
+    }
+
+    private function applyWatermark($path)
+    {
+        if (!class_exists(\Intervention\Image\ImageManager::class)) {
+            \Illuminate\Support\Facades\Log::error("Watermark: ImageManager class not found.");
+            return;
+        }
+        
+        $siteLogo = \App\Models\Setting::where('key', 'site_logo')->first()->value ?? null;
+        $brandName = \App\Models\Setting::where('key', 'brand_name')->first()->value ?? 'Wisma Indo';
+        if (!$siteLogo) {
+            \Illuminate\Support\Facades\Log::error("Watermark: site_logo setting not found.");
+            return;
+        }
+
+        $logoPath = public_path(str_replace('/storage/', 'storage/', $siteLogo));
+        if (!file_exists($logoPath)) {
+            // Fallback for cPanel if symlink doesn't exist
+            $logoPath = storage_path('app/public/' . str_replace('/storage/', '', $siteLogo));
+        }
+        
+        if (!file_exists($logoPath)) {
+            \Illuminate\Support\Facades\Log::error("Watermark: Logo file does not exist at path: " . $logoPath);
+            return;
+        }
+
+        try {
+            $manager = new \Intervention\Image\ImageManager(\Intervention\Image\Drivers\Gd\Driver::class);
+            $image = $manager->decodePath(storage_path('app/' . $path));
+            $watermark = $manager->decodePath($logoPath);
+            
+            // Layout seperti Navbar: Logo di kiri, Teks di kanan
+            // Ukuran logo dibuat proporsional (8% dari tinggi gambar utama)
+            $logoHeight = intval($image->height() * 0.08);
+            if ($logoHeight < 20) $logoHeight = 20;
+            $logoWidth = intval($watermark->width() * ($logoHeight / max($watermark->height(), 1)));
+            
+            $watermark->scale(height: $logoHeight);
+            $watermark->sharpen(15); // Tambah ketajaman (HD)
+            $watermark->grayscale();
+            
+            $fontSize = intval($logoHeight * 0.8);
+            $approxTextWidth = strlen($brandName) * ($fontSize * 0.55);
+            $padding = 15;
+            $totalWidth = $logoWidth + $padding + $approxTextWidth;
+            
+            // Hitung posisi agar grup logo+teks berada pas di tengah gambar
+            $startX = intval(($image->width() - $totalWidth) / 2);
+            $startY = intval(($image->height() - $logoHeight) / 2);
+            
+            // Masukkan logo
+            $image->insert($watermark, $startX, $startY, 'top-left', 0.85);
+            
+            // Masukkan teks di sebelah kanan logo
+            $fontPath = public_path('fonts/arialbd.ttf'); // Menggunakan font dari project
+            if (file_exists($fontPath)) {
+                $textX = $startX + $logoWidth + $padding;
+                $textY = $startY + intval($logoHeight * 0.85); // Baseline text
+                $image->text($brandName, $textX, $textY, function($font) use ($fontPath, $fontSize) {
+                    $font->file($fontPath);
+                    $font->size($fontSize);
+                    $font->color('rgba(128, 128, 128, 0.85)');
+                    $font->align('left');
+                });
+            } else {
+                \Illuminate\Support\Facades\Log::error("Watermark: Font file does not exist at path: " . $fontPath);
+            }
+
+            $image->scaleDown(width: 1200);
+            $image->save(storage_path('app/' . $path), quality: 75);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Watermark failed: " . $e->getMessage());
+        }
     }
 }
