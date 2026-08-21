@@ -23,7 +23,14 @@ class AutopostController extends Controller
         $redirectUri = url('/autopost/callback/meta');
         $scopes = 'pages_show_list,pages_read_engagement,pages_manage_posts,instagram_basic,instagram_content_publish';
         
-        $url = "https://www.facebook.com/v19.0/dialog/oauth?client_id={$appId}&redirect_uri={$redirectUri}&scope={$scopes}&response_type=code";
+        $query = http_build_query([
+            'client_id' => $appId,
+            'redirect_uri' => $redirectUri,
+            'scope' => $scopes,
+            'response_type' => 'code'
+        ]);
+        
+        $url = "https://www.facebook.com/v19.0/dialog/oauth?" . $query;
         
         return redirect($url);
     }
@@ -119,7 +126,14 @@ class AutopostController extends Controller
         $redirectUri = url('/autopost/callback/threads');
         $scopes = 'threads_basic,threads_content_publish';
         
-        $url = "https://threads.net/oauth/authorize?client_id={$appId}&redirect_uri={$redirectUri}&scope={$scopes}&response_type=code";
+        $query = http_build_query([
+            'client_id' => $appId,
+            'redirect_uri' => $redirectUri,
+            'scope' => $scopes,
+            'response_type' => 'code'
+        ]);
+        
+        $url = "https://threads.net/oauth/authorize?" . $query;
         
         return redirect($url);
     }
