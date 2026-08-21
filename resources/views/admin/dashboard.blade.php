@@ -40,11 +40,11 @@
 
             <div class="flex items-start justify-between relative">
                 <div>
-                    <div class="text-xs font-extrabold text-slate-500">Pendapatan Saldo</div>
+                    <div class="text-xs font-extrabold text-slate-500">Total Pendapatan</div>
                     <div class="mt-2 text-2xl font-extrabold text-emerald-600">
                        Rp {{ number_format($totalRevenue, 0, ',', '.') }}
                     </div>
-                    <div class="mt-1 text-xs text-slate-500">Dari penjualan top up koin</div>
+                    <div class="mt-1 text-xs text-slate-500">Dari semua transaksi sukses</div>
                 </div>
 
                 <div class="h-11 w-11 rounded-2xl grid place-items-center border border-emerald-200 bg-emerald-50">

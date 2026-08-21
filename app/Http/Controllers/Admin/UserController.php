@@ -310,6 +310,17 @@ return redirect()
         return back()->with('success', "Berhasil mengurangi {$request->amount} kuota iklan dari {$user->name}.");
     }
 
+    public function updatePopup(Request $request)
+    {
+        $request->validate([
+            'popup_text' => 'nullable|string'
+        ]);
+
+        \App\Models\Setting::setValue('user_dashboard_popup', $request->popup_text);
+
+        return back()->with('success', 'Popup dashboard user berhasil diperbarui.');
+    }
+
     public function impersonate(User $user)
     {
         if ($user->hasRole('admin')) {

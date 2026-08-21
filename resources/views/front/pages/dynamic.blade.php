@@ -1,5 +1,29 @@
 @extends('layouts.front')
 
+@if($page->meta_title)
+@section('title', $page->meta_title)
+@endif
+
+@if($page->meta_desc)
+@section('meta_desc', $page->meta_desc)
+@endif
+
+@if($page->meta_keywords)
+@section('meta_keywords', $page->meta_keywords)
+@endif
+
+@if($page->social_title)
+@section('social_title', $page->social_title)
+@endif
+
+@if($page->social_desc)
+@section('social_desc', $page->social_desc)
+@endif
+
+@if($page->seo_image)
+@section('seo_image', asset($page->seo_image))
+@endif
+
 @section('content')
 <div class="bg-slate-50 min-h-screen py-10 pt-24">
     <div class="max-w-4xl mx-auto px-4">

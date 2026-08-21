@@ -409,6 +409,42 @@
     }
 })();
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Cari semua form yang punya attribute onsubmit return confirm
+    document.querySelectorAll('form[onsubmit*="return confirm"]').forEach(form => {
+        // Ambil isi pesannya dengan regex
+        const match = form.getAttribute('onsubmit').match(/confirm\(['"]([^'"]+)['"]\)/);
+        if (match && match[1]) {
+            const message = match[1];
+            // Hapus attribut onsubmit bawaan biar ngga muncul native popup
+            form.removeAttribute('onsubmit');
+            // Tambahkan listener submit custom
+            form.addEventListener('submit', function(e) {
+                e.preventDefault(); // Stop form dikirim
+                Swal.fire({
+                    title: 'Konfirmasi',
+                    text: message,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#0194F3',
+                    cancelButtonColor: '#ef4444',
+                    confirmButtonText: 'Ya, Lanjutkan',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Jika OK, submit form secara programatik
+                        form.submit();
+                    }
+                });
+            });
+        }
+    });
+});
+</script>
+
 @stack('scripts')
 </body>
 </html>

@@ -15,13 +15,16 @@ class DashboardController extends Controller
         $totalListings = Listing::count();
 
         // TOTAL ACTIVE LISTINGS
-        $activeListings = Listing::where('status', 'active')->count();
+        $activeListings = Listing::where('status', 'tersedia')->count();
 
         // TOTAL USERS
         $totalUsers = User::count();
 
-        // TOTAL REVENUE (Success)
-        $totalRevenue = TopupTransaction::where('status', 'success')->sum('price');
+        // TOTAL REVENUE (Success from all sources)
+        $topupRevenue = TopupTransaction::where('status', 'success')->sum('total_amount');
+        $listingRevenue = \App\Models\ListingTransaction::where('status', 'success')->sum('amount');
+        $partnerRevenue = \App\Models\PartnerSubscription::where('status', 'active')->sum('amount');
+        $totalRevenue = $topupRevenue + $listingRevenue + $partnerRevenue;
 
         // VISITOR ANALYTICS
         $todayVisitors = \App\Models\Visitor::whereDate('date', today())->sum('hits');

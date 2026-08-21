@@ -25,7 +25,7 @@ class PartnerRegistrationController extends Controller
             'phone' => ['required', 'string', 'max:20'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'ktp_file' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
-            'foto_file' => ['required', 'file', 'mimes:jpg,jpeg,png', 'max:5120'],
+            'foto_file' => ['nullable', 'file', 'mimes:jpg,jpeg,png', 'max:5120'],
             'npwp_file' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
             'lisensi_file' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
         ]);
@@ -42,6 +42,7 @@ class PartnerRegistrationController extends Controller
 
         $registration = new PartnerRegistration();
         $registration->user_id = $user->id;
+        $registration->foto_file = 'none'; // Dummy value to satisfy MySQL NOT NULL constraint
 
         if ($request->hasFile('ktp_file')) {
             $path = $request->file('ktp_file')->store('partners/ktp', 'public');

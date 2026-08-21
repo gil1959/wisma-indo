@@ -17,7 +17,7 @@ class CreatePartnerRegistrationsTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('ktp_file');
-            $table->string('foto_file');
+            $table->string('foto_file')->nullable();
             $table->string('npwp_file')->nullable();
             $table->string('lisensi_file')->nullable();
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');

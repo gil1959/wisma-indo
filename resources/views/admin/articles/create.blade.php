@@ -9,7 +9,11 @@
             <div class="lg:col-span-2 space-y-6">
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2">Judul Artikel</label>
-                    <input type="text" name="title" class="w-full rounded-xl border-slate-300 focus:border-[#0194F3] focus:ring-[#0194F3]" required>
+                    <input type="text" name="title" value="{{ old('title') }}" class="w-full rounded-xl border-slate-300 focus:border-[#0194F3] focus:ring-[#0194F3]" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">SLUG URL</label>
+                    <input type="text" name="slug" value="{{ old('slug') }}" class="w-full rounded-xl border-slate-300 focus:border-[#0194F3] focus:ring-[#0194F3]" placeholder="opsional-jika-kosong-otomatis-dari-judul">
                 </div>
                 <div>
                     <div class="flex items-center justify-between mb-2">
@@ -134,6 +138,8 @@
         selector: '#editor',
         height: 400,
         menubar: false,
+        branding: false,
+        promotion: false,
         plugins: [
             'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
             'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
@@ -142,7 +148,7 @@
         toolbar: 'undo redo | blocks | ' +
         'bold italic backcolor | alignleft aligncenter ' +
         'alignright alignjustify | bullist numlist outdent indent | ' +
-        'removeformat | help',
+        'removeformat | link | help',
         content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }',
         setup: function (editor) {
             editor.on('change', function () {

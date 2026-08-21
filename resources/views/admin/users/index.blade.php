@@ -6,6 +6,7 @@
 @section('content')
 <div class="space-y-5" x-data="{
     deleteModal: false,
+    popupModal: false,
     impersonateModal: false,
     formToSubmit: null,
     userName: '',
@@ -49,12 +50,16 @@
                 </button>
             </div>
         </form>
-        <a href="{{ route('admin.users.create') }}"
-   class="px-4 py-2.5 rounded-2xl font-extrabold text-white"
-   style="background:#0194F3;">
-   Tambah User
-</a>
-
+        <div class="flex gap-2">
+            <button @click="popupModal = true" class="px-4 py-2.5 rounded-2xl font-extrabold text-slate-700 bg-slate-200 hover:bg-slate-300 transition">
+                Edit Pop up User
+            </button>
+            <a href="{{ route('admin.users.create') }}"
+               class="px-4 py-2.5 rounded-2xl font-extrabold text-white"
+               style="background:#0194F3;">
+               Tambah User
+            </a>
+        </div>
     </div>
 
     @if(session('success'))
@@ -163,22 +168,42 @@
     </div>
 
     {{-- MODAL DELETE --}}
-    <template x-teleport="body">
-        <div x-show="deleteModal" style="display: none;" class="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-            <div x-show="deleteModal" x-transition.opacity class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="deleteModal = false"></div>
-            <div x-show="deleteModal" x-transition class="relative bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center z-10">
-                <div class="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i data-lucide="alert-triangle" class="w-8 h-8"></i>
-                </div>
-                <h3 class="text-xl font-bold text-slate-800 mb-2">Hapus User?</h3>
-                <p class="text-slate-500 mb-6 text-sm">Data user ini akan dihapus secara permanen dari sistem.</p>
-                <div class="flex gap-3 justify-center">
-                    <button type="button" @click="deleteModal = false" class="px-4 py-2 rounded-xl font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Batal</button>
-                    <button type="button" @click="submitDelete()" class="px-4 py-2 rounded-xl font-bold bg-rose-600 text-white hover:bg-rose-700 transition">Ya, Hapus</button>
-                </div>
+    <div x-show="deleteModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm" x-cloak>
+        <div @click.away="deleteModal = false" class="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl transform transition-all scale-100 opacity-100">
+            <div class="mb-4 flex items-center justify-center w-12 h-12 rounded-full bg-rose-100 text-rose-600 mx-auto">
+                <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-center text-lg font-extrabold text-slate-900 mb-2">Hapus User?</h3>
+            <p class="text-center text-sm text-slate-500 mb-6">Tindakan ini tidak bisa dibatalkan. Data user ini akan dihapus permanen.</p>
+            <div class="flex gap-3">
+                <button @click="deleteModal = false" class="flex-1 rounded-xl bg-slate-100 py-3 text-sm font-bold text-slate-700 hover:bg-slate-200 transition">Batal</button>
+                <button @click="submitDelete" class="flex-1 rounded-xl bg-rose-600 py-3 text-sm font-bold text-white hover:bg-rose-700 transition">Hapus</button>
             </div>
         </div>
-    </template>
+    </div>
+
+    {{-- Modal Edit Popup User --}}
+    <div x-show="popupModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm" x-cloak>
+        <div @click.away="popupModal = false" class="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl transform transition-all scale-100 opacity-100">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-extrabold text-slate-900">Edit Pop up Dashboard User</h3>
+                <button @click="popupModal = false" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form action="{{ route('admin.users.update_popup') }}" method="POST">
+                @csrf
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Teks Pengumuman (Kosongkan jika ingin menyembunyikan popup)</label>
+                    <textarea name="popup_text" rows="4" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-[#0194F3] focus:ring-1 focus:ring-[#0194F3]">{{ \App\Models\Setting::getValue('user_dashboard_popup') }}</textarea>
+                </div>
+                <div class="flex justify-end gap-3">
+                    <button type="button" @click="popupModal = false" class="px-4 py-2.5 rounded-xl bg-slate-100 text-sm font-bold text-slate-700 hover:bg-slate-200 transition">Batal</button>
+                    <button type="submit" class="px-4 py-2.5 rounded-xl bg-[#0194F3] text-sm font-bold text-white shadow-lg hover:bg-[#027dd1] transition">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     {{-- MODAL IMPERSONATE --}}
     <template x-teleport="body">

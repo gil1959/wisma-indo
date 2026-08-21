@@ -27,6 +27,7 @@ class ArticleController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
+            'slug' => 'nullable|string|max:255|unique:articles',
             'category_id' => 'nullable|exists:article_categories,id',
             'content' => 'required|string',
             'image' => 'nullable|image|max:2048',
@@ -39,7 +40,12 @@ class ArticleController extends Controller
             'social_desc' => 'nullable|string',
         ]);
 
-        $validated['slug'] = Str::slug($request->title);
+        if (!empty($request->slug)) {
+            $validated['slug'] = Str::slug($request->slug);
+        } else {
+            $validated['slug'] = Str::slug($request->title);
+        }
+        
         $validated['is_published'] = $request->has('is_published');
 
         if ($request->hasFile('image')) {
@@ -74,6 +80,7 @@ class ArticleController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
+            'slug' => 'nullable|string|max:255|unique:articles,slug,' . $article->id,
             'category_id' => 'nullable|exists:article_categories,id',
             'content' => 'required|string',
             'image' => 'nullable|image|max:2048',
@@ -86,7 +93,12 @@ class ArticleController extends Controller
             'social_desc' => 'nullable|string',
         ]);
 
-        $validated['slug'] = Str::slug($request->title);
+        if (!empty($request->slug)) {
+            $validated['slug'] = Str::slug($request->slug);
+        } else {
+            $validated['slug'] = Str::slug($request->title);
+        }
+        
         $validated['is_published'] = $request->has('is_published');
 
         if ($request->hasFile('image')) {

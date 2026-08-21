@@ -328,12 +328,12 @@
                             <p class="text-slate-500 mb-8 max-w-md mx-auto">Sistem Meta mengharuskan Anda login menggunakan akun Facebook untuk dapat memposting ke Halaman FB dan Akun Instagram Business Anda. Untuk Threads, gunakan tombol login Threads.</p>
                             
                             <div class="flex flex-col gap-3 items-center w-full max-w-xs mx-auto">
-                                <a href="{{ route('autopost.auth.meta') }}" class="w-full py-4 px-6 bg-[#1877F2] text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition flex items-center justify-center gap-3">
+                                <a href="{{ route('autopost.auth.meta') }}" class="w-full py-4 px-6 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition flex items-center justify-center gap-3" style="background-color: #1877F2;">
                                     <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg> Facebook & Instagram
                                 </a>
                                 
                                 <a href="{{ route('autopost.auth.threads') }}" class="w-full py-4 px-6 bg-black text-white font-bold rounded-xl shadow-lg hover:bg-gray-800 transition flex items-center justify-center gap-3">
-                                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M14.28 11.08c-.7-1.12-2.12-1.39-3.48-.95-1.57.51-2.43 2.05-2.02 3.65.34 1.35 1.57 2.19 2.91 2.12 1.34-.07 2.22-1.11 2.37-2.31h2.5c-.26 2.45-2 4.39-4.5 4.57-2.58.19-4.9-1.33-5.58-3.79-.76-2.73.91-5.63 3.69-6.26 2.07-.47 4.1.28 5.25 1.96.64.93.97 2.08 1 3.23v.9h-5.2c.11.96.94 1.63 1.93 1.58.91-.04 1.57-.61 1.76-1.42h2.24c-.11.66-.46 1.48-1.07 2.22l-1.8.55Z"/></svg> Login Threads
+                                    <img src="{{ asset('threads.png') }}" class="w-6 h-6 object-contain" alt="Threads"> Login Threads
                                 </a>
                             </div>
                         </div>
@@ -383,7 +383,7 @@
                                         </label>
                                         <label class="flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-colors" :class="[!hasThreads ? 'opacity-50 cursor-not-allowed bg-slate-50' : (autopostForm.platforms.includes('threads') ? 'border-black bg-slate-100' : 'border-slate-200 hover:border-slate-300')]">
                                             <input type="checkbox" name="platforms[]" value="threads" x-model="autopostForm.platforms" class="hidden" :disabled="!hasThreads">
-                                            <svg class="w-5 h-5" :class="autopostForm.platforms.includes('threads') ? 'text-black' : 'text-slate-400'" viewBox="0 0 24 24" fill="currentColor"><path d="M14.28 11.08c-.7-1.12-2.12-1.39-3.48-.95-1.57.51-2.43 2.05-2.02 3.65.34 1.35 1.57 2.19 2.91 2.12 1.34-.07 2.22-1.11 2.37-2.31h2.5c-.26 2.45-2 4.39-4.5 4.57-2.58.19-4.9-1.33-5.58-3.79-.76-2.73.91-5.63 3.69-6.26 2.07-.47 4.1.28 5.25 1.96.64.93.97 2.08 1 3.23v.9h-5.2c.11.96.94 1.63 1.93 1.58.91-.04 1.57-.61 1.76-1.42h2.24c-.11.66-.46 1.48-1.07 2.22l-1.8.55Z"/></svg>
+                                            <img src="{{ asset('threads.png') }}" class="w-6 h-6 object-contain transition-all" style="filter: invert(1);" :class="autopostForm.platforms.includes('threads') ? '' : 'opacity-50'" alt="Threads">
                                             <span class="text-sm font-bold flex flex-col" :class="autopostForm.platforms.includes('threads') ? 'text-black' : 'text-slate-600'">
                                                 Threads
                                                 <span x-show="!hasThreads" class="text-[9px] text-red-500 font-normal">Belum terhubung</span>

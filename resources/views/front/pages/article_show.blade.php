@@ -27,16 +27,26 @@
             <i data-lucide="chevron-right" class="w-4 h-4"></i>
             <a href="{{ route('articles') }}" class="hover:text-[#0194F3] transition-colors">Artikel</a>
             <i data-lucide="chevron-right" class="w-4 h-4"></i>
-            <a href="{{ route('articles', ['category' => $article->category->slug]) }}" class="hover:text-[#0194F3] transition-colors">{{ $article->category->name ?? 'Uncategorized' }}</a>
+            @if($article->category)
+            <a href="{{ route('articles', ['category' => $article->category->slug]) }}" class="hover:text-[#0194F3] transition-colors">{{ $article->category->name }}</a>
+            @else
+            <span class="hover:text-[#0194F3] transition-colors">Uncategorized</span>
+            @endif
             <i data-lucide="chevron-right" class="w-4 h-4"></i>
             <span class="text-slate-800 line-clamp-1">{{ $article->title }}</span>
         </div>
 
         <!-- Article Header -->
         <header class="mb-10 text-center">
+            @if($article->category)
             <a href="{{ route('articles', ['category' => $article->category->slug]) }}" class="inline-block px-4 py-1.5 bg-indigo-50 text-indigo-600 rounded-full text-xs font-bold mb-4 hover:bg-indigo-100 transition-colors">
-                {{ $article->category->name ?? 'Uncategorized' }}
+                {{ $article->category->name }}
             </a>
+            @else
+            <span class="inline-block px-4 py-1.5 bg-indigo-50 text-indigo-600 rounded-full text-xs font-bold mb-4 hover:bg-indigo-100 transition-colors">
+                Uncategorized
+            </span>
+            @endif
             <h1 class="text-4xl md:text-5xl font-extrabold text-slate-800 mb-6 leading-tight">
                 {{ $article->title }}
             </h1>

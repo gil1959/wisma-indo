@@ -49,6 +49,15 @@
                 </div>
 
                 <div>
+                    <label for="phone" class="block text-sm font-semibold text-slate-700 mb-1">
+                        {{ $isEn ? 'WhatsApp Number' : 'Nomor WhatsApp' }}
+                    </label>
+                    <input id="phone" type="text" name="phone" value="{{ old('phone') }}" required
+                        class="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0194F3]/40 focus:border-[#0194F3] transition"
+                        placeholder="{{ $isEn ? 'e.g. 08123456789' : 'Contoh: 08123456789' }}">
+                </div>
+
+                <div>
                     <label for="password" class="block text-sm font-semibold text-slate-700 mb-1">
                         {{ $isEn ? 'Password' : 'Kata Sandi' }}
                     </label>

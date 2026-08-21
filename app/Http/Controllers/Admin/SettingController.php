@@ -14,7 +14,42 @@ class SettingController extends Controller
         $settings = Setting::pluck('value', 'key');
         $footerLogos = \App\Models\FooterLogo::orderBy('order')->get();
         $offlineMethods = \App\Models\OfflinePaymentMethod::all();
-        return view('admin.settings.general', compact('settings', 'footerLogos', 'offlineMethods'));
+        
+        // Google Indexing Stats & Logs
+        $googleIndexingLogs = \App\Models\GoogleIndexingLog::latest()->take(10)->get();
+        
+        $totalSubmitted = \App\Models\GoogleIndexingLog::count();
+        $totalSuccess = \App\Models\GoogleIndexingLog::where('status_code', 200)->count();
+        $totalFailed = \App\Models\GoogleIndexingLog::where('status_code', '!=', 200)->whereNotNull('status_code')->count();
+        
+        $quotaUsedToday = \App\Models\GoogleIndexingLog::whereDate('created_at', today())->count();
+        $quotaLimit = 200;
+
+        // Data for Chart (last 7 days)
+        $chartLabels = [];
+        $chartSuccess = [];
+        $chartFailed = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i)->format('Y-m-d');
+            $chartLabels[] = now()->subDays($i)->translatedFormat('D');
+            
+            $chartSuccess[] = \App\Models\GoogleIndexingLog::whereDate('created_at', $date)->where('status_code', 200)->count();
+            $chartFailed[] = \App\Models\GoogleIndexingLog::whereDate('created_at', $date)->where('status_code', '!=', 200)->whereNotNull('status_code')->count();
+        }
+
+        $googleIndexingStats = [
+            'total' => $totalSubmitted,
+            'success' => $totalSuccess,
+            'failed' => $totalFailed,
+            'success_rate' => $totalSubmitted > 0 ? round(($totalSuccess / $totalSubmitted) * 100) : 0,
+            'quota_used' => $quotaUsedToday,
+            'quota_limit' => $quotaLimit,
+            'chart_labels' => $chartLabels,
+            'chart_success' => $chartSuccess,
+            'chart_failed' => $chartFailed,
+        ];
+
+        return view('admin.settings.general', compact('settings', 'footerLogos', 'offlineMethods', 'googleIndexingLogs', 'googleIndexingStats'));
     }
 
     public function storeFooterLogo(Request $request)
@@ -80,8 +115,8 @@ class SettingController extends Controller
             'google_maps_api_key'  => ['nullable', 'string', 'max:255'],
             'gemini_api_key'       => ['nullable', 'string', 'max:255'],
 
-            'google_ads_tag'       => ['nullable', 'string'],
-            'fb_ads_tag'           => ['nullable', 'string'],
+            'tracking_script_head' => ['nullable', 'string'],
+            'tracking_script_body' => ['nullable', 'string'],
 
             // Social Autopost Integrations
             'meta_app_id'          => ['nullable', 'string', 'max:255'],
@@ -98,7 +133,7 @@ class SettingController extends Controller
             'xendit_api_key', 'xendit_active', 'xendit_callback_token',
             'offline_unique_code_min', 'offline_unique_code_max',
             'google_login_active', 'google_client_id', 'google_client_secret', 'google_maps_api_key', 'gemini_api_key',
-            'google_ads_tag', 'fb_ads_tag',
+            'tracking_script_head', 'tracking_script_body',
             'meta_app_id', 'meta_app_secret', 'threads_app_id', 'threads_app_secret'
         ];
 

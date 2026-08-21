@@ -3,7 +3,18 @@
 @section('content')
 <div class="pt-24 pb-20 min-h-screen bg-slate-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+        @php $popupText = \App\Models\Setting::getValue('user_dashboard_popup'); @endphp
+        @if(!empty($popupText))
+        <div x-data="{ showPopup: true }" x-show="showPopup" class="-mt-4 mb-6 rounded-xl bg-transparent p-4 relative" x-cloak>
+            <div class="px-8 text-sm font-bold text-rose-500 uppercase text-center">
+                {!! nl2br(e($popupText)) !!}
+            </div>
+            <button @click="showPopup = false" class="absolute top-4 right-4 text-rose-500 hover:text-rose-700">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+        @endif
+
         <div class="flex flex-col lg:flex-row gap-8">
             
             {{-- LEFT SIDEBAR --}}

@@ -92,20 +92,33 @@
                     @php
                     $isEn = app()->getLocale() === 'en';
 
+                    $hasPremium = false;
+                    $lockedRoutes = ['partner.statistics', 'iklan.saya', 'partner.leads', 'partner.surveys', 'partner.kpr', 'partner.whatsapp'];
+                    
+                    if (auth()->user()->hasRole('partner')) {
+                        $hasPremium = \App\Models\PartnerSubscription::where('user_id', auth()->id())
+                                        ->whereHas('package', function($query) {
+                                            $query->where('is_free', 0);
+                                        })
+                                        ->where('status', 'active')
+                                        ->where('ends_at', '>', now())
+                                        ->exists();
+                    }
+
                     $nav = [];
 
                     if (auth()->user()->hasRole('partner')) {
-                        $nav[] = ['label' => 'Dashboard Partner', 'route' => 'partner.statistics', 'match' => 'partner.statistics', 'icon' => 'layout-dashboard'];
-                        $nav[] = ['label' => 'Iklan Saya', 'route' => 'iklan.saya', 'match' => 'iklan.saya*', 'icon' => 'home'];
-                        $nav[] = ['label' => 'Lead Pembeli', 'route' => 'partner.leads', 'match' => 'partner.leads', 'icon' => 'users'];
-                        $nav[] = ['label' => 'Jadwal Survey', 'route' => 'partner.surveys', 'match' => 'partner.surveys', 'icon' => 'calendar'];
-                        $nav[] = ['label' => 'Pengajuan KPR', 'route' => 'partner.kpr', 'match' => 'partner.kpr', 'icon' => 'file-text'];
-                        $nav[] = ['label' => 'Tagihan Bulanan', 'route' => 'partner.billing', 'match' => 'partner.billing', 'icon' => 'receipt'];
-                        $nav[] = ['label' => 'Pengaturan WhatsApp', 'route' => 'partner.whatsapp', 'match' => 'partner.whatsapp', 'icon' => 'message-circle'];
-                        $nav[] = ['label' => 'Profil', 'route' => 'partner.profile.edit', 'match' => 'partner.profile.*', 'icon' => 'user'];
+                        $nav[] = ['label' => 'Dashboard Partner', 'route' => 'partner.statistics', 'match' => 'partner.statistics', 'icon' => 'layout-dashboard', 'locked' => !$hasPremium];
+                        $nav[] = ['label' => 'Iklan Saya', 'route' => 'iklan.saya', 'match' => 'iklan.saya*', 'icon' => 'home', 'locked' => !$hasPremium];
+                        $nav[] = ['label' => 'Lead Pembeli', 'route' => 'partner.leads', 'match' => 'partner.leads', 'icon' => 'users', 'locked' => !$hasPremium];
+                        $nav[] = ['label' => 'Jadwal Survey', 'route' => 'partner.surveys', 'match' => 'partner.surveys', 'icon' => 'calendar', 'locked' => !$hasPremium];
+                        $nav[] = ['label' => 'Pengajuan KPR', 'route' => 'partner.kpr', 'match' => 'partner.kpr', 'icon' => 'file-text', 'locked' => !$hasPremium];
+                        $nav[] = ['label' => 'Tagihan Bulanan', 'route' => 'partner.billing', 'match' => 'partner.billing', 'icon' => 'receipt', 'locked' => false];
+                        $nav[] = ['label' => 'Pengaturan WhatsApp', 'route' => 'partner.whatsapp', 'match' => 'partner.whatsapp', 'icon' => 'message-circle', 'locked' => !$hasPremium];
+                        $nav[] = ['label' => 'Profil', 'route' => 'partner.profile.edit', 'match' => 'partner.profile.*', 'icon' => 'user', 'locked' => false];
                     } else {
-                        $nav[] = ['label' => 'Dashboard User', 'route' => 'akun', 'match' => 'akun', 'icon' => 'layout-dashboard'];
-                        $nav[] = ['label' => 'Profil', 'route' => 'user.profile.edit', 'match' => 'user.profile.*', 'icon' => 'user'];
+                        $nav[] = ['label' => 'Dashboard User', 'route' => 'akun', 'match' => 'akun', 'icon' => 'layout-dashboard', 'locked' => false];
+                        $nav[] = ['label' => 'Profil', 'route' => 'user.profile.edit', 'match' => 'user.profile.*', 'icon' => 'user', 'locked' => false];
                     }
 
                     @endphp
@@ -178,6 +191,22 @@
                         </div>
                     </div>
                     @else
+                    @if($n['locked'] ?? false)
+                    <a href="#"
+                        onclick="event.preventDefault(); showPremiumAlert();"
+                        class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl border transition text-slate-500 bg-slate-50/50 hover:bg-slate-100 border-transparent cursor-pointer">
+                        <span class="flex items-center gap-3 min-w-0">
+                            <span class="h-9 w-9 rounded-xl grid place-items-center border shrink-0 bg-slate-100 border-slate-200">
+                                <i data-lucide="{{ $n['icon'] }}" class="w-5 h-5 text-slate-400"></i>
+                            </span>
+
+                            <span class="font-bold text-sm truncate flex items-center gap-2">
+                                {{ $n['label'] }}
+                                <i data-lucide="lock" class="w-3.5 h-3.5 text-red-400"></i>
+                            </span>
+                        </span>
+                    </a>
+                    @else
                     <a href="{{ route($n['route']) }}"
                         @click="sidebarOpen=false"
                         class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl border transition
@@ -195,6 +224,7 @@
 
                         <span class="text-xs font-extrabold shrink-0" style="{{ $active ? 'color:#0194F3;' : 'color:#94a3b8;' }}">→</span>
                     </a>
+                    @endif
                     @endif
                     @endforeach
 
@@ -399,6 +429,24 @@
         })();
     </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function showPremiumAlert() {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Fitur Premium Terkunci',
+                text: 'Silakan berlangganan atau perpanjang Paket Partner Anda untuk membuka fitur ini.',
+                confirmButtonText: 'Lihat Paket',
+                confirmButtonColor: '#0194F3',
+                showCancelButton: true,
+                cancelButtonText: 'Tutup'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('partner.billing') }}";
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>

@@ -40,10 +40,31 @@ class PageController extends Controller
             'title' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:pages',
             'content' => 'required',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_desc' => 'nullable|string',
+            'seo_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'meta_keywords' => 'nullable|string',
+            'social_title' => 'nullable|string|max:255',
+            'social_desc' => 'nullable|string',
         ]);
 
         $data['is_active'] = $request->has('is_active');
+
+        if ($request->hasFile('seo_image')) {
+            $seoPath = $request->file('seo_image')->store('public/pages/seo');
+            $data['seo_image'] = \Illuminate\Support\Facades\Storage::url($seoPath);
+        }
+
+        if ($request->has('meta_keywords') && $request->meta_keywords) {
+            $keywords = json_decode($request->meta_keywords, true);
+            if (is_array($keywords)) {
+                $data['meta_keywords'] = implode(', ', array_column($keywords, 'value'));
+            } else {
+                $data['meta_keywords'] = $request->meta_keywords;
+            }
+        }
+
         \App\Models\Page::create($data);
 
         return redirect()->route('admin.pages.index')->with('success', 'Halaman berhasil ditambahkan.');
@@ -87,10 +108,35 @@ class PageController extends Controller
             'title' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:pages,slug,' . $page->id,
             'content' => 'required',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_desc' => 'nullable|string',
+            'seo_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'meta_keywords' => 'nullable|string',
+            'social_title' => 'nullable|string|max:255',
+            'social_desc' => 'nullable|string',
         ]);
 
         $data['is_active'] = $request->has('is_active');
+
+        if ($request->hasFile('seo_image')) {
+            if ($page->seo_image) {
+                $oldPath = str_replace('/storage/', 'public/', $page->seo_image);
+                \Illuminate\Support\Facades\Storage::delete($oldPath);
+            }
+            $path = $request->file('seo_image')->store('public/pages/seo');
+            $data['seo_image'] = \Illuminate\Support\Facades\Storage::url($path);
+        }
+
+        if ($request->has('meta_keywords') && $request->meta_keywords) {
+            $keywords = json_decode($request->meta_keywords, true);
+            if (is_array($keywords)) {
+                $data['meta_keywords'] = implode(', ', array_column($keywords, 'value'));
+            } else {
+                $data['meta_keywords'] = $request->meta_keywords;
+            }
+        }
+
         $page->update($data);
 
         return redirect()->route('admin.pages.index')->with('success', 'Halaman berhasil diupdate.');

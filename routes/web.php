@@ -41,7 +41,7 @@ Route::get('/auth/google/callback', [\App\Http\Controllers\Auth\GoogleController
 // USER DASHBOARD (Requires Auth)
 Route::middleware(['auth'])->group(function () {
     Route::get('/akun', [\App\Http\Controllers\User\DashboardController::class, 'index'])->name('akun');
-    Route::get('/iklan-saya', [\App\Http\Controllers\User\ListingController::class, 'index'])->name('iklan.saya');
+    Route::get('/iklan-saya', [\App\Http\Controllers\User\ListingController::class, 'index'])->name('iklan.saya')->middleware('premium.partner');
     Route::get('/iklan-favorit', [\App\Http\Controllers\User\FavoriteController::class, 'index'])->name('iklan.favorit');
     
     // Bulk Uploads
@@ -57,19 +57,22 @@ Route::middleware(['auth'])->group(function () {
 
     // Partner Routes
     Route::middleware(['role:partner'])->group(function () {
-        Route::get('/partner/leads', [\App\Http\Controllers\User\PartnerController::class, 'leads'])->name('partner.leads');
-        Route::get('/partner/leads/{id}', [\App\Http\Controllers\User\PartnerController::class, 'showLead'])->name('partner.leads.show');
-        Route::post('/partner/leads/{id}/activity', [\App\Http\Controllers\User\PartnerController::class, 'addLeadActivity'])->name('partner.leads.activity');
-        
-        Route::get('/partner/surveys', [\App\Http\Controllers\User\PartnerController::class, 'surveys'])->name('partner.surveys');
-        Route::post('/partner/surveys/{id}/status', [\App\Http\Controllers\User\PartnerController::class, 'updateSurveyStatus'])->name('partner.surveys.status');
-        
-        Route::get('/partner/statistics', [\App\Http\Controllers\User\PartnerController::class, 'statistics'])->name('partner.statistics');
+        // Premium Partner Only Routes
+        Route::middleware(['premium.partner'])->group(function () {
+            Route::get('/partner/leads', [\App\Http\Controllers\User\PartnerController::class, 'leads'])->name('partner.leads');
+            Route::get('/partner/leads/{id}', [\App\Http\Controllers\User\PartnerController::class, 'showLead'])->name('partner.leads.show');
+            Route::post('/partner/leads/{id}/activity', [\App\Http\Controllers\User\PartnerController::class, 'addLeadActivity'])->name('partner.leads.activity');
+            
+            Route::get('/partner/surveys', [\App\Http\Controllers\User\PartnerController::class, 'surveys'])->name('partner.surveys');
+            Route::post('/partner/surveys/{id}/status', [\App\Http\Controllers\User\PartnerController::class, 'updateSurveyStatus'])->name('partner.surveys.status');
+            
+            Route::get('/partner/statistics', [\App\Http\Controllers\User\PartnerController::class, 'statistics'])->name('partner.statistics');
+            
+            Route::get('/partner/whatsapp', [\App\Http\Controllers\User\PartnerController::class, 'whatsapp'])->name('partner.whatsapp');
+            Route::post('/partner/whatsapp', [\App\Http\Controllers\User\PartnerController::class, 'updateWhatsapp'])->name('partner.whatsapp.update');
+        });
         
         Route::get('/partner/billing', [\App\Http\Controllers\User\PartnerController::class, 'billing'])->name('partner.billing');
-        
-        Route::get('/partner/whatsapp', [\App\Http\Controllers\User\PartnerController::class, 'whatsapp'])->name('partner.whatsapp');
-        Route::post('/partner/whatsapp', [\App\Http\Controllers\User\PartnerController::class, 'updateWhatsapp'])->name('partner.whatsapp.update');
 
         // Partner Profile
         Route::get('/partner/profile', [\App\Http\Controllers\Partner\ProfileController::class, 'edit'])->name('partner.profile.edit');
@@ -77,9 +80,11 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/partner/profile/password', [\App\Http\Controllers\Partner\ProfileController::class, 'updatePassword'])->name('partner.profile.password');
         
         // Partner KPR
-        Route::get('/partner/kpr', function () {
-            return view('user.partner.kpr.index');
-        })->name('partner.kpr');
+        Route::middleware(['premium.partner'])->group(function () {
+            Route::get('/partner/kpr', function () {
+                return view('user.partner.kpr.index');
+            })->name('partner.kpr');
+        });
 
         // Partner Billing / Subscription
         Route::get('/partner/billing/checkout/{package}', [\App\Http\Controllers\User\PartnerSubscriptionController::class, 'checkout'])->name('partner.billing.checkout');
@@ -155,6 +160,12 @@ Route::middleware(['auth', \Spatie\Permission\Middleware\RoleMiddleware::class .
     Route::get('/settings/payment', [\App\Http\Controllers\Admin\SettingController::class, 'payment'])->name('settings.payment');
     Route::post('/settings/payment', [\App\Http\Controllers\Admin\SettingController::class, 'updatePayment'])->name('settings.payment.save');
 
+    // Google Indexing API Settings
+    Route::post('/settings/google-indexing/upload-json', [\App\Http\Controllers\Admin\GoogleIndexingController::class, 'uploadJson'])->name('settings.google_indexing.upload_json');
+    Route::post('/settings/google-indexing/submit', [\App\Http\Controllers\Admin\GoogleIndexingController::class, 'submitUrls'])->name('settings.google_indexing.submit');
+    Route::get('/auth/google-indexing/redirect', [\App\Http\Controllers\Admin\GoogleIndexingController::class, 'oauthRedirect'])->name('settings.google_indexing.oauth_redirect');
+    Route::get('/auth/google-indexing/callback', [\App\Http\Controllers\Admin\GoogleIndexingController::class, 'oauthCallback'])->name('settings.google_indexing.oauth_callback');
+
     // Home Settings
     Route::get('/settings/home', [\App\Http\Controllers\Admin\HomeSettingController::class, 'index'])->name('settings.home');
     Route::post('/settings/home/hero', [\App\Http\Controllers\Admin\HomeSettingController::class, 'updateHero'])->name('settings.home.hero');
@@ -190,6 +201,7 @@ Route::middleware(['auth', \Spatie\Permission\Middleware\RoleMiddleware::class .
     
     // Users Management
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
+    Route::post('users/update-popup', [\App\Http\Controllers\Admin\UserController::class, 'updatePopup'])->name('users.update_popup');
     Route::post('/users/{user}/impersonate', [\App\Http\Controllers\Admin\UserController::class, 'impersonate'])->name('users.impersonate');
     Route::post('users/{user}/toggle-quota', [\App\Http\Controllers\Admin\UserController::class, 'toggleFreeQuota'])->name('users.toggle_quota');
     Route::post('users/{user}/add-quota', [\App\Http\Controllers\Admin\UserController::class, 'addQuota'])->name('users.add_quota');

@@ -27,7 +27,8 @@
         <button @click="tab = 'kontak'" :class="tab === 'kontak' ? 'border-b-2 border-[#0194F3] text-[#0194F3] bg-white' : 'text-slate-500 hover:text-slate-700'" class="px-6 py-4 font-bold text-sm">Kontak & Footer</button>
         <button @click="tab = 'pembayaran'" :class="tab === 'pembayaran' ? 'border-b-2 border-[#0194F3] text-[#0194F3] bg-white' : 'text-slate-500 hover:text-slate-700'" class="px-6 py-4 font-bold text-sm">Pembayaran</button>
         <button @click="tab = 'integrasi'" :class="tab === 'integrasi' ? 'border-b-2 border-[#0194F3] text-[#0194F3] bg-white' : 'text-slate-500 hover:text-slate-700'" class="px-6 py-4 font-bold text-sm">Integrasi</button>
-        <button @click="tab = 'ads'" :class="tab === 'ads' ? 'border-b-2 border-[#0194F3] text-[#0194F3] bg-white' : 'text-slate-500 hover:text-slate-700'" class="px-6 py-4 font-bold text-sm">Google & FB Ads</button>
+        <button @click="tab = 'ads'" :class="tab === 'ads' ? 'border-b-2 border-[#0194F3] text-[#0194F3] bg-white' : 'text-slate-500 hover:text-slate-700'" class="px-6 py-4 font-bold text-sm">Global Tracking</button>
+        <button @click="tab = 'submit_url'" :class="tab === 'submit_url' ? 'border-b-2 border-red-500 text-red-600 bg-white' : 'text-slate-500 hover:text-red-500'" class="px-6 py-4 font-bold text-sm flex items-center gap-1">SUBMIT Url</button>
     </div>
 
     <!-- MAIN FORM FOR GENERAL SETTINGS -->
@@ -210,27 +211,29 @@
 
         <!-- TAB: ADS TAGS -->
         <div x-show="tab === 'ads'" x-cloak class="p-6">
-            <h3 class="text-lg font-extrabold text-slate-800 mb-4">Pengaturan Google & FB Ads Tracking</h3>
-            <p class="text-sm text-slate-500 mb-6">Masukkan script tag/pixel di bawah ini. Sistem akan secara otomatis menyisipkannya di dalam tag <code>&lt;head&gt;</code> pada setiap halaman website Anda.</p>
+            <h3 class="text-lg font-extrabold text-slate-800 mb-4">Pengaturan Global Tracking & Analytics</h3>
+            <p class="text-sm text-slate-500 mb-6">Masukkan script tag/pixel pelacakan di bawah ini. Anda dapat menempelkan berbagai script sekaligus (TikTok Pixel, Google Analytics, FB Pixel, dll).</p>
             
             <div class="grid grid-cols-1 gap-6 max-w-4xl">
                 <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
                     <div>
-                        <label class="block text-sm font-bold text-slate-600 mb-2">Google Tag Manager / Analytics Script</label>
-                        <textarea name="google_ads_tag" rows="6" class="w-full rounded-xl border-slate-300 font-mono text-sm" placeholder="<!-- Google tag (gtag.js) -->&#10;<script async src='https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX'></script>...">{{ old('google_ads_tag', $settings['google_ads_tag'] ?? '') }}</textarea>
+                        <label class="block text-sm font-bold text-slate-600 mb-2">Scripts in &lt;head&gt; (Contoh: Meta Pixel, TikTok Pixel, Google Analytics)</label>
+                        <textarea name="tracking_script_head" rows="6" class="w-full rounded-xl border-slate-300 font-mono text-sm" placeholder="<!-- Google tag (gtag.js) -->&#10;<script async src='...'>...</script>">{{ old('tracking_script_head', $settings['tracking_script_head'] ?? '') }}</textarea>
+                        <p class="text-xs text-slate-500 mt-1">Sistem akan secara otomatis menyisipkannya di dalam tag <code>&lt;head&gt;</code> pada setiap halaman website Anda.</p>
                     </div>
                 </div>
 
                 <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
                     <div>
-                        <label class="block text-sm font-bold text-slate-600 mb-2">Meta (Facebook) Pixel Script</label>
-                        <textarea name="fb_ads_tag" rows="6" class="w-full rounded-xl border-slate-300 font-mono text-sm" placeholder="<!-- Meta Pixel Code -->&#10;<script>&#10;!function(f,b,e,v,n,t,s)...">{{ old('fb_ads_tag', $settings['fb_ads_tag'] ?? '') }}</textarea>
+                        <label class="block text-sm font-bold text-slate-600 mb-2">Scripts in &lt;body&gt; (Contoh: Google Tag Manager noscript)</label>
+                        <textarea name="tracking_script_body" rows="6" class="w-full rounded-xl border-slate-300 font-mono text-sm" placeholder="<!-- Google Tag Manager (noscript) -->&#10;<noscript><iframe src='...'></iframe></noscript>">{{ old('tracking_script_body', $settings['tracking_script_body'] ?? '') }}</textarea>
+                        <p class="text-xs text-slate-500 mt-1">Sistem akan secara otomatis menyisipkannya tepat setelah tag pembuka <code>&lt;body&gt;</code> pada setiap halaman website Anda.</p>
                     </div>
                 </div>
             </div>
             
             <div class="mt-8 flex justify-end">
-                <button type="submit" class="bg-[#0194F3] text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-600">Simpan Ads Tags</button>
+                <button type="submit" class="bg-[#0194F3] text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-600">Simpan Scripts</button>
             </div>
         </div>
 
@@ -494,13 +497,15 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="p-4 text-center text-sm text-slate-500">Belum ada rekening yang ditambahkan.</td>
+                        <td colspan="6" class="p-4 text-center text-sm text-slate-500">Belum ada rekening yang ditambahkan.</td>
                     </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
     </div>
+
+    @include('admin.settings._submit_url')
 
 </div>
 @endsection

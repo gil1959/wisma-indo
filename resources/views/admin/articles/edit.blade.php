@@ -12,6 +12,10 @@
                     <input type="text" name="title" value="{{ old('title', $article->title) }}" class="w-full rounded-xl border-slate-300 focus:border-[#0194F3] focus:ring-[#0194F3]" required>
                 </div>
                 <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">SLUG URL</label>
+                    <input type="text" name="slug" value="{{ old('slug', $article->slug) }}" class="w-full rounded-xl border-slate-300 focus:border-[#0194F3] focus:ring-[#0194F3]" placeholder="opsional-jika-kosong-otomatis-dari-judul">
+                </div>
+                <div>
                     <div class="flex items-center justify-between mb-2">
                         <label class="block text-sm font-bold text-slate-700">Konten</label>
                         <button type="button" onclick="generateAiArticle()" id="btnAiDesc" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg shadow hover:opacity-90 transition">
@@ -137,6 +141,8 @@
         selector: '#editor',
         height: 400,
         menubar: false,
+        branding: false,
+        promotion: false,
         plugins: [
             'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
             'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
@@ -145,7 +151,7 @@
         toolbar: 'undo redo | blocks | ' +
         'bold italic backcolor | alignleft aligncenter ' +
         'alignright alignjustify | bullist numlist outdent indent | ' +
-        'removeformat | help',
+        'removeformat | link | help',
         content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }',
         setup: function (editor) {
             editor.on('change', function () {
