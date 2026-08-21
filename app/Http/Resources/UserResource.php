@@ -31,6 +31,11 @@ class UserResource extends JsonResource
             'roles' => $this->roles->pluck('name'),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'quota' => [
+                'total_bought' => (int) (\App\Models\TopupTransaction::where('user_id', $this->id)->where('status', 'success')->sum('amount') ?? 0),
+                'used' => \App\Models\Listing::where('user_id', $this->id)->count(),
+                'remaining' => $this->quota ? (int) $this->quota->listing_quota : 0,
+            ],
         ];
     }
 }

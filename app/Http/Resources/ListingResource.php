@@ -68,7 +68,7 @@ class ListingResource extends JsonResource
             'maps_url' => $this->maps_url,
             
             // Relations
-            'category' => new ListingCategoryResource($this->whenLoaded('category')),
+            'category' => new ListingCategoryResource($this->whenLoaded('listingCategory')),
             'user' => new UserResource($this->whenLoaded('user')),
             'images' => $this->whenLoaded('images', function() {
                 return $this->images->map(function($img) {

@@ -174,6 +174,33 @@
                         <p class="text-xs text-slate-500 mt-1">Digunakan untuk fitur Generate Deskripsi Iklan dan Artikel secara otomatis menggunakan Google Gemini AI.</p>
                     </div>
                 </div>
+
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-slate-700">Autopost Social Media (Meta & Threads)</h4>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-600 mb-2">Meta App ID (FB/IG)</label>
+                            <input type="text" name="meta_app_id" value="{{ old('meta_app_id', $settings['meta_app_id'] ?? '') }}" class="w-full rounded-xl border-slate-300">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-600 mb-2">Meta App Secret (FB/IG)</label>
+                            <input type="password" name="meta_app_secret" value="{{ old('meta_app_secret', $settings['meta_app_secret'] ?? '') }}" class="w-full rounded-xl border-slate-300">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-600 mb-2">Threads App ID</label>
+                            <input type="text" name="threads_app_id" value="{{ old('threads_app_id', $settings['threads_app_id'] ?? '') }}" class="w-full rounded-xl border-slate-300">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-600 mb-2">Threads App Secret</label>
+                            <input type="password" name="threads_app_secret" value="{{ old('threads_app_secret', $settings['threads_app_secret'] ?? '') }}" class="w-full rounded-xl border-slate-300">
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-1">Digunakan untuk fitur Autopost ke halaman Facebook, Instagram Business, dan Threads.</p>
+                </div>
             </div>
             
             <div class="mt-8 flex justify-end">

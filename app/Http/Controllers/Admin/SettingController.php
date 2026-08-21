@@ -82,6 +82,12 @@ class SettingController extends Controller
 
             'google_ads_tag'       => ['nullable', 'string'],
             'fb_ads_tag'           => ['nullable', 'string'],
+
+            // Social Autopost Integrations
+            'meta_app_id'          => ['nullable', 'string', 'max:255'],
+            'meta_app_secret'      => ['nullable', 'string', 'max:255'],
+            'threads_app_id'       => ['nullable', 'string', 'max:255'],
+            'threads_app_secret'   => ['nullable', 'string', 'max:255'],
         ]);
 
         $keys = [
@@ -92,7 +98,8 @@ class SettingController extends Controller
             'xendit_api_key', 'xendit_active', 'xendit_callback_token',
             'offline_unique_code_min', 'offline_unique_code_max',
             'google_login_active', 'google_client_id', 'google_client_secret', 'google_maps_api_key', 'gemini_api_key',
-            'google_ads_tag', 'fb_ads_tag'
+            'google_ads_tag', 'fb_ads_tag',
+            'meta_app_id', 'meta_app_secret', 'threads_app_id', 'threads_app_secret'
         ];
 
         foreach ($keys as $key) {

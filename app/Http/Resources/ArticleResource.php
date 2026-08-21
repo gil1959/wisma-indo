@@ -14,7 +14,7 @@ class ArticleResource extends JsonResource
             'slug' => $this->slug,
             'content' => $this->content,
             'excerpt' => $this->excerpt,
-            'image' => $this->image ? url('storage/' . $this->image) : null,
+            'image' => $this->image ? url($this->image) : null,
             'views' => $this->views,
             'status' => $this->status,
             'seo_title' => $this->seo_title,

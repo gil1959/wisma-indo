@@ -14,7 +14,6 @@ class ListingController extends Controller
     public function index(Request $request)
     {
         $query = Listing::with(['listingCategory', 'user', 'images'])
-            ->where('is_active', true)
             ->where('status', 'tersedia');
 
         // Filters
@@ -75,7 +74,6 @@ class ListingController extends Controller
     {
         $listing = Listing::with(['listingCategory', 'user', 'images'])
             ->where('slug', $slug)
-            ->where('is_active', true)
             ->where('status', 'tersedia')
             ->first();
 
@@ -88,8 +86,17 @@ class ListingController extends Controller
 
         $listing->increment('views');
 
+        $similarListings = Listing::with(['listingCategory', 'user', 'images'])
+            ->where('listing_category_id', $listing->listing_category_id)
+            ->where('id', '!=', $listing->id)
+            ->where('status', 'tersedia')
+            ->inRandomOrder()
+            ->limit(4)
+            ->get();
+
         return (new ListingResource($listing))->additional([
-            'success' => true
+            'success' => true,
+            'similar_listings' => ListingResource::collection($similarListings)
         ]);
     }
 

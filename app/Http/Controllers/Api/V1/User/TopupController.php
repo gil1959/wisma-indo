@@ -90,7 +90,7 @@ class TopupController extends Controller
 
     public function transactions(Request $request)
     {
-        $transactions = TopupTransaction::with('package')
+        $transactions = TopupTransaction::with('topupPackage')
             ->where('user_id', $request->user()->id)
             ->orderBy('created_at', 'desc')
             ->paginate(10);

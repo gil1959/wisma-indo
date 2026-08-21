@@ -120,6 +120,13 @@ Route::middleware(['auth'])->group(function () {
 
         // AI Generator Route
         Route::post('/ai/generate', [\App\Http\Controllers\AiController::class, 'generate'])->name('ai.generate');
+        
+        // Autopost Routes
+        Route::get('/autopost/auth/meta', [\App\Http\Controllers\User\AutopostController::class, 'authMeta'])->name('autopost.auth.meta');
+        Route::get('/autopost/callback/meta', [\App\Http\Controllers\User\AutopostController::class, 'callbackMeta'])->name('autopost.callback.meta');
+        Route::post('/autopost/generate-caption', [\App\Http\Controllers\User\AutopostController::class, 'generateCaption'])->name('autopost.generate');
+        Route::post('/autopost/publish', [\App\Http\Controllers\User\AutopostController::class, 'publish'])->name('autopost.publish');
+        Route::get('/autopost/logs', [\App\Http\Controllers\User\AutopostController::class, 'logs'])->name('autopost.logs');
     });
 
     // Leave Impersonation

@@ -22,12 +22,12 @@ class TopupTransactionResource extends JsonResource
             'payment_reference' => $this->payment_reference,
             'proof_of_payment' => $this->proof_of_payment ? url('storage/' . $this->proof_of_payment) : null,
             'note' => $this->note,
-            'package' => $this->whenLoaded('package', function() {
+            'package' => $this->whenLoaded('topupPackage', function() {
                 return [
-                    'id' => $this->package->id,
-                    'name' => $this->package->name,
-                    'price' => $this->package->price,
-                    'quota_amount' => $this->package->quota_amount,
+                    'id' => $this->topupPackage->id,
+                    'name' => $this->topupPackage->name,
+                    'price' => $this->topupPackage->price,
+                    'quota_amount' => $this->topupPackage->amount,
                 ];
             }),
             'user' => new UserResource($this->whenLoaded('user')),

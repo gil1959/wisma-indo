@@ -34,7 +34,7 @@ class HomeController extends Controller
             return $b;
         });
 
-        $allCategories = ListingCategory::where('is_active', true)->get()->map(function($c) {
+        $allCategories = ListingCategory::get()->map(function($c) {
             $c->photo = $c->photo ? url($c->photo) : null;
             return $c;
         });
