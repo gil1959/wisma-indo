@@ -237,7 +237,7 @@ class AutopostController extends Controller
             'caption' => 'required|string',
             'media_url' => 'required|url',
             'platforms' => 'required|array',
-            'is_scheduled' => 'required|boolean',
+            'is_scheduled' => 'nullable|boolean',
             'scheduled_at' => 'nullable|date',
         ]);
 
