@@ -89,8 +89,36 @@ class ProcessAutopostJob implements ShouldQueue
                         $errors[] = "IG Business Account not found.";
                     }
                 } elseif ($platform === 'threads') {
-                    // Threads integration placeholder since official API is restricted/in-dev
-                    $errors[] = "Threads integration is currently pending API access.";
+                    $account = \App\Models\SocialAccount::where('user_id', $post->user_id)->where('provider', 'threads')->first();
+                    if ($account) {
+                        // 1. Upload media container
+                        $uploadResponse = Http::post("https://graph.threads.net/v1.0/me/threads", [
+                            'media_type' => 'IMAGE',
+                            'image_url' => $post->media_url,
+                            'text' => $post->caption,
+                            'access_token' => $account->access_token
+                        ]);
+
+                        if ($uploadResponse->successful()) {
+                            $creationId = $uploadResponse->json()['id'];
+                            
+                            // 2. Publish container
+                            $publishResponse = Http::post("https://graph.threads.net/v1.0/me/threads_publish", [
+                                'creation_id' => $creationId,
+                                'access_token' => $account->access_token
+                            ]);
+                            
+                            if (!$publishResponse->successful()) {
+                                $errors[] = "Threads Publish Error: " . $publishResponse->body();
+                            } else {
+                                $successCount++;
+                            }
+                        } else {
+                            $errors[] = "Threads Upload Error: " . $uploadResponse->body();
+                        }
+                    } else {
+                        $errors[] = "Threads Account not found.";
+                    }
                 }
             }
 

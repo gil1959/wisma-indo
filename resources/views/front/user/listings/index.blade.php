@@ -8,6 +8,7 @@
 @endif
 @php
     $hasMetaAccount = \App\Models\SocialAccount::where('user_id', auth()->id())->where('provider', 'meta')->exists();
+    $hasThreadsAccount = \App\Models\SocialAccount::where('user_id', auth()->id())->where('provider', 'threads')->exists();
 @endphp
 <div x-data="{ 
     deleteModal: false, 
@@ -19,6 +20,7 @@
 
     autopostModal: false,
     hasMeta: {{ $hasMetaAccount ? 'true' : 'false' }},
+    hasThreads: {{ $hasThreadsAccount ? 'true' : 'false' }},
     autopostForm: {
         listing_id: null,
         title: '',
@@ -317,20 +319,27 @@
                 </div>
 
                 <div class="overflow-y-auto flex-1 bg-slate-50">
-                    <div x-show="!hasMeta">
+                    <div x-show="!hasMeta && !hasThreads">
                         <div class="p-12 text-center flex flex-col items-center justify-center min-h-[400px]">
                             <div class="w-24 h-24 bg-blue-50 text-[#0194F3] rounded-full flex items-center justify-center mb-6">
-                                <svg class="w-12 h-12 fill-current" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+                                <i data-lucide="share-2" class="w-12 h-12"></i>
                             </div>
-                            <h2 class="text-2xl font-bold text-slate-800 mb-3">Hubungkan Akun Meta</h2>
-                            <p class="text-slate-500 mb-8 max-w-md mx-auto">Untuk menggunakan fitur Autopost, Anda harus menghubungkan halaman Facebook (FB Page) atau Instagram Business Anda terlebih dahulu.</p>
-                            <a href="{{ route('autopost.auth.meta') }}" class="px-8 py-4 bg-[#1877F2] text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition flex items-center gap-3">
-                                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg> Hubungkan Facebook & Instagram
-                            </a>
+                            <h2 class="text-2xl font-bold text-slate-800 mb-3">Hubungkan Akun Media Sosial</h2>
+                            <p class="text-slate-500 mb-8 max-w-md mx-auto">Sistem Meta mengharuskan Anda login menggunakan akun Facebook untuk dapat memposting ke Halaman FB dan Akun Instagram Business Anda. Untuk Threads, gunakan tombol login Threads.</p>
+                            
+                            <div class="flex flex-col gap-3 items-center w-full max-w-xs mx-auto">
+                                <a href="{{ route('autopost.auth.meta') }}" class="w-full py-4 px-6 bg-[#1877F2] text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition flex items-center justify-center gap-3">
+                                    <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg> Facebook & Instagram
+                                </a>
+                                
+                                <a href="{{ route('autopost.auth.threads') }}" class="w-full py-4 px-6 bg-black text-white font-bold rounded-xl shadow-lg hover:bg-gray-800 transition flex items-center justify-center gap-3">
+                                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M14.28 11.08c-.7-1.12-2.12-1.39-3.48-.95-1.57.51-2.43 2.05-2.02 3.65.34 1.35 1.57 2.19 2.91 2.12 1.34-.07 2.22-1.11 2.37-2.31h2.5c-.26 2.45-2 4.39-4.5 4.57-2.58.19-4.9-1.33-5.58-3.79-.76-2.73.91-5.63 3.69-6.26 2.07-.47 4.1.28 5.25 1.96.64.93.97 2.08 1 3.23v.9h-5.2c.11.96.94 1.63 1.93 1.58.91-.04 1.57-.61 1.76-1.42h2.24c-.11.66-.46 1.48-1.07 2.22l-1.8.55Z"/></svg> Login Threads
+                                </a>
+                            </div>
                         </div>
                     </div>
 
-                    <form x-show="hasMeta" action="{{ route('autopost.publish') }}" method="POST" class="flex flex-col lg:flex-row h-full">
+                    <form x-show="hasMeta || hasThreads" action="{{ route('autopost.publish') }}" method="POST" class="flex flex-col lg:flex-row h-full">
                         @csrf
                         <input type="hidden" name="listing_id" x-model="autopostForm.listing_id">
                             
@@ -356,20 +365,29 @@
                                 <div class="mb-8">
                                     <label class="block text-xs font-bold text-slate-500 mb-3 uppercase tracking-wide">Target Platform Publikasi</label>
                                     <div class="grid grid-cols-2 gap-3">
-                                        <label class="flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-colors" :class="autopostForm.platforms.includes('fb_page') ? 'border-[#1877F2] bg-blue-50' : 'border-slate-200 hover:border-slate-300'">
-                                            <input type="checkbox" name="platforms[]" value="fb_page" x-model="autopostForm.platforms" class="hidden">
+                                        <label class="flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-colors" :class="[!hasMeta ? 'opacity-50 cursor-not-allowed bg-slate-50' : (autopostForm.platforms.includes('fb_page') ? 'border-[#1877F2] bg-blue-50' : 'border-slate-200 hover:border-slate-300')]">
+                                            <input type="checkbox" name="platforms[]" value="fb_page" x-model="autopostForm.platforms" class="hidden" :disabled="!hasMeta">
                                             <svg class="w-5 h-5 fill-current" :class="autopostForm.platforms.includes('fb_page') ? 'text-[#1877F2]' : 'text-slate-400'" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
-                                            <span class="text-sm font-bold" :class="autopostForm.platforms.includes('fb_page') ? 'text-[#1877F2]' : 'text-slate-600'">Facebook Page</span>
+                                            <span class="text-sm font-bold flex flex-col" :class="autopostForm.platforms.includes('fb_page') ? 'text-[#1877F2]' : 'text-slate-600'">
+                                                Facebook Page
+                                                <span x-show="!hasMeta" class="text-[9px] text-red-500 font-normal">Belum terhubung</span>
+                                            </span>
                                         </label>
-                                        <label class="flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-colors" :class="autopostForm.platforms.includes('ig_business') ? 'border-pink-500 bg-pink-50' : 'border-slate-200 hover:border-slate-300'">
-                                            <input type="checkbox" name="platforms[]" value="ig_business" x-model="autopostForm.platforms" class="hidden">
+                                        <label class="flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-colors" :class="[!hasMeta ? 'opacity-50 cursor-not-allowed bg-slate-50' : (autopostForm.platforms.includes('ig_business') ? 'border-pink-500 bg-pink-50' : 'border-slate-200 hover:border-slate-300')]">
+                                            <input type="checkbox" name="platforms[]" value="ig_business" x-model="autopostForm.platforms" class="hidden" :disabled="!hasMeta">
                                             <svg class="w-5 h-5 fill-current" :class="autopostForm.platforms.includes('ig_business') ? 'text-pink-500' : 'text-slate-400'" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-                                            <span class="text-sm font-bold" :class="autopostForm.platforms.includes('ig_business') ? 'text-pink-600' : 'text-slate-600'">Instagram</span>
+                                            <span class="text-sm font-bold flex flex-col" :class="autopostForm.platforms.includes('ig_business') ? 'text-pink-600' : 'text-slate-600'">
+                                                Instagram
+                                                <span x-show="!hasMeta" class="text-[9px] text-red-500 font-normal">Belum terhubung</span>
+                                            </span>
                                         </label>
-                                        <label class="flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-colors" :class="autopostForm.platforms.includes('threads') ? 'border-black bg-slate-100' : 'border-slate-200 hover:border-slate-300'">
-                                            <input type="checkbox" name="platforms[]" value="threads" x-model="autopostForm.platforms" class="hidden">
+                                        <label class="flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-colors" :class="[!hasThreads ? 'opacity-50 cursor-not-allowed bg-slate-50' : (autopostForm.platforms.includes('threads') ? 'border-black bg-slate-100' : 'border-slate-200 hover:border-slate-300')]">
+                                            <input type="checkbox" name="platforms[]" value="threads" x-model="autopostForm.platforms" class="hidden" :disabled="!hasThreads">
                                             <svg class="w-5 h-5" :class="autopostForm.platforms.includes('threads') ? 'text-black' : 'text-slate-400'" viewBox="0 0 24 24" fill="currentColor"><path d="M14.28 11.08c-.7-1.12-2.12-1.39-3.48-.95-1.57.51-2.43 2.05-2.02 3.65.34 1.35 1.57 2.19 2.91 2.12 1.34-.07 2.22-1.11 2.37-2.31h2.5c-.26 2.45-2 4.39-4.5 4.57-2.58.19-4.9-1.33-5.58-3.79-.76-2.73.91-5.63 3.69-6.26 2.07-.47 4.1.28 5.25 1.96.64.93.97 2.08 1 3.23v.9h-5.2c.11.96.94 1.63 1.93 1.58.91-.04 1.57-.61 1.76-1.42h2.24c-.11.66-.46 1.48-1.07 2.22l-1.8.55Z"/></svg>
-                                            <span class="text-sm font-bold" :class="autopostForm.platforms.includes('threads') ? 'text-black' : 'text-slate-600'">Threads</span>
+                                            <span class="text-sm font-bold flex flex-col" :class="autopostForm.platforms.includes('threads') ? 'text-black' : 'text-slate-600'">
+                                                Threads
+                                                <span x-show="!hasThreads" class="text-[9px] text-red-500 font-normal">Belum terhubung</span>
+                                            </span>
                                         </label>
                                     </div>
                                 </div>

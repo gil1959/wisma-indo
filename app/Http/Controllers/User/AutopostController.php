@@ -109,6 +109,67 @@ class AutopostController extends Controller
         }
     }
 
+    public function authThreads()
+    {
+        $appId = Setting::getValue('threads_app_id');
+        if (!$appId) {
+            return redirect()->back()->with('error', 'Threads App ID belum dikonfigurasi oleh Admin.');
+        }
+
+        $redirectUri = url('/autopost/callback/threads');
+        $scopes = 'threads_basic,threads_content_publish';
+        
+        $url = "https://threads.net/oauth/authorize?client_id={$appId}&redirect_uri={$redirectUri}&scope={$scopes}&response_type=code";
+        
+        return redirect($url);
+    }
+
+    public function callbackThreads(Request $request)
+    {
+        $code = $request->query('code');
+        if (!$code) {
+            return redirect()->route('iklan.saya')->with('error', 'Otorisasi Threads dibatalkan atau gagal.');
+        }
+
+        $appId = Setting::getValue('threads_app_id');
+        $appSecret = Setting::getValue('threads_app_secret');
+        $redirectUri = url('/autopost/callback/threads');
+
+        try {
+            // Tukar code dengan Access Token Threads
+            $response = Http::asForm()->post('https://graph.threads.net/oauth/access_token', [
+                'client_id' => $appId,
+                'client_secret' => $appSecret,
+                'grant_type' => 'authorization_code',
+                'redirect_uri' => $redirectUri,
+                'code' => $code,
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                $accessToken = $data['access_token'];
+                $userId = $data['user_id']; // ID User di Threads
+
+                // Simpan token ke social_accounts
+                SocialAccount::updateOrCreate(
+                    ['user_id' => Auth::id(), 'provider' => 'threads'],
+                    [
+                        'provider_id' => $userId,
+                        'access_token' => $accessToken,
+                        'page_name' => 'Akun Threads Anda',
+                        'page_picture' => null, // Opsional, bisa didapat dari endpoint GET /v1.0/me
+                    ]
+                );
+
+                return redirect()->route('iklan.saya')->with('success', 'Akun Threads berhasil dihubungkan!');
+            }
+
+            return redirect()->route('iklan.saya')->with('error', 'Gagal mendapatkan Access Token dari Threads API.');
+        } catch (\Exception $e) {
+            return redirect()->route('iklan.saya')->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+        }
+    }
+
     public function generateCaption(Request $request)
     {
         $listingId = $request->input('listing_id');
