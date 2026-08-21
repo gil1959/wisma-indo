@@ -16,8 +16,10 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('partner:check-subscriptions')->dailyAt('00:00');
-        
-        $schedule->job(new \App\Jobs\ProcessAutopostJob)->everyMinute();
+        $schedule->call(function () {
+            $job = new \App\Jobs\ProcessAutopostJob();
+            $job->handle();
+        })->everyMinute();
     }
 
     /**
