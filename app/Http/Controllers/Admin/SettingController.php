@@ -123,6 +123,7 @@ class SettingController extends Controller
             'meta_app_secret'      => ['nullable', 'string', 'max:255'],
             'threads_app_id'       => ['nullable', 'string', 'max:255'],
             'threads_app_secret'   => ['nullable', 'string', 'max:255'],
+            'autopost_status'      => ['nullable', 'boolean'],
         ]);
 
         $keys = [
@@ -134,7 +135,7 @@ class SettingController extends Controller
             'offline_unique_code_min', 'offline_unique_code_max',
             'google_login_active', 'google_client_id', 'google_client_secret', 'google_maps_api_key', 'gemini_api_key',
             'tracking_script_head', 'tracking_script_body',
-            'meta_app_id', 'meta_app_secret', 'threads_app_id', 'threads_app_secret'
+            'meta_app_id', 'meta_app_secret', 'threads_app_id', 'threads_app_secret', 'autopost_status'
         ];
 
         foreach ($keys as $key) {

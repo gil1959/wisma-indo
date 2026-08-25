@@ -138,7 +138,7 @@
                 </div>
                 
                 <div class="mt-8">
-                    {{ $listings->links() }}
+                    {{ $listings->withQueryString()->links() }}
                 </div>
                 @else
                 {{-- Empty State --}}

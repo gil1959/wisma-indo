@@ -157,9 +157,11 @@
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex justify-end gap-2">
+                                    @if(App\Models\Setting::getValue('autopost_status') == '1')
                                     <button type="button" @click="openAutopost({{ $item->id }}, '{{ addslashes($item->title) }}', '{{ asset($item->cover_image) }}')" class="inline-flex items-center justify-center h-9 px-3 rounded-xl bg-orange-100 text-orange-700 hover:bg-orange-200 hover:text-orange-900 transition text-xs font-bold" title="Autopost FB/IG">
                                         <i data-lucide="share-2" class="w-4 h-4 mr-1"></i> Autopost FB/IG
                                     </button>
+                                    @endif
                                     <a href="{{ route('listing_promotions.packages', ['listing' => $item->id, 'type' => 'sundul']) }}" class="inline-flex items-center justify-center h-9 px-3 rounded-xl bg-indigo-100 text-indigo-700 hover:bg-indigo-200 hover:text-indigo-900 transition text-xs font-bold" title="Sundulan">
                                         <i data-lucide="arrow-up" class="w-4 h-4 mr-1"></i> Sundulan
                                     </a>

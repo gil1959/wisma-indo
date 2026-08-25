@@ -179,6 +179,12 @@
                 <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
                     <div class="flex items-center justify-between">
                         <h4 class="font-bold text-slate-700">Autopost Social Media (Meta & Threads)</h4>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="hidden" name="autopost_status" value="0">
+                            <input type="checkbox" name="autopost_status" value="1" {{ ($settings['autopost_status'] ?? '0') == '1' ? 'checked' : '' }} class="sr-only peer">
+                            <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#0194F3]"></div>
+                            <span class="ml-3 text-sm font-bold text-slate-600">Aktifkan Fitur Autopost</span>
+                        </label>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
