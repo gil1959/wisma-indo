@@ -50,10 +50,12 @@ class RegisteredUserController extends Controller
         // default role untuk registrasi
         $user->assignRole('user');
 
-        // default free quota
+        // default free quota berdasarkan setting global
+        $freeQuotaEnabled = \App\Models\Setting::getValue('free_quota_register_enabled', '1');
         \App\Models\UserQuota::create([
             'user_id' => $user->id,
-            'listing_quota' => 1
+            'listing_quota' => $freeQuotaEnabled === '1' ? 1 : 0,
+            'has_free_quota' => $freeQuotaEnabled === '1'
         ]);
         event(new Registered($user));
         

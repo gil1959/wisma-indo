@@ -50,12 +50,27 @@
                 </button>
             </div>
         </form>
-        <div class="flex gap-2">
-            <button @click="popupModal = true" class="px-4 py-2.5 rounded-2xl font-extrabold text-slate-700 bg-slate-200 hover:bg-slate-300 transition">
-                Edit Pop up User
+        <div class="flex items-center gap-2">
+            <button @click="popupModal = true" class="px-3 py-2 rounded-xl text-sm font-bold text-slate-700 bg-slate-200 hover:bg-slate-300 transition whitespace-nowrap">
+                Edit Pop up
             </button>
+            @php
+                $isFreeQuotaEnabled = \App\Models\Setting::getValue('free_quota_register_enabled', '1') === '1';
+            @endphp
+            <form action="{{ route('admin.users.toggle_global_quota') }}" method="POST" id="form-toggle-global-quota" class="inline-block m-0">
+                @csrf
+                @if($isFreeQuotaEnabled)
+                    <button type="button" onclick="confirmToggleGlobalQuota('form-toggle-global-quota', 'nonaktifkan')" class="px-3 py-2 rounded-xl text-sm font-bold text-white bg-rose-500 hover:bg-rose-600 transition whitespace-nowrap">
+                        Nonaktifkan Kuota Free
+                    </button>
+                @else
+                    <button type="button" onclick="confirmToggleGlobalQuota('form-toggle-global-quota', 'aktifkan')" class="px-3 py-2 rounded-xl text-sm font-bold text-white bg-emerald-500 hover:bg-emerald-600 transition whitespace-nowrap">
+                        Aktifkan Kuota Free
+                    </button>
+                @endif
+            </form>
             <a href="{{ route('admin.users.create') }}"
-               class="px-4 py-2.5 rounded-2xl font-extrabold text-white"
+               class="px-3 py-2 rounded-xl text-sm font-bold text-white whitespace-nowrap"
                style="background:#0194F3;">
                Tambah User
             </a>
@@ -236,6 +251,23 @@
             confirmButtonColor: '#0194F3',
             cancelButtonColor: '#64748b',
             confirmButtonText: 'Ya, Tambahkan'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(formId).submit();
+            }
+        });
+    }
+
+    function confirmToggleGlobalQuota(formId, action) {
+        Swal.fire({
+            title: action === 'aktifkan' ? 'Aktifkan Kuota Gratis?' : 'Nonaktifkan Kuota Gratis?',
+            text: action === 'aktifkan' ? "Seluruh user baru akan otomatis mendapatkan kuota gratis." : "Seluruh user baru tidak akan mendapatkan kuota gratis.",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#0194F3',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Ya, ' + (action === 'aktifkan' ? 'Aktifkan' : 'Nonaktifkan'),
+            cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
                 document.getElementById(formId).submit();

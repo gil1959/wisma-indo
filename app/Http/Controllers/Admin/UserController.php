@@ -129,10 +129,15 @@ public function store(Request $request)
             'ends_at' => now()->addDays($freePackage->duration_days)
         ]);
     } elseif ($data['role'] === 'user') {
-        // Aktifkan kuota gratis 1x bawaan (Paket Free User)
+        // Cek pengaturan kuota gratis global
+        $freeQuotaEnabled = \App\Models\Setting::getValue('free_quota_register_enabled', '1');
+        
         \App\Models\UserQuota::firstOrCreate(
             ['user_id' => $user->id],
-            ['listing_quota' => 1, 'has_free_quota' => true]
+            [
+                'listing_quota' => $freeQuotaEnabled === '1' ? 1 : 0, 
+                'has_free_quota' => $freeQuotaEnabled === '1'
+            ]
         );
     }
 
@@ -272,6 +277,16 @@ return redirect()
             $quota->save();
             return back()->with('success', 'Kuota Gratis 1x berhasil diaktifkan kembali.');
         }
+    }
+
+    public function toggleGlobalFreeQuota()
+    {
+        $current = \App\Models\Setting::getValue('free_quota_register_enabled', '1');
+        $newVal = $current === '1' ? '0' : '1';
+        \App\Models\Setting::setValue('free_quota_register_enabled', $newVal);
+        
+        $msg = $newVal === '1' ? 'Kuota gratis user baru berhasil diaktifkan.' : 'Kuota gratis user baru berhasil dinonaktifkan.';
+        return back()->with('success', $msg);
     }
 
     public function addQuota(Request $request, User $user)
