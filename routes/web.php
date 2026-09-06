@@ -109,6 +109,8 @@ Route::middleware(['auth'])->group(function () {
     // Notifications
     Route::get('/notifikasi', [\App\Http\Controllers\User\NotificationController::class, 'index'])->name('user.notifications.index');
     Route::get('/notifikasi/{id}', [\App\Http\Controllers\User\NotificationController::class, 'show'])->name('user.notifications.show');
+    Route::post('/notifications/{id}/mark-read', [\App\Http\Controllers\NotificationCenterController::class, 'markRead'])->name('notifications.markRead');
+    Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationCenterController::class, 'readAll'])->name('notifications.readAll');
 
     // Verified only
     Route::middleware(['verified'])->group(function () {
