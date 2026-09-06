@@ -82,6 +82,7 @@ Route::prefix('v1')->namespace('App\Http\Controllers\Api\V1')->group(function ()
         Route::delete('/user/listings/{id}', [App\Http\Controllers\Api\V1\User\ListingController::class, 'destroy']);
         
         // Listing Promotions
+        Route::get('/user/listing-promotions/transactions', [App\Http\Controllers\Api\V1\User\ListingPromotionController::class, 'transactions']);
         Route::get('/user/listings/{id}/promotions/packages', [App\Http\Controllers\Api\V1\User\ListingPromotionController::class, 'packages']);
         Route::post('/user/listings/{id}/promotions/checkout/{package_id}', [App\Http\Controllers\Api\V1\User\ListingPromotionController::class, 'checkout']);
         Route::post('/user/listing-promotions/{transaction_id}/upload-proof', [App\Http\Controllers\Api\V1\User\ListingPromotionController::class, 'uploadProof']);
@@ -100,6 +101,9 @@ Route::prefix('v1')->namespace('App\Http\Controllers\Api\V1')->group(function ()
         // Notifications
         Route::get('/user/notifications', [App\Http\Controllers\Api\V1\User\NotificationController::class, 'index']);
         Route::post('/user/notifications/{id}/read', [App\Http\Controllers\Api\V1\User\NotificationController::class, 'markAsRead']);
+
+        // AI Generator
+        Route::post('/user/generate-ai', [\App\Http\Controllers\AiController::class, 'generate']);
 
         // Partner Routes
         Route::middleware('role:partner')->prefix('partner')->group(function () {

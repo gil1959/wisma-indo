@@ -42,6 +42,17 @@ class ListingController extends Controller
         if ($request->has('max_price')) {
             $query->where('price', '<=', $request->max_price);
         }
+
+        // Radius / Geolocation Search
+        if ($request->has('latitude') && $request->has('longitude') && $request->has('radius')) {
+            $lat = $request->latitude;
+            $lon = $request->longitude;
+            $radius = $request->radius; // dalam kilometer
+
+            $query->select('listings.*')
+                  ->selectRaw("( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) ) AS distance", [$lat, $lon, $lat])
+                  ->having('distance', '<=', $radius);
+        }
         
         if ($request->has('type')) {
             if ($request->type === 'barang_jasa') {

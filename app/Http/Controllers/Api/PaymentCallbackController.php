@@ -30,19 +30,21 @@ class PaymentCallbackController extends Controller
                 return true;
             }
         } else if (str_starts_with($merchantRef, 'PROMO-')) {
-            $transaction = \App\Models\ListingPromotionTransaction::where('payment_reference', $merchantRef)->first();
+            $transaction = \App\Models\ListingTransaction::where('payment_reference', $merchantRef)->first();
             if ($transaction && $transaction->status !== 'success') {
                 $transaction->update(['status' => 'success']);
                 
                 $listing = $transaction->listing;
                 $package = $transaction->listingPackage;
                 
-                $listing->update([
-                    'is_promoted' => true,
-                    'promotion_type' => $package->type,
-                    'promoted_until' => now()->addDays($package->duration_days),
-                    'promoted_at' => now()
-                ]);
+                if ($listing && $package) {
+                    if ($package->type == 'premium') {
+                        $listing->update(['is_premium' => true]);
+                    } else {
+                        $listing->increment('bump_count', $package->amount ?? 1);
+                        $listing->update(['bumped_at' => now()]);
+                    }
+                }
                 return true;
             }
         } else {
@@ -74,7 +76,7 @@ class PaymentCallbackController extends Controller
         if (str_starts_with($merchantRef, 'PARTNER-')) {
             \App\Models\PartnerSubscription::where('payment_reference', $merchantRef)->update(['status' => 'failed']);
         } else if (str_starts_with($merchantRef, 'PROMO-')) {
-            \App\Models\ListingPromotionTransaction::where('payment_reference', $merchantRef)->update(['status' => 'failed']);
+            \App\Models\ListingTransaction::where('payment_reference', $merchantRef)->update(['status' => 'failed']);
         } else {
             \App\Models\TopupTransaction::where('payment_reference', $merchantRef)->update(['status' => 'failed']);
         }
@@ -85,7 +87,7 @@ class PaymentCallbackController extends Controller
         if (str_starts_with($merchantRef, 'PARTNER-')) {
             return \App\Models\PartnerSubscription::where('payment_reference', $merchantRef)->first();
         } else if (str_starts_with($merchantRef, 'PROMO-')) {
-            return \App\Models\ListingPromotionTransaction::where('payment_reference', $merchantRef)->first();
+            return \App\Models\ListingTransaction::where('payment_reference', $merchantRef)->first();
         } else {
             return \App\Models\TopupTransaction::where('payment_reference', $merchantRef)->first();
         }

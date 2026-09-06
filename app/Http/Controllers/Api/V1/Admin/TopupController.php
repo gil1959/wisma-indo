@@ -25,7 +25,7 @@ class TopupController extends Controller
     {
         $transaction = TopupTransaction::findOrFail($id);
         
-        if ($transaction->status !== 'waiting_verification') {
+        if ($transaction->status !== 'pending') {
             return response()->json(['success' => false, 'message' => 'Transaction cannot be approved'], 400);
         }
 
@@ -34,10 +34,20 @@ class TopupController extends Controller
 
         // Add quota to user
         $user = $transaction->user;
+        $package = $transaction->topupPackage ?? $transaction->package;
+        
+        $totalBonus = $package ? ($package->bonus ?? 0) : 0;
+        $quotaAmount = $transaction->amount + $totalBonus;
+
         $quota = $user->quota;
         if ($quota) {
-            $quota->listing_quota += $transaction->quota_amount;
+            $quota->listing_quota += $quotaAmount;
             $quota->save();
+        } else {
+            \App\Models\UserQuota::create([
+                'user_id' => $user->id,
+                'listing_quota' => $quotaAmount
+            ]);
         }
 
         return response()->json([
@@ -50,7 +60,7 @@ class TopupController extends Controller
     {
         $transaction = TopupTransaction::findOrFail($id);
         
-        if ($transaction->status !== 'waiting_verification') {
+        if ($transaction->status !== 'pending') {
             return response()->json(['success' => false, 'message' => 'Transaction cannot be rejected'], 400);
         }
 

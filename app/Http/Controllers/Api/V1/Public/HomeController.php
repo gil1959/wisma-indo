@@ -39,6 +39,9 @@ class HomeController extends Controller
             return $c;
         });
 
+        $settingsKeys = ['brand_name', 'footer_phone', 'footer_whatsapp', 'footer_email'];
+        $settings = \App\Models\Setting::whereIn('key', $settingsKeys)->pluck('value', 'key');
+
         return response()->json([
             'success' => true,
             'data' => [
@@ -51,6 +54,7 @@ class HomeController extends Controller
                     'goods' => $allCategories->where('type', 'goods')->values(),
                     'services' => $allCategories->where('type', 'services')->values(),
                 ],
+                'settings' => $settings
             ]
         ]);
     }
