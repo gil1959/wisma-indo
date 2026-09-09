@@ -24,9 +24,11 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="@hasSection('social_title') @yield('social_title') @elseif(View::hasSection('title')) @yield('title') @else {{ $siteSettings['seo_meta_title'] ?? ($siteSettings['brand_name'] ?? 'Rumaindo') }} | Portal Properti Terpercaya @endif">
   <meta name="twitter:description" content="@hasSection('social_desc') @yield('social_desc') @elseif(View::hasSection('meta_desc')) @yield('meta_desc') @else {{ $siteSettings['seo_meta_desc'] ?? 'Temukan properti impian Anda di ' . ($siteSettings['brand_name'] ?? 'Rumaindo') . '.' }} @endif">
-  
-  <link rel="canonical" href="{{ url('/') }}">
-
+  @hasSection('canonical')
+  <link rel="canonical" href="@yield('canonical')">
+  @else
+  <link rel="canonical" href="{{ url()->current() }}">
+  @endif
   <script type="application/ld+json">
     {
       "@context": "https://schema.org/",
