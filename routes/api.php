@@ -45,10 +45,17 @@ Route::match(['GET', 'HEAD'], '/webhooks/tripay', function () {
 Route::prefix('v1')->namespace('App\Http\Controllers\Api\V1')->group(function () {
 
     // Auth
-    Route::post('/register', [App\Http\Controllers\Api\V1\AuthController::class, 'register']);
-    Route::post('/login', [App\Http\Controllers\Api\V1\AuthController::class, 'login']);
+    Route::post('/register', [App\Http\Controllers\Api\V1\MobileAuthController::class, 'register']);
+    Route::post('/login', [App\Http\Controllers\Api\V1\MobileAuthController::class, 'login']);
 
+    Route::post('/auth/register-partner', [App\Http\Controllers\Api\V1\MobileAuthController::class, 'registerPartner'])->middleware('throttle:5,1');
+    Route::post('/auth/forgot-password', [App\Http\Controllers\Api\V1\MobileAuthController::class, 'forgotPassword'])->middleware('throttle:5,1');
+    Route::post('/auth/reset-password', [App\Http\Controllers\Api\V1\MobileAuthController::class, 'resetPassword'])->middleware('throttle:10,1');
+    Route::get('/auth/password-link', [App\Http\Controllers\Api\V1\MobileAuthController::class, 'passwordLink']);
+    Route::get('/auth/verify/{id}/{hash}', [App\Http\Controllers\Api\V1\MobileAuthController::class, 'verify'])->middleware(['signed:relative', 'throttle:10,1'])->name('mobile.verify');
+    Route::post('/auth/verification-notification', [App\Http\Controllers\Api\V1\MobileAuthController::class, 'resend'])->middleware(['auth:sanctum', 'throttle:3,1']);
     // Public Routes
+    Route::get('/auth/indexing-callback', [App\Http\Controllers\Api\V1\NativeGoogleIndexingController::class, 'callback'])->middleware('throttle:10,1');
     Route::get('/home', [App\Http\Controllers\Api\V1\Public\HomeController::class, 'index']);
     
     Route::get('/listings', [App\Http\Controllers\Api\V1\Public\ListingController::class, 'index']);
@@ -64,8 +71,18 @@ Route::prefix('v1')->namespace('App\Http\Controllers\Api\V1')->group(function ()
     Route::get('/simulator/kemampuan', [App\Http\Controllers\Api\V1\Public\SimulatorController::class, 'kemampuan']);
     Route::get('/simulator/kpr', [App\Http\Controllers\Api\V1\Public\SimulatorController::class, 'kpr']);
 
+    Route::get('/auth/options', [App\Http\Controllers\Api\V1\MobileGoogleController::class, 'options']);
+    Route::post('/auth/google/start', [App\Http\Controllers\Api\V1\MobileGoogleController::class, 'start'])->middleware('throttle:10,1');
+    Route::post('/auth/google/exchange', [App\Http\Controllers\Api\V1\MobileGoogleController::class, 'exchange'])->middleware('throttle:10,1');
     // Authenticated Routes (User)
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware(['auth:sanctum', App\Http\Middleware\EnsureMobileAccountActive::class])->group(function () {
+        Route::get('/user/bulk-uploads', [App\Http\Controllers\Api\V1\MobileBulkController::class, 'index']);
+        Route::post('/user/bulk-uploads', [App\Http\Controllers\Api\V1\MobileBulkController::class, 'store']);
+        Route::get('/user/bulk-uploads/template/{type}', [App\Http\Controllers\Api\V1\MobileBulkController::class, 'template']);
+        Route::get('/mobile/admin/documents/{id}/{field}', [App\Http\Controllers\Api\V1\NativePanelController::class, 'document']);
+        Route::get('/mobile/{area}/modules', [App\Http\Controllers\Api\V1\NativePanelController::class, 'modules']);
+        Route::get('/mobile/{area}/{key}', [App\Http\Controllers\Api\V1\NativePanelController::class, 'screen']);
+        Route::post('/mobile/{area}/{key}/{action}', [App\Http\Controllers\Api\V1\NativePanelController::class, 'action']);
         Route::post('/logout', [App\Http\Controllers\Api\V1\AuthController::class, 'logout']);
         Route::get('/me', [App\Http\Controllers\Api\V1\AuthController::class, 'me']);
         
@@ -75,6 +92,7 @@ Route::prefix('v1')->namespace('App\Http\Controllers\Api\V1')->group(function ()
         Route::post('/user/profile/avatar', [App\Http\Controllers\Api\V1\User\ProfileController::class, 'updateAvatar']);
 
         // User Listings (Iklan Saya)
+        Route::get('/user/listing-form', [App\Http\Controllers\Api\V1\User\ListingController::class, 'form']);
         Route::get('/user/listings', [App\Http\Controllers\Api\V1\User\ListingController::class, 'index']);
         Route::post('/user/listings', [App\Http\Controllers\Api\V1\User\ListingController::class, 'store']);
         Route::get('/user/listings/{id}', [App\Http\Controllers\Api\V1\User\ListingController::class, 'show']);

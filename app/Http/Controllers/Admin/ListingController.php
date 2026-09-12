@@ -53,6 +53,8 @@ class ListingController extends Controller
             'location' => 'nullable|string|max:255',
             'address' => 'nullable|string|max:255',
             'maps_url' => 'nullable|string',
+            'latitude' => 'nullable|required_with:longitude|numeric|between:-90,90',
+            'longitude' => 'nullable|required_with:latitude|numeric|between:-180,180',
             'property_type' => 'nullable|string',
             'bedrooms' => 'nullable|integer',
             'bathrooms' => 'nullable|integer',
@@ -82,6 +84,7 @@ class ListingController extends Controller
             'youtube_url' => 'nullable|string',
             'status' => 'nullable|string',
             'cover_image' => 'nullable|image|max:20480',
+            'images' => 'nullable|array|max:12',
             'images.*' => 'nullable|image|max:20480',
         ]);
 
@@ -180,6 +183,8 @@ class ListingController extends Controller
             'location' => 'nullable|string|max:255',
             'address' => 'nullable|string|max:255',
             'maps_url' => 'nullable|string',
+            'latitude' => 'nullable|required_with:longitude|numeric|between:-90,90',
+            'longitude' => 'nullable|required_with:latitude|numeric|between:-180,180',
             'property_type' => 'nullable|string',
             'bedrooms' => 'nullable|integer',
             'bathrooms' => 'nullable|integer',
@@ -209,8 +214,14 @@ class ListingController extends Controller
             'youtube_url' => 'nullable|string',
             'status' => 'nullable|string',
             'cover_image' => 'nullable|image|max:20480',
+            'images' => 'nullable|array|max:12',
             'images.*' => 'nullable|image|max:20480',
         ]);
+
+        $remainingImages = $listing->images()->whereNotIn('id', (array) $request->input('delete_images', []))->count();
+        if ($remainingImages + count($request->file('images', [])) > 12) {
+            throw \Illuminate\Validation\ValidationException::withMessages(['images' => 'Maksimal 12 foto tambahan. Hapus foto lama atau kurangi foto baru.']);
+        }
 
         $validated['co_broke'] = $request->has('co_broke');
         $validated['negotiable'] = $request->has('negotiable');

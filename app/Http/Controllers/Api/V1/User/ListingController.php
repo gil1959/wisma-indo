@@ -3,228 +3,63 @@
 namespace App\Http\Controllers\Api\V1\User;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\SaveListingRequest;
+use App\Http\Resources\ListingResource;
 use App\Models\Listing;
 use App\Models\ListingCategory;
-use App\Models\ListingImage;
-use App\Http\Resources\ListingResource;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use App\Services\ListingWriter;
+use Illuminate\Http\Request;
 
 class ListingController extends Controller
 {
+    public function __construct()
+    {
+        // Match the verified email requirement on the web's listing forms.
+        $this->middleware('verified')->only(['form', 'store', 'update', 'destroy']);
+        $this->middleware(\App\Http\Middleware\EnsureMobilePartnerSubscription::class)->only('index');
+    }
+
+    public function form(Request $request)
+    {
+        $remaining = (int) optional($request->user()->quota)->listing_quota;
+        return response()->json(['success' => true, 'data' => [
+            'listing_quota' => $remaining,
+            'can_create' => $remaining > 0 || $remaining === -1,
+            'categories' => ListingCategory::whereIn('type', ['property', 'goods', 'services'])->orderBy('name')->get(['id', 'name', 'type']),
+            'phone' => $request->user()->phone,
+            'max_gallery_images' => 18,
+            'max_image_size_mb' => 20,
+        ]]);
+    }
+
     public function index(Request $request)
     {
-        $user = $request->user();
-        $listings = Listing::with('listingCategory')->where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(10);
-        
-        return ListingResource::collection($listings)->additional([
-            'success' => true
-        ]);
+        return ListingResource::collection(Listing::with(['listingCategory', 'images'])
+            ->where('user_id', $request->user()->id)->latest()->paginate(10))->additional(['success' => true]);
     }
 
     public function show(Request $request, $id)
     {
-        $listing = Listing::with(['listingCategory', 'images'])->where('user_id', $request->user()->id)->findOrFail($id);
-        
-        return (new ListingResource($listing))->additional([
-            'success' => true
-        ]);
+        return (new ListingResource(Listing::with(['listingCategory', 'images'])
+            ->where('user_id', $request->user()->id)->findOrFail($id)))->additional(['success' => true]);
     }
 
-    public function store(Request $request)
+    public function store(SaveListingRequest $request, ListingWriter $writer)
     {
-        $user = $request->user();
-        $quota = $user->quota;
-        if (!$quota || $quota->listing_quota <= 0) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Kuota iklan habis. Silakan topup terlebih dahulu.'
-            ], 403);
-        }
-
-        $validated = $request->validate([
-            'listing_category_id' => 'required|exists:listing_categories,id',
-            'transaction_type' => 'nullable|string',
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'price' => 'required|numeric',
-            'currency' => 'nullable|string',
-            'rental_period' => 'nullable|string',
-            'min_rental' => 'nullable|string',
-            'price_type' => 'nullable|string',
-            'co_broke' => 'nullable|boolean',
-            'negotiable' => 'nullable|boolean',
-            'location' => 'nullable|string|max:255',
-            'address' => 'nullable|string|max:255',
-            'maps_url' => 'nullable|string',
-            'property_type' => 'nullable|string',
-            'bedrooms' => 'nullable|integer',
-            'bathrooms' => 'nullable|integer',
-            'land_area' => 'nullable|integer',
-            'building_area' => 'nullable|integer',
-            'floors' => 'nullable|integer',
-            'certificate' => 'nullable|string',
-            'imb' => 'nullable|boolean',
-            'pbb' => 'nullable|boolean',
-            'latitude' => 'nullable|string',
-            'longitude' => 'nullable|string',
-            'electricity' => 'nullable|integer',
-            'maid_bedrooms' => 'nullable|integer',
-            'maid_bathrooms' => 'nullable|integer',
-            'car_access' => 'nullable|string',
-            'water_source' => 'nullable|string',
-            'facing_direction' => 'nullable|string',
-            'build_year' => 'nullable|string',
-            'carport' => 'nullable|integer',
-            'garage' => 'nullable|integer',
-            'furnished_status' => 'nullable|string',
-            'facilities' => 'nullable|array',
-            'surroundings' => 'nullable|array',
-            'condition' => 'nullable|string',
-            'brand' => 'nullable|string',
-            'service_area' => 'nullable|string',
-            'phone' => 'nullable|string',
-            'whatsapp' => 'nullable|string',
-            'youtube_url' => 'nullable|string',
-            'cover_image' => 'nullable|image|max:20480',
-        ]);
-
-        $validated['user_id'] = $user->id;
-        $validated['slug'] = Str::slug($validated['title']) . '-' . uniqid();
-        $validated['co_broke'] = $request->has('co_broke');
-        $validated['negotiable'] = $request->has('negotiable');
-        $validated['imb'] = $request->has('imb');
-        $validated['pbb'] = $request->has('pbb');
-        
-        $category = ListingCategory::find($validated['listing_category_id']);
-        $validated['category'] = $category->type;
-        $validated['type'] = $category->type;
-        $validated['status'] = 'tersedia';
-
-        if ($request->hasFile('cover_image')) {
-            $path = $request->file('cover_image')->store('listings', 'public');
-            $validated['cover_image'] = Storage::url($path);
-        }
-
-        DB::beginTransaction();
-        try {
-            $listing = Listing::create($validated);
-            $quota->decrement('listing_quota', 1);
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Listing created successfully.',
-                'data' => new ListingResource($listing)
-            ], 201);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create listing: ' . $e->getMessage()
-            ], 500);
-        }
+        $listing = $writer->save($request->user()->id, $request->validated(), $request);
+        return response()->json(['success' => true, 'message' => 'Iklan berhasil ditambahkan.', 'data' => new ListingResource($listing)], 201);
     }
 
-    public function update(Request $request, $id)
+    public function update(SaveListingRequest $request, ListingWriter $writer, $id)
     {
         $listing = Listing::where('user_id', $request->user()->id)->findOrFail($id);
-        
-        $validated = $request->validate([
-            'listing_category_id' => 'required|exists:listing_categories,id',
-            'transaction_type' => 'nullable|string',
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'price' => 'required|numeric',
-            'currency' => 'nullable|string',
-            'rental_period' => 'nullable|string',
-            'min_rental' => 'nullable|string',
-            'price_type' => 'nullable|string',
-            'co_broke' => 'nullable|boolean',
-            'negotiable' => 'nullable|boolean',
-            'location' => 'nullable|string|max:255',
-            'address' => 'nullable|string|max:255',
-            'maps_url' => 'nullable|string',
-            'property_type' => 'nullable|string',
-            'bedrooms' => 'nullable|integer',
-            'bathrooms' => 'nullable|integer',
-            'land_area' => 'nullable|integer',
-            'building_area' => 'nullable|integer',
-            'floors' => 'nullable|integer',
-            'certificate' => 'nullable|string',
-            'imb' => 'nullable|boolean',
-            'pbb' => 'nullable|boolean',
-            'latitude' => 'nullable|string',
-            'longitude' => 'nullable|string',
-            'electricity' => 'nullable|integer',
-            'maid_bedrooms' => 'nullable|integer',
-            'maid_bathrooms' => 'nullable|integer',
-            'car_access' => 'nullable|string',
-            'water_source' => 'nullable|string',
-            'facing_direction' => 'nullable|string',
-            'build_year' => 'nullable|string',
-            'carport' => 'nullable|integer',
-            'garage' => 'nullable|integer',
-            'furnished_status' => 'nullable|string',
-            'facilities' => 'nullable|array',
-            'surroundings' => 'nullable|array',
-            'condition' => 'nullable|string',
-            'brand' => 'nullable|string',
-            'service_area' => 'nullable|string',
-            'phone' => 'nullable|string',
-            'whatsapp' => 'nullable|string',
-            'youtube_url' => 'nullable|string',
-            'cover_image' => 'nullable|image|max:20480',
-        ]);
-
-        $validated['co_broke'] = $request->has('co_broke');
-        $validated['negotiable'] = $request->has('negotiable');
-        $validated['imb'] = $request->has('imb');
-        $validated['pbb'] = $request->has('pbb');
-        
-        $category = ListingCategory::find($validated['listing_category_id']);
-        $validated['category'] = $category->type;
-        $validated['type'] = $category->type;
-
-        if ($listing->status === 'rejected') {
-            $validated['status'] = 'tersedia';
-        }
-
-        if ($request->hasFile('cover_image')) {
-            if ($listing->cover_image) {
-                Storage::disk('public')->delete(str_replace('/storage/', '', $listing->cover_image));
-            }
-            $path = $request->file('cover_image')->store('listings', 'public');
-            $validated['cover_image'] = Storage::url($path);
-        }
-
-        $listing->update($validated);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Listing updated successfully',
-            'data' => new ListingResource($listing)
-        ]);
+        $listing = $writer->save($request->user()->id, $request->validated(), $request, $listing);
+        return response()->json(['success' => true, 'message' => 'Iklan berhasil diperbarui.', 'data' => new ListingResource($listing)]);
     }
 
-    public function destroy(Request $request, $id)
+    public function destroy(Request $request, ListingWriter $writer, $id)
     {
-        $listing = Listing::where('user_id', $request->user()->id)->findOrFail($id);
-        
-        if ($listing->cover_image) {
-            Storage::disk('public')->delete(str_replace('/storage/', '', $listing->cover_image));
-        }
-        foreach($listing->images as $img) {
-            Storage::disk('public')->delete(str_replace('/storage/', '', $img->image_path));
-        }
-        
-        $listing->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Listing deleted successfully'
-        ]);
+        $writer->delete($request->user()->id, (int) $id);
+        return response()->json(['success' => true, 'message' => 'Iklan berhasil dihapus.']);
     }
 }

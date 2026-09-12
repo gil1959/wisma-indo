@@ -63,6 +63,21 @@
                             <a href="{{ asset($registration->ktp_file) }}" target="_blank" class="px-3 py-1 bg-slate-100 text-slate-600 rounded text-xs font-semibold hover:bg-slate-200 transition">Lihat</a>
                         </div>
                     @endif
+
+                    @if($registration->nib_file)
+                        <div class="border border-slate-200 rounded-xl p-3 flex items-center justify-between hover:bg-slate-50 transition">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-sm text-slate-800">NIB</div>
+                                    <div class="text-xs text-slate-500">Wajib</div>
+                                </div>
+                            </div>
+                            <a href="{{ asset($registration->nib_file) }}" target="_blank" class="px-3 py-1 bg-slate-100 text-slate-600 rounded text-xs font-semibold hover:bg-slate-200 transition">Lihat</a>
+                        </div>
+                    @endif
                     
                     @if($registration->foto_file)
                         <div class="border border-slate-200 rounded-xl p-3 flex items-center justify-between hover:bg-slate-50 transition">

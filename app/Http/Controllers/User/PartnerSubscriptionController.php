@@ -126,6 +126,7 @@ class PartnerSubscriptionController extends Controller
                 'starts_at' => now(), // Will be updated on approval
                 'ends_at' => now()->addDays($package->duration_days)
             ]);
+            if ($request->expectsJson()) return response()->json(['success'=>true,'data'=>$transaction]);
             return redirect()->route('partner.billing.upload_proof', $transaction->id);
         } else if ($type == 'pg') {
             $provider = str_starts_with($methodIdOrCode, 'XENDIT_') ? 'xendit' : 'tripay';
@@ -184,6 +185,7 @@ class PartnerSubscriptionController extends Controller
                     $resData = $response->json();
                     if (isset($resData['success']) && $resData['success'] && isset($resData['data']['checkout_url'])) {
                         $transaction->update(['payment_url' => $resData['data']['checkout_url']]);
+                        if ($request->expectsJson()) return response()->json(['success'=>true,'data'=>$transaction]);
                         return redirect($resData['data']['checkout_url']);
                     }
                 }
@@ -211,6 +213,7 @@ class PartnerSubscriptionController extends Controller
                     $resData = $response->json();
                     if (isset($resData['invoice_url'])) {
                         $transaction->update(['payment_url' => $resData['invoice_url']]);
+                        if ($request->expectsJson()) return response()->json(['success'=>true,'data'=>$transaction]);
                         return redirect($resData['invoice_url']);
                     }
                 }
@@ -258,6 +261,7 @@ class PartnerSubscriptionController extends Controller
             } catch (\Exception $e) { }
         }
 
+        if ($request->expectsJson()) return response()->json(['success'=>true,'message'=>'Bukti transfer berhasil diunggah. Tunggu konfirmasi admin.','data'=>$transaction]);
         return redirect()->route('partner.billing')->with('success', 'Bukti transfer berhasil diunggah. Silakan tunggu konfirmasi Admin.');
     }
 }

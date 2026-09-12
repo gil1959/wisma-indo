@@ -10,6 +10,9 @@ class AiController extends Controller
 {
     public function generate(Request $request)
     {
+        $request->validate(['title' => 'required|string|max:255', 'type' => 'nullable|in:listing,article',
+            'category' => 'nullable|string|max:255', 'facilities' => 'nullable|array', 'facilities.*' => 'string|max:255',
+            'surroundings' => 'nullable|array', 'surroundings.*' => 'string|max:255']);
         $apiKey = Setting::where('key', 'gemini_api_key')->first()->value ?? null;
         if (empty($apiKey)) {
             return response()->json(['success' => false, 'message' => 'Gemini API Key belum dikonfigurasi di Pengaturan.'], 400);
@@ -65,6 +68,7 @@ Tulis minimal 4-5 paragraf yang komprehensif, jabarkan seluruh spesifikasi, fasi
 WAJIB tulis dalam format HTML di mana SETIAP paragraf dibungkus dengan tag `<p style=\"text-align: justify;\">`. Jangan hanya 1-2 kalimat pendek.";
         }
 
+        $prompt .= " Gunakan hanya fakta dari data yang diberikan. Jangan mengarang fasilitas, lokasi, atau legalitas. Jangan gunakan emoji atau tanda strip. Susun dengan paragraf.";
         $models = [
             'gemini-3.5-flash', 
             'gemini-3.1-flash-lite', 
@@ -79,7 +83,7 @@ WAJIB tulis dalam format HTML di mana SETIAP paragraf dibungkus dengan tag `<p s
             $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}";
             
             try {
-                $response = Http::post($url, [
+                $response = Http::withOptions(['connect_timeout' => 8])->timeout(25)->post($url, [
                     'contents' => [
                         [
                             'parts' => [
@@ -104,8 +108,8 @@ WAJIB tulis dalam format HTML di mana SETIAP paragraf dibungkus dengan tag `<p s
                     \Illuminate\Support\Facades\Log::warning("Gemini AI ($model) failed: " . json_encode($response->json()));
                 }
             } catch (\Exception $e) {
-                $errorMsg = $e->getMessage();
-                \Illuminate\Support\Facades\Log::warning("Gemini AI Exception ($model): " . $e->getMessage());
+                $errorMsg = 'Layanan AI belum dapat dihubungi.';
+                \Illuminate\Support\Facades\Log::warning("Gemini AI connection failed for model $model");
             }
         }
 
@@ -119,6 +123,7 @@ WAJIB tulis dalam format HTML di mana SETIAP paragraf dibungkus dengan tag `<p s
             ]);
         }
 
-        return response()->json(['success' => false, 'message' => 'Gagal generate konten dengan AI: ' . $errorMsg], 500);
+        return response()->json(['success' => false, 'message' => 'Deskripsi belum dapat dibuat. Coba kembali nanti atau isi deskripsi sendiri.'], 503);
     }
 }
+

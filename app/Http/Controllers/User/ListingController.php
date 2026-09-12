@@ -22,7 +22,7 @@ class ListingController extends Controller
     public function create(Request $request)
     {
         $quota = Auth::user()->quota;
-        if (!$quota || $quota->listing_quota <= 0) {
+        if (!$quota || ($quota->listing_quota <= 0 && (int) $quota->listing_quota !== -1)) {
             return redirect()->route('topup')->with('error', 'Klaim diskon anda sekarang. Manfaatkan Voucher Promo Spesial di bawah untuk top up dengan harga lebih hemat!');
         }
 
@@ -34,7 +34,7 @@ class ListingController extends Controller
     public function store(Request $request)
     {
         $quota = Auth::user()->quota;
-        if (!$quota || $quota->listing_quota <= 0) {
+        if (!$quota || ($quota->listing_quota <= 0 && (int) $quota->listing_quota !== -1)) {
             return redirect()->route('topup')->with('error', 'Klaim diskon anda sekarang. Manfaatkan Voucher Promo Spesial di bawah untuk top up dengan harga lebih hemat!');
         }
 
@@ -62,8 +62,8 @@ class ListingController extends Controller
             'certificate' => 'nullable|string',
             'imb' => 'nullable|boolean',
             'pbb' => 'nullable|boolean',
-            'latitude' => 'nullable|string',
-            'longitude' => 'nullable|string',
+            'latitude' => 'nullable|required_with:longitude|numeric|between:-90,90',
+            'longitude' => 'nullable|required_with:latitude|numeric|between:-180,180',
             'electricity' => 'nullable|integer',
             'maid_bedrooms' => 'nullable|integer',
             'maid_bathrooms' => 'nullable|integer',
@@ -83,43 +83,13 @@ class ListingController extends Controller
             'whatsapp' => 'nullable|string',
             'youtube_url' => 'nullable|string',
             'cover_image' => 'nullable|image|max:20480',
+            'images' => 'nullable|array|max:18',
             'images.*' => 'nullable|image|max:20480',
+            'delete_images' => 'nullable|array|max:18',
+            'delete_images.*' => 'integer',
         ]);
 
-        $validated['user_id'] = Auth::id();
-        $validated['co_broke'] = $request->has('co_broke');
-        $validated['negotiable'] = $request->has('negotiable');
-        $validated['imb'] = $request->has('imb');
-        $validated['pbb'] = $request->has('pbb');
-        
-        $category = ListingCategory::find($validated['listing_category_id']);
-        $validated['category'] = $category->type;
-        $validated['type'] = $category->type;
-        $validated['status'] = 'tersedia';
-
-        if ($request->hasFile('cover_image')) {
-            $path = $request->file('cover_image')->store('public/listings');
-            $this->applyWatermark($path);
-            $validated['cover_image'] = Storage::url($path);
-        }
-
-        $listing = Listing::create($validated);
-
-        // Deduct Quota
-        $quota->decrement('listing_quota', 1);
-
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $index => $image) {
-                if ($index >= 18) break; // Max 18 images
-                $path = $image->store('public/listings');
-                $this->applyWatermark($path);
-                ListingImage::create([
-                    'listing_id' => $listing->id,
-                    'image_path' => Storage::url($path),
-                    'is_primary' => $index === 0,
-                ]);
-            }
-        }
+        app(\App\Services\ListingWriter::class)->save(Auth::id(), $validated, $request);
 
         return redirect()->route('iklan.saya')->with('success', 'Iklan berhasil ditambahkan!');
     }
@@ -160,8 +130,8 @@ class ListingController extends Controller
             'certificate' => 'nullable|string',
             'imb' => 'nullable|boolean',
             'pbb' => 'nullable|boolean',
-            'latitude' => 'nullable|string',
-            'longitude' => 'nullable|string',
+            'latitude' => 'nullable|required_with:longitude|numeric|between:-90,90',
+            'longitude' => 'nullable|required_with:latitude|numeric|between:-180,180',
             'electricity' => 'nullable|integer',
             'maid_bedrooms' => 'nullable|integer',
             'maid_bathrooms' => 'nullable|integer',
@@ -181,58 +151,14 @@ class ListingController extends Controller
             'whatsapp' => 'nullable|string',
             'youtube_url' => 'nullable|string',
             'cover_image' => 'nullable|image|max:20480',
+            'images' => 'nullable|array|max:18',
             'images.*' => 'nullable|image|max:20480',
+            'delete_images' => 'nullable|array|max:18',
+            'delete_images.*' => 'integer',
         ]);
 
-        $validated['co_broke'] = $request->has('co_broke');
-        $validated['negotiable'] = $request->has('negotiable');
-        $validated['imb'] = $request->has('imb');
-        $validated['pbb'] = $request->has('pbb');
-        
-        $category = ListingCategory::find($validated['listing_category_id']);
-        $validated['category'] = $category->type;
-        $validated['type'] = $category->type;
-
-        if ($listing->status === 'rejected') {
-            $validated['status'] = 'tersedia';
-        }
-
-        if ($request->hasFile('cover_image')) {
-            if ($listing->cover_image) {
-                Storage::delete(str_replace('/storage/', 'public/', $listing->cover_image));
-            }
-            $path = $request->file('cover_image')->store('public/listings');
-            $this->applyWatermark($path);
-            $validated['cover_image'] = Storage::url($path);
-        }
-
-        $listing->update($validated);
-
-        if ($request->has('delete_images')) {
-            $imagesToDelete = \App\Models\ListingImage::whereIn('id', $request->delete_images)
-                                ->where('listing_id', $listing->id)
-                                ->get();
-            foreach ($imagesToDelete as $img) {
-                \Illuminate\Support\Facades\Storage::delete(str_replace('/storage/', 'public/', $img->image_path));
-                $img->delete();
-            }
-        }
-
-        if ($request->hasFile('images')) {
-            // Option to replace all or add to existing. Let's just add new ones for now up to limit
-            $currentImages = $listing->images()->count();
-            foreach ($request->file('images') as $image) {
-                if ($currentImages >= 18) break;
-                $path = $image->store('public/listings');
-                $this->applyWatermark($path);
-                ListingImage::create([
-                    'listing_id' => $listing->id,
-                    'image_path' => Storage::url($path),
-                    'is_primary' => $currentImages === 0,
-                ]);
-                $currentImages++;
-            }
-        }
+        foreach (['co_broke', 'negotiable', 'imb', 'pbb'] as $key) $validated[$key] = $request->boolean($key);
+        app(\App\Services\ListingWriter::class)->save(Auth::id(), $validated, $request, $listing);
 
         return redirect()->route('iklan.saya')->with('success', 'Iklan berhasil diperbarui!');
     }
@@ -241,88 +167,8 @@ class ListingController extends Controller
     {
         if ($listing->user_id != Auth::id()) abort(403);
         
-        if ($listing->cover_image) {
-            Storage::delete(str_replace('/storage/', 'public/', $listing->cover_image));
-        }
-        foreach($listing->images as $img) {
-            Storage::delete(str_replace('/storage/', 'public/', $img->image_path));
-        }
-        
-        $listing->delete();
+        app(\App\Services\ListingWriter::class)->delete(Auth::id(), $listing->id);
         return redirect()->route('iklan.saya')->with('success', 'Iklan berhasil dihapus!');
     }
 
-    private function applyWatermark($path)
-    {
-        if (!class_exists(\Intervention\Image\ImageManager::class)) {
-            \Illuminate\Support\Facades\Log::error("Watermark: ImageManager class not found.");
-            return;
-        }
-        
-        $siteLogo = \App\Models\Setting::where('key', 'site_logo')->first()->value ?? null;
-        $brandName = \App\Models\Setting::where('key', 'brand_name')->first()->value ?? 'Wisma Indo';
-        if (!$siteLogo) {
-            \Illuminate\Support\Facades\Log::error("Watermark: site_logo setting not found.");
-            return;
-        }
-
-        $logoPath = public_path(str_replace('/storage/', 'storage/', $siteLogo));
-        if (!file_exists($logoPath)) {
-            // Fallback for cPanel if symlink doesn't exist
-            $logoPath = storage_path('app/public/' . str_replace('/storage/', '', $siteLogo));
-        }
-        
-        if (!file_exists($logoPath)) {
-            \Illuminate\Support\Facades\Log::error("Watermark: Logo file does not exist at path: " . $logoPath);
-            return;
-        }
-
-        try {
-            $manager = new \Intervention\Image\ImageManager(\Intervention\Image\Drivers\Gd\Driver::class);
-            $image = $manager->decodePath(storage_path('app/' . $path));
-            $watermark = $manager->decodePath($logoPath);
-            
-            // Layout seperti Navbar: Logo di kiri, Teks di kanan
-            // Ukuran logo dibuat proporsional (8% dari tinggi gambar utama)
-            $logoHeight = intval($image->height() * 0.08);
-            if ($logoHeight < 20) $logoHeight = 20;
-            $logoWidth = intval($watermark->width() * ($logoHeight / max($watermark->height(), 1)));
-            
-            $watermark->scale(height: $logoHeight);
-            $watermark->sharpen(15); // Tambah ketajaman (HD)
-            $watermark->grayscale();
-            
-            $fontSize = intval($logoHeight * 0.8);
-            $approxTextWidth = strlen($brandName) * ($fontSize * 0.55);
-            $padding = 15;
-            $totalWidth = $logoWidth + $padding + $approxTextWidth;
-            
-            // Hitung posisi agar grup logo+teks berada pas di tengah gambar
-            $startX = intval(($image->width() - $totalWidth) / 2);
-            $startY = intval(($image->height() - $logoHeight) / 2);
-            
-            // Masukkan logo
-            $image->insert($watermark, $startX, $startY, 'top-left', 0.85);
-            
-            // Masukkan teks di sebelah kanan logo
-            $fontPath = public_path('fonts/arialbd.ttf'); // Menggunakan font dari project
-            if (file_exists($fontPath)) {
-                $textX = $startX + $logoWidth + $padding;
-                $textY = $startY + intval($logoHeight * 0.85); // Baseline text
-                $image->text($brandName, $textX, $textY, function($font) use ($fontPath, $fontSize) {
-                    $font->file($fontPath);
-                    $font->size($fontSize);
-                    $font->color('rgba(128, 128, 128, 0.85)');
-                    $font->align('left');
-                });
-            } else {
-                \Illuminate\Support\Facades\Log::error("Watermark: Font file does not exist at path: " . $fontPath);
-            }
-
-            $image->scaleDown(width: 1200);
-            $image->save(storage_path('app/' . $path), quality: 75);
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error("Watermark failed: " . $e->getMessage());
-        }
-    }
 }

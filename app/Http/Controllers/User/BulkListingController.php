@@ -37,7 +37,7 @@ class BulkListingController extends Controller
     {
         $request->validate([
             'type' => 'required|in:property,goods,services',
-            'file' => 'required|file'
+            'file' => 'required|file|max:20480'
         ]);
 
         $file = $request->file('file');
@@ -51,7 +51,7 @@ class BulkListingController extends Controller
         $filename = \Illuminate\Support\Str::random(40) . '.' . $extension;
         $path = $file->storeAs('bulk_uploads', $filename, 'public');
         // IMPORTANT: Convert backslashes to forward slashes for PHP ZipArchive on Windows!
-        $fullPath = str_replace('\\', '/', storage_path('app/public/' . $path));
+        $fullPath = str_replace('\\', '/', \Illuminate\Support\Facades\Storage::disk('public')->path($path));
 
         try {
             // Count rows directly using PhpSpreadsheet to completely bypass Maatwebsite/Excel's LocalTemporaryFile
@@ -83,16 +83,17 @@ class BulkListingController extends Controller
         }
 
         $user = Auth::user();
-        $quota = UserQuota::where('user_id', $user->id)->first();
-        $remainingQuota = $quota ? $quota->listing_quota : 0;
+        return \Illuminate\Support\Facades\DB::transaction(function() use ($request, $user, $totalRows, $fullPath, $path) {
+        $quota = UserQuota::where('user_id', $user->id)->lockForUpdate()->first();
+        $remainingQuota = $quota ? (int) $quota->listing_quota : 0;
 
-        if ($totalRows > $remainingQuota) {
+        if ($remainingQuota !== -1 && $totalRows > $remainingQuota) {
             @unlink($fullPath);
             return back()->withErrors(['file' => "Sisa kuota iklan Anda hanya $remainingQuota, tetapi file berisi $totalRows baris iklan. Silakan kurangi isi file atau tambah kuota."]);
         }
 
         // Deduct Quota upfront
-        if ($quota) {
+        if ($quota && $remainingQuota !== -1) {
             $quota->decrement('listing_quota', $totalRows);
         }
 
@@ -106,8 +107,10 @@ class BulkListingController extends Controller
         ]);
 
         // Dispatch Job
-        ProcessBulkUploadJob::dispatch($bulkUpload);
+        ProcessBulkUploadJob::dispatch($bulkUpload)->afterCommit();
 
         return redirect()->route('bulk-uploads.index')->with('status', 'File berhasil di-upload! Iklan dan foto sedang diproses oleh sistem di belakang layar.');
+        });
     }
 }
+

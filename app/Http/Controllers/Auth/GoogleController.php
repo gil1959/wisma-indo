@@ -18,6 +18,9 @@ class GoogleController extends Controller
 
     public function handleGoogleCallback()
     {
+        if (str_starts_with((string) request()->state, 'mobile_')) {
+            return app(\App\Http\Controllers\Api\V1\MobileGoogleController::class)->callback(request());
+        }
         try {
             $googleUser = Socialite::driver('google')->user();
             
@@ -87,3 +90,4 @@ class GoogleController extends Controller
         }
     }
 }
+

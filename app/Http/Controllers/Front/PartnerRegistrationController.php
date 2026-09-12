@@ -19,49 +19,7 @@ class PartnerRegistrationController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'phone' => ['required', 'string', 'max:20'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'ktp_file' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
-            'foto_file' => ['nullable', 'file', 'mimes:jpg,jpeg,png', 'max:5120'],
-            'npwp_file' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
-            'lisensi_file' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
-        ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'password' => Hash::make($request->password),
-        ]);
-
-        // Default role for new registration is 'user' until approved
-        $user->assignRole('user');
-
-        $registration = new PartnerRegistration();
-        $registration->user_id = $user->id;
-        $registration->foto_file = 'none'; // Dummy value to satisfy MySQL NOT NULL constraint
-
-        if ($request->hasFile('ktp_file')) {
-            $path = $request->file('ktp_file')->store('partners/ktp', 'public');
-            $registration->ktp_file = 'storage/' . $path;
-        }
-        if ($request->hasFile('foto_file')) {
-            $path = $request->file('foto_file')->store('partners/foto', 'public');
-            $registration->foto_file = 'storage/' . $path;
-        }
-        if ($request->hasFile('npwp_file')) {
-            $path = $request->file('npwp_file')->store('partners/npwp', 'public');
-            $registration->npwp_file = 'storage/' . $path;
-        }
-        if ($request->hasFile('lisensi_file')) {
-            $path = $request->file('lisensi_file')->store('partners/lisensi', 'public');
-            $registration->lisensi_file = 'storage/' . $path;
-        }
-
-        $registration->save();
+        $user = app(\App\Services\PartnerRegistrationService::class)->register($request);
 
         // Notify Admin
         $adminEmail = \App\Models\Setting::getValue('admin_notification_email');
