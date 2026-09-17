@@ -97,6 +97,7 @@ class NativePanelController extends Controller
         }
         $actions=[];
         foreach($module['actions']??[] as $action=>$definition) {
+            if ($area==='partner' && $key==='billing' && $action==='proof' && $id && ($data['record']->payment_method!=='offline' || $data['record']->status!=='pending')) continue;
             if(($definition['record']??false) && !$id) continue;
             if(!($definition['record']??false) && $id) continue;
             $class='App\\Http\\Controllers\\'.$module['controller'];

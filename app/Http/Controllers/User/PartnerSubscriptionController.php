@@ -172,7 +172,8 @@ class PartnerSubscriptionController extends Controller
                             'quantity'  => 1
                         ]
                     ],
-                    'return_url'   => route('partner.billing'),
+                    'callback_url' => url('/api/webhooks/topup/tripay'),
+                    'return_url'   => ($request->expectsJson() ? url('/api/v1/payments/return') : route('partner.billing')),
                     'expired_time' => (time() + (24 * 60 * 60)), // 24 hours
                     'signature'    => $signature
                 ];
@@ -202,8 +203,8 @@ class PartnerSubscriptionController extends Controller
                     'payer_email' => $user->email,
                     'description' => 'Paket ' . $package->name,
                     'payment_methods' => [$channelCode],
-                    'success_redirect_url' => route('partner.billing'),
-                    'failure_redirect_url' => route('partner.billing')
+                    'success_redirect_url' => ($request->expectsJson() ? url('/api/v1/payments/return') : route('partner.billing')),
+                    'failure_redirect_url' => ($request->expectsJson() ? url('/api/v1/payments/return') : route('partner.billing'))
                 ];
 
                 $response = \Illuminate\Support\Facades\Http::withBasicAuth($xenditApiKey, '')

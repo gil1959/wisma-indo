@@ -158,3 +158,10 @@ Route::prefix('v1')->namespace('App\Http\Controllers\Api\V1')->group(function ()
         });
     });
 });
+
+// Browser return is informational only. Entitlements are granted by verified webhooks.
+Route::get('/v1/payments/return', function () {
+    return response('<!doctype html><html lang="id"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Pembayaran WismaIndo</title><body style="font-family:system-ui;background:#f8fafc;color:#121212;padding:32px"><h1>WismaIndo</h1><h2>Periksa status pembayaran</h2><p>Kembali ke aplikasi WismaIndo untuk melihat status transaksi dan kuota terbaru. Tutup halaman ini atau gunakan tombol kembali di ponsel.</p><p>Jika status masih menunggu, tekan Muat ulang setelah beberapa saat. Kuota ditambahkan setelah pembayaran dikonfirmasi oleh penyedia pembayaran.</p></body></html>')->header('Content-Type', 'text/html; charset=UTF-8')->header('Cache-Control', 'no-store');
+});
+
+Route::post('/v1/account/deletion-request', [\App\Http\Controllers\AccountDeletionController::class, 'requestFromApp'])->middleware(['auth:sanctum', 'throttle:5,1']);

@@ -12,6 +12,10 @@ class TripayWebhookController extends Controller
 {
     public function __invoke(Request $request)
     {
+        if (preg_match('/^(TOPUP|PARTNER|PROMO)-[0-9]+-/', (string) $request->input('merchant_ref', ''))) {
+            return app(\App\Http\Controllers\Api\PaymentCallbackController::class)->tripayCallback($request);
+        }
+
         // Ambil gateway config (jangan blok webhook hanya karena is_active)
         $gateway = PaymentGateway::where('name', 'tripay')->first();
         if (!$gateway) {

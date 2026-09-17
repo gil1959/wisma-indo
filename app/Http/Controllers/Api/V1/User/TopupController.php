@@ -169,7 +169,8 @@ class TopupController extends Controller
                             'quantity'  => 1
                         ]
                     ],
-                    'return_url'   => url('/api/v1/user/transactions'),
+                    'callback_url' => url('/api/webhooks/topup/tripay'),
+                    'return_url'   => url('/api/v1/payments/return'),
                     'expired_time' => (time() + (24 * 60 * 60)),
                     'signature'    => $signature
                 ];
@@ -209,8 +210,8 @@ class TopupController extends Controller
                     'payer_email' => $user->email,
                     'description' => 'Topup ' . $package->amount . ' Kuota - ' . $user->name,
                     'payment_methods' => [$channelCode],
-                    'success_redirect_url' => url('/api/v1/user/transactions'),
-                    'failure_redirect_url' => url('/api/v1/user/transactions')
+                    'success_redirect_url' => url('/api/v1/payments/return'),
+                    'failure_redirect_url' => url('/api/v1/payments/return')
                 ];
 
                 $response = \Illuminate\Support\Facades\Http::withBasicAuth($xenditApiKey, '')

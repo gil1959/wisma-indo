@@ -18,6 +18,7 @@ class ListingWriter
         $obsolete = [];
         try {
             $listing = DB::transaction(function () use ($userId, $data, $request, $existing, &$stored, &$obsolete) {
+                \App\Models\User::whereKey($userId)->lockForUpdate()->firstOrFail();
                 if ($existing) {
                     $listing = Listing::where('user_id', $userId)->lockForUpdate()->findOrFail($existing->id);
                 } else {

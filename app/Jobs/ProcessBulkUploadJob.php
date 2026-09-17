@@ -22,6 +22,7 @@ class ProcessBulkUploadJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $deleteWhenMissingModels = true;
     public $timeout = 3600; // 1 hour
 
     protected $bulkUpload;
@@ -55,6 +56,7 @@ class ProcessBulkUploadJob implements ShouldQueue
             $errors = [];
 
             foreach ($rows as $index => $row) {
+                if (!\App\Models\User::whereKey($this->bulkUpload->user_id)->exists()) return;
                 // withHeadingRow converts headings to slug format e.g. "Judul Iklan" -> "judul_iklan"
                 $judulIklan = $this->matchKey($row, 'judul_iklan', 'judul');
                 if (empty($judulIklan)) {
@@ -157,6 +159,8 @@ class ProcessBulkUploadJob implements ShouldQueue
                         $listingData['service_area'] = $this->matchKey($row, 'area_layanan', 'area');
                     }
 
+                    \Illuminate\Support\Facades\DB::transaction(function () use ($listingData, $row) {
+                    \App\Models\User::whereKey($this->bulkUpload->user_id)->lockForUpdate()->firstOrFail();
                     $listing = Listing::create($listingData);
 
                     // Cover Image
@@ -182,6 +186,7 @@ class ProcessBulkUploadJob implements ShouldQueue
                         }
                     }
 
+                    });
                     $processed++;
 
                 } catch (\Exception $e) {

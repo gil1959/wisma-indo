@@ -47,6 +47,10 @@ class Handler extends ExceptionHandler
             return null;
         }
 
+        if ($request->is('hapus-akun*') && ($e instanceof NotFoundHttpException || $e instanceof AuthorizationException || $e instanceof AccessDeniedHttpException)) {
+            return redirect()->route('account-deletion.index')->with('deletion_status', 'Tautan tidak tersedia, kedaluwarsa, atau sudah digunakan. Jika akun masih tersedia, ajukan kembali konfirmasi penghapusan.');
+        }
+
         $user = auth()->user();
         $isAdmin = $user && method_exists($user, 'hasRole') && $user->hasRole('admin');
         $isPartner = $user && method_exists($user, 'hasRole') && $user->hasRole('partner');

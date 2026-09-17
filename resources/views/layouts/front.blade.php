@@ -56,13 +56,13 @@
     [x-cloak] { display: none !important; }
   </style>
 
-  @if(!empty($siteSettings['tracking_script_head']))
+  @if(!request()->is('hapus-akun*') && !empty($siteSettings['tracking_script_head']))
   {!! $siteSettings['tracking_script_head'] !!}
   @endif
 </head>
 
 <body class="bg-slate-50 font-[Poppins] text-slate-800 antialiased">
-  @if(!empty($siteSettings['tracking_script_body']))
+  @if(!request()->is('hapus-akun*') && !empty($siteSettings['tracking_script_body']))
   {!! $siteSettings['tracking_script_body'] !!}
   @endif
 

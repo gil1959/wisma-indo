@@ -12,6 +12,10 @@ class XenditWebhookController extends Controller
 {
     public function handle(Request $request)
     {
+        if (preg_match('/^(TOPUP|PARTNER|PROMO)-[0-9]+-/', (string) $request->input('external_id', ''))) {
+            return app(\App\Http\Controllers\Api\PaymentCallbackController::class)->xenditCallback($request);
+        }
+
         // ambil gateway xendit
         $gateway = PaymentGateway::where('name', 'xendit')->first();
 

@@ -284,6 +284,11 @@ Route::middleware(['auth', \Spatie\Permission\Middleware\RoleMiddleware::class .
     Route::resource('listing-promotions', \App\Http\Controllers\Admin\ListingPromotionController::class)->only(['index', 'update', 'destroy']);
 });
 
+Route::get('/hapus-akun', [\App\Http\Controllers\AccountDeletionController::class, 'index'])->name('account-deletion.index');
+Route::post('/hapus-akun', [\App\Http\Controllers\AccountDeletionController::class, 'request'])->middleware('throttle:5,1')->name('account-deletion.request');
+Route::get('/hapus-akun/konfirmasi/{user}', [\App\Http\Controllers\AccountDeletionController::class, 'confirm'])->middleware('throttle:20,1')->name('account-deletion.confirm');
+Route::post('/hapus-akun/konfirmasi/{user}', [\App\Http\Controllers\AccountDeletionController::class, 'destroy'])->middleware('throttle:5,1');
+
 require __DIR__ . '/auth.php';
 
 // Dynamic Listing Route (must be at the very end to avoid capturing /admin/dashboard, etc)

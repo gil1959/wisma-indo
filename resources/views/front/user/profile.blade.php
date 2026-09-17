@@ -114,6 +114,7 @@
                 </div>
             </form>
         </div>
+        @include('account-deletion.profile-action')
 
     </div>
 </div>

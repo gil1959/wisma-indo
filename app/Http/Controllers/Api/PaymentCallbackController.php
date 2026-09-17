@@ -9,8 +9,12 @@ class PaymentCallbackController extends Controller
 {
     private function processTransactionSuccess($merchantRef)
     {
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($merchantRef) {
+        $current = $this->getTransaction($merchantRef);
+        if (!$current || $current->payment_method === 'offline') return false;
+        \App\Models\User::whereKey($current->user_id)->lockForUpdate()->firstOrFail();
         if (str_starts_with($merchantRef, 'PARTNER-')) {
-            $transaction = \App\Models\PartnerSubscription::where('payment_reference', $merchantRef)->first();
+            $transaction = \App\Models\PartnerSubscription::where('payment_reference', $merchantRef)->lockForUpdate()->first();
             if ($transaction && $transaction->status !== 'success' && $transaction->status !== 'active') {
                 $transaction->update(['status' => 'active']);
                 $package = $transaction->package;
@@ -21,7 +25,7 @@ class PaymentCallbackController extends Controller
                 
                 $user = $transaction->user;
                 $userQuota = \App\Models\UserQuota::firstOrCreate(['user_id' => $user->id]);
-                if ($package->listing_quota != -1) {
+                if ($package->listing_quota != -1 && $userQuota->listing_quota != -1) {
                     $userQuota->listing_quota += $package->listing_quota;
                 } else {
                     $userQuota->listing_quota = -1;
@@ -30,7 +34,7 @@ class PaymentCallbackController extends Controller
                 return true;
             }
         } else if (str_starts_with($merchantRef, 'PROMO-')) {
-            $transaction = \App\Models\ListingTransaction::where('payment_reference', $merchantRef)->first();
+            $transaction = \App\Models\ListingTransaction::where('payment_reference', $merchantRef)->lockForUpdate()->first();
             if ($transaction && $transaction->status !== 'success') {
                 $transaction->update(['status' => 'success']);
                 
@@ -48,7 +52,7 @@ class PaymentCallbackController extends Controller
                 return true;
             }
         } else {
-            $transaction = \App\Models\TopupTransaction::where('payment_reference', $merchantRef)->first();
+            $transaction = \App\Models\TopupTransaction::where('payment_reference', $merchantRef)->lockForUpdate()->first();
             if ($transaction && $transaction->status !== 'success') {
                 $transaction->update(['status' => 'success']);
                 
@@ -58,7 +62,7 @@ class PaymentCallbackController extends Controller
                 $totalBonus = $package->bonus ?? 0;
                 $quota = $user->quota;
                 if ($quota) {
-                    $quota->increment('listing_quota', $package->amount + $totalBonus);
+                    if ($quota->listing_quota != -1) $quota->increment('listing_quota', $package->amount + $totalBonus);
                 } else {
                     \App\Models\UserQuota::create([
                         'user_id' => $user->id,
@@ -69,16 +73,17 @@ class PaymentCallbackController extends Controller
             }
         }
         return false;
+        }, 3);
     }
 
     private function processTransactionFailed($merchantRef)
     {
         if (str_starts_with($merchantRef, 'PARTNER-')) {
-            \App\Models\PartnerSubscription::where('payment_reference', $merchantRef)->update(['status' => 'failed']);
+            \App\Models\PartnerSubscription::where('payment_reference', $merchantRef)->whereNotIn('status', ['success', 'active'])->update(['status' => 'failed']);
         } else if (str_starts_with($merchantRef, 'PROMO-')) {
-            \App\Models\ListingTransaction::where('payment_reference', $merchantRef)->update(['status' => 'failed']);
+            \App\Models\ListingTransaction::where('payment_reference', $merchantRef)->whereNotIn('status', ['success', 'active'])->update(['status' => 'failed']);
         } else {
-            \App\Models\TopupTransaction::where('payment_reference', $merchantRef)->update(['status' => 'failed']);
+            \App\Models\TopupTransaction::where('payment_reference', $merchantRef)->whereNotIn('status', ['success', 'active'])->update(['status' => 'failed']);
         }
     }
 
@@ -99,9 +104,10 @@ class PaymentCallbackController extends Controller
         $json = $request->getContent();
         
         $tripayPrivateKey = \App\Models\Setting::where('key', 'tripay_private_key')->value('value');
+        if (!$tripayPrivateKey) return response()->json(['success' => false], 503);
         $signature = hash_hmac('sha256', $json, $tripayPrivateKey);
 
-        if ($signature !== (string) $callbackSignature) {
+        if (!hash_equals($signature, (string) $callbackSignature)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid signature',
@@ -116,7 +122,7 @@ class PaymentCallbackController extends Controller
         }
 
         $data = json_decode($json);
-        if (JSON_ERROR_NONE !== json_last_error()) {
+        if (JSON_ERROR_NONE !== json_last_error() || !is_object($data) || !isset($data->merchant_ref, $data->status)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid data',
@@ -155,13 +161,13 @@ class PaymentCallbackController extends Controller
         $xenditToken = \App\Models\Setting::where('key', 'xendit_callback_token')->value('value');
         
         // Verifikasi token jika dikonfigurasi di pengaturan
-        if (!empty($xenditToken) && $xenditToken !== $callbackToken) {
+        if (empty($xenditToken) || !hash_equals((string) $xenditToken, (string) $callbackToken)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid Callback Token',
             ], 403);
         }
-        if (!isset($data['external_id']) || !isset($data['status'])) {
+        if (!isset($data['external_id'], $data['status'], $data['id']) || !is_string($data['id'])) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid data',
@@ -187,14 +193,16 @@ class PaymentCallbackController extends Controller
             // Verify via Xendit API to prevent spoofing
             $xenditApiKey = \App\Models\Setting::where('key', 'xendit_api_key')->value('value');
             $response = \Illuminate\Support\Facades\Http::withBasicAuth($xenditApiKey, '')
-                    ->get('https://api.xendit.co/v2/invoices/' . $data['id']);
+                    ->timeout(20)->get('https://api.xendit.co/v2/invoices/' . rawurlencode($data['id']));
                     
             if ($response->successful()) {
                 $invoice = $response->json();
-                if ($invoice['status'] === 'PAID' || $invoice['status'] === 'SETTLED') {
+                $expectedAmount = $transaction instanceof \App\Models\TopupTransaction ? $transaction->total_amount : $transaction->amount;
+                if (($invoice['external_id'] ?? null) !== $data['external_id'] || (float) ($invoice['amount'] ?? -1) !== (float) $expectedAmount) return response()->json(['success' => false], 422);
+                if (in_array($invoice['status'] ?? '', ['PAID', 'SETTLED'])) {
                     $this->processTransactionSuccess($data['external_id']);
-                }
-            }
+                } else return response()->json(['success' => false], 409);
+            } else return response()->json(['success' => false], 502);
         } else if ($data['status'] === 'EXPIRED') {
             $this->processTransactionFailed($data['external_id']);
         }

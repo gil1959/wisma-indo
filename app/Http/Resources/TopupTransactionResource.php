@@ -21,6 +21,7 @@ class TopupTransactionResource extends JsonResource
             'payment_method' => $this->payment_method,
             'payment_channel' => $this->payment_channel,
             'payment_reference' => $this->payment_reference,
+            'payment_url' => $this->payment_url,
             'proof_of_payment' => $this->proof_of_payment ? url('storage/' . $this->proof_of_payment) : null,
             'note' => $this->note,
             'package' => $this->whenLoaded('topupPackage', function() {
