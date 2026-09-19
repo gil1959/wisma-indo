@@ -51,10 +51,12 @@ class GoogleController extends Controller
                     $newUser->assignRole('user'); // asumsikan role default adalah 'user'
                 }
 
-                // Berikan 1 free listing quota untuk user baru (sama seperti register manual)
+                // Ikuti pengaturan kuota gratis user baru, sama seperti register manual.
+                $freeQuotaEnabled = \App\Models\Setting::getValue('free_quota_register_enabled', '1') === '1';
                 \App\Models\UserQuota::create([
                     'user_id' => $newUser->id,
-                    'listing_quota' => 1
+                    'listing_quota' => $freeQuotaEnabled ? 1 : 0,
+                    'has_free_quota' => $freeQuotaEnabled,
                 ]);
 
                 Auth::login($newUser);
