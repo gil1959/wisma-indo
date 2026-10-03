@@ -158,7 +158,7 @@
                                 </div>
 
                                 <div>
-                                    <x-label for="nib_file" :value="$isEn ? 'Upload NIB' : 'Upload NIB'" />
+                                    <x-label for="nib_file" :value="$isEn ? 'Foto Usaha / NIB' : 'Foto Usaha / NIB'" />
                                     <div class="mt-1 relative border-2 border-dashed border-slate-200 rounded-xl hover:border-blue-400 bg-slate-50 transition cursor-pointer text-center group overflow-hidden min-h-[120px] flex items-center justify-center">
                                         <input id="nib_file" name="nib_file" type="file" required accept=".jpg,.jpeg,.png,.pdf" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="previewImage(this, 'nib_preview', 'nib_icon_container', 'nib_filename')">
                                         <div id="nib_icon_container" class="flex flex-col items-center justify-center pointer-events-none p-4">
