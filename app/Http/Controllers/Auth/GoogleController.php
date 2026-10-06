@@ -24,6 +24,8 @@ class GoogleController extends Controller
         try {
             $googleUser = Socialite::driver('google')->user();
             
+            $isNewUser = false;
+            
             // Cek apakah user dengan email ini sudah ada
             $user = User::where('email', $googleUser->getEmail())->first();
 
@@ -60,6 +62,7 @@ class GoogleController extends Controller
                 ]);
 
                 Auth::login($newUser);
+                $isNewUser = true;
             }
             $loggedInUser = Auth::user();
 
@@ -83,6 +86,10 @@ class GoogleController extends Controller
 
             if ($loggedInUser && $loggedInUser->hasRole('partner')) {
                 return redirect()->route('partner.statistics');
+            }
+
+            if ($isNewUser) {
+                return redirect()->route('topup');
             }
 
             return redirect('/akun');

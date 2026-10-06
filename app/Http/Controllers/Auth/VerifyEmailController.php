@@ -42,6 +42,6 @@ class VerifyEmailController extends Controller
             return redirect('/partner/dashboard?verified=1');
         }
 
-        return redirect('/akun?verified=1');
+        return redirect('/top-up?verified=1');
     }
 }
